@@ -12,7 +12,7 @@ ly文件能被[lilypond](http://lilypond.org/)所识别，并通过lilypond来�
 
 ## 特别感谢
 
-![](https://cdn.xhhdd.cc/aurality_2.jpg)
+![](https://cdn.xhhdd.cc/aurality_1.jpg)
 
 @我最喜欢的小学妹
 
