@@ -310,8 +310,8 @@ class module_interval:
             ('d','c'),('e','d'),('g','f'),('a','g'),('b','a'))
         self.aug=(('f','b'),)
         self.dim=(('b','f'),)
-        self.property_1=('倍减','减','小','大','增','倍增')
-        self.property_2=('倍减','减','纯','增','倍增')
+        self.property_1=['d_d','d','m','M','A','d_A']
+        self.property_2=['d_d','d','p','A','d_A']
     def step_1(self):
         interval_step_1_num=self.t2.note_num_mode()[0]-self.t1.note_num_mode()[0]
         interval_step_1_num+=1 # 调整成正确的度数
@@ -382,9 +382,13 @@ class module_interval:
             property_name=property_l[property_step_3_num]
         return property_name
     def interval_name(self):
-        property_name=self.property_name()
-        interval_num_name=num_to_str(self.step_2()[0])
+        # 性质名称本地化
+        l_1=['d_d','d','m','M','A','d_A','p','fail']
+        l_2=['倍减','减','小','大','增','倍增','纯','fail']
+        property_name=l_2[l_1.index(self.property_name())]
+
         # 得出音程的名称
+        interval_num_name=num_to_str(self.step_2()[0])
         if self.step_1()>8:
             interval_name="复"+property_name+interval_num_name+'度'
             interval_name_co=property_name+num_to_str(self.step_1())+'度'
@@ -392,6 +396,11 @@ class module_interval:
             interval_name=property_name+interval_num_name+'度'
             interval_name_co=interval_name
         return interval_name,interval_name_co
+    def interval_name_en(self):
+        l_1=['d_d','d','m','M','A','d_A','p','fail']
+        l_2=['double_diminished','diminished','minor','major','augmented','double_augmented','perfect','fail']
+        property_name=l_2[l_1.index(self.property_name())]
+        return # 还没写好
 
 def random_create_interval(low_c,high_c,sharpe_flat_l,interval_num_l,property_l):
     def step_1():
@@ -425,3 +434,4 @@ def random_create_interval(low_c,high_c,sharpe_flat_l,interval_num_l,property_l)
         return t1
     t1=step_5()
     return t1
+

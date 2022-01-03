@@ -200,7 +200,7 @@ def write_enharmonica():
             note_row+=t1.note_all()+'1 '+' \skip1 '
             for v1 in enharmonica_l:
                 note_answer_row_1+=v1.note_all()+' '
-            note_answer_row+=' \\blackNote '+t1.note_all()+'1 '+' \\redNote '+" < "+note_answer_row_1+" >1 "
+            note_answer_row+=' \\blackNote '+t1.note_all()+'1 '+' \\blueNote '+" < "+note_answer_row_1+" >1 "
         # 行数
         start_row=0
         row_name=" \\break \set Score.currentBarNumber = #%s " %(o+2+start_row)
@@ -219,7 +219,7 @@ def write_enharmonica():
 def write_interval_name():
     # 特殊参数
     interval_num_l=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]
-    property_l=['倍减','减','小','大','增','倍增','纯']
+    property_l=['d_d','d','m','M','A','d_A','p'] # ['d_d','d','m','M','A','d_A','p','fail']
 
     interval_rall=''
     lyric_answer_all=''
@@ -254,7 +254,7 @@ def write_interval_name():
 def write_interval_note():
     # 特殊参数
     interval_num_l=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]
-    property_l=['倍减','减','小','大','增','倍增','纯']
+    property_l=['d_d','d','m','M','A','d_A','p'] # ['d_d','d','m','M','A','d_A','p','fail']
 
     lyric_all=''
     interval_all=''
@@ -295,4 +295,4 @@ def write_interval_note():
     t3.write_interval_name(question,main_answer,lyric_answer)
     return '运行完成'
 
-write_enharmonica()
+write_interval_name()
