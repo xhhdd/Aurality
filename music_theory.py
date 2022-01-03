@@ -295,3 +295,4 @@ def write_interval_note():
     t3.write_interval_name(question,main_answer,lyric_answer)
     return '运行完成'
 
+'测试双设备同步——来自MAC'
