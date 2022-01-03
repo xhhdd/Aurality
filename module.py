@@ -503,14 +503,15 @@ class module_chord:
 
         return self.root_note,note_3,note_5,note_7,errors
     def chord(self):
+        invert=lambda x:module_note(x.note_num_mode()[0]+7,x.note_num_mode()[2])
         # 考虑转位音程
         root_note,note_3,note_5,note_7,errors=self.create_chord_note()
         if self.invert_class==1:
-            chord_l=[note_3,note_5,note_7,root_note]
+            chord_l=[note_3,note_5,note_7,invert(root_note)]
         if self.invert_class==2:
-            chord_l=[note_5,note_7,root_note,note_3]
+            chord_l=[note_5,note_7,invert(root_note),invert(note_3)]
         if self.invert_class==3:
-            chord_l=[note_7,root_note,note_3,note_5]
+            chord_l=[note_7,invert(root_note),invert(note_3),invert(note_5)]
         if self.invert_class==0:
             chord_l=[root_note,note_3,note_5,note_7]
         return chord_l
@@ -532,3 +533,30 @@ class module_chord:
             invert_name=seven_invert_l[self.invert_class]
 
         return chord_name+invert_name
+
+def random_create_chord(low_c,high_c,sharpe_flat_l,chord_name_c,invert_class_c):
+    def create_chord_t():
+        # 生成根音
+        note_t=random_create_note(low_c,high_c,sharpe_flat_l)
+        chord_name=random.choice(chord_name_c)
+        invert_class=random.choice(invert_class_c)
+        chord_t=module_chord(note_t,chord_name,invert_class)
+        return chord_t
+    def step_1(): # 控制不要生成报错的和弦
+        chord_t=create_chord_t()
+        while chord_t.create_chord_note()=='fail':
+            chord_t=create_chord_t()
+        return chord_t
+    def step_2(): # 控制不要生成超过音域的和弦
+        high=range_to_num(low_c,high_c)[1]
+
+        chord_t=step_1()
+        chord_l=chord_t.chord()
+        chord_l.remove('')
+        while chord_l[-1].note_num_mode()[0]>high:
+            chord_t=step_1()
+            chord_l=chord_t.chord()
+            chord_l.remove('')
+        return chord_t
+    chord_t=step_2()
+    return chord_t

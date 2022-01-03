@@ -295,3 +295,39 @@ def write_interval_note():
     t3.write_interval_name(question,main_answer,lyric_answer)
     return '运行完成'
 
+def write_chord_name():
+    # 专有参数
+    chord_name_c=['major','minor']  #'major','minor','aug','dim'|'MM7','Mm7','mm7','dm7','dd7'
+    invert_class_c=[0,1,2] # 最多输入3 三和弦在第三转位则没有任何变化
+
+
+    chord_all=''
+    chord_name_row=''
+    for o in range(100):
+        chord_row_2=''
+        for i in range(5):
+            chord_row_1=''
+            chord_t=module.random_create_chord(low_c,high_c,sharpe_flat_l,chord_name_c,invert_class_c)
+            # 和弦名称
+            chord_name_row+=chord_t.chord_name_zh()+'1 ' 
+            # 和弦的音
+            chord_l=chord_t.chord()
+            chord_l.remove('')
+            for v1 in chord_l:
+                chord_row_1+=v1.note_all()+' '
+            chord_row_2+=' < '+chord_row_1+' >1 '
+        # 行数
+        start_row=0
+        row_name=" \\break \set Score.currentBarNumber = #%s " %(o+2+start_row)
+        chord_all+=chord_row_2+row_name
+    # 拉起ly文件
+    main=chord_all
+    lyric=''
+    main_answer=chord_all
+    lyric_answer=chord_name_row
+    t3=create_ly.ly_set(flatsharpe_kind,low_c,high_c,clef,main,lyric)
+    question="write_chord_name"
+    t3.write_chord_name(question,main_answer,lyric_answer)
+    return '运行完成'
+
+write_chord_name()
