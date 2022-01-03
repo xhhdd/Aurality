@@ -448,4 +448,87 @@ def interval_to_note(t1,interval_c):
         if t3.property_name()==interval_name:
             break
     errors=t3.step_3()[1]
-    return t1,t2,errors
+    return t2,errors
+
+class module_chord:
+    def __init__(self,note_t1,chord_name,invert_class):
+        self.root_note=note_t1
+        self.chord_name=chord_name
+        self.invert_class=invert_class
+        self.triad_chord=['major','minor','aug','dim']
+        self.seventh_chord=['MM7','Mm7','mm7','dm7','dd7']
+    def create_chord_note(self):
+        # 各种和弦的结构，以后可以扩展
+        if self.chord_name=='major':
+            interval_c_3=[3,'M']
+            interval_c_5=[3,'m']
+        if self.chord_name=='minor':
+            interval_c_3=[3,'m']
+            interval_c_5=[3,'M']
+        if self.chord_name=='aug':
+            interval_c_3=[3,'M']
+            interval_c_5=[3,'M']
+        if self.chord_name=='dim':
+            interval_c_3=[3,'m']
+            interval_c_5=[3,'m']
+        # 七和弦
+        if self.chord_name=='MM7':
+            interval_c_3=[3,'M']
+            interval_c_5=[3,'m']
+            interval_c_7=[3,'M']
+        if self.chord_name=='Mm7':
+            interval_c_3=[3,'M']
+            interval_c_5=[3,'m']
+            interval_c_7=[3,'m']
+        if self.chord_name=='mm7':
+            interval_c_3=[3,'m']
+            interval_c_5=[3,'M']
+            interval_c_7=[3,'m']
+        if self.chord_name=='dm7':
+            interval_c_3=[3,'m']
+            interval_c_5=[3,'m']
+            interval_c_7=[3,'M']
+        if self.chord_name=='dd7':
+            interval_c_3=[3,'m']
+            interval_c_5=[3,'m']
+            interval_c_7=[3,'m']
+        note_3,errors_3=interval_to_note(self.root_note,interval_c_3)
+        note_5,errors_5=interval_to_note(note_3,interval_c_5)
+        if self.chord_name in self.triad_chord:
+            note_7=''
+            errors_7=''
+        else:
+            note_7,errors_7=interval_to_note(note_5,interval_c_7)
+        errors=[errors_3,errors_5,errors_7]
+
+        return self.root_note,note_3,note_5,note_7,errors
+    def chord(self):
+        # 考虑转位音程
+        root_note,note_3,note_5,note_7,errors=self.create_chord_note()
+        if self.invert_class==1:
+            chord_l=[note_3,note_5,note_7,root_note]
+        if self.invert_class==2:
+            chord_l=[note_5,note_7,root_note,note_3]
+        if self.invert_class==3:
+            chord_l=[note_7,root_note,note_3,note_5]
+        if self.invert_class==0:
+            chord_l=[root_note,note_3,note_5,note_7]
+        return chord_l
+    def chord_name_zh(self):
+        # 和弦种类本地化
+        triad_chord_name=['大','小','减','增']
+        seventh_chord_name=['大大','大小','小小','减小','减减']
+        if self.chord_name in self.triad_chord:
+            chord_name=triad_chord_name[self.triad_chord.index(self.chord_name)]
+        else:
+            chord_name=seventh_chord_name[self.seventh_chord.index(self.chord_name)]
+        # 和弦转位本地化
+        triad_invert_l=['三和弦','六和弦','四六和弦','']
+        seven_invert_l=['七和弦','五六和弦','三四和弦','二和弦']
+
+        if self.chord_name in self.triad_chord:
+            invert_name=triad_invert_l[self.invert_class]
+        else:
+            invert_name=seven_invert_l[self.invert_class]
+
+        return chord_name+invert_name
