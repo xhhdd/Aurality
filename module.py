@@ -514,6 +514,9 @@ class module_chord:
             chord_l=[note_7,invert(root_note),invert(note_3),invert(note_5)]
         if self.invert_class==0:
             chord_l=[root_note,note_3,note_5,note_7]
+        
+        if '' in chord_l:
+            chord_l.remove('')
         return chord_l
     def chord_name_zh(self):
         # 和弦种类本地化
@@ -552,11 +555,9 @@ def random_create_chord(low_c,high_c,sharpe_flat_l,chord_name_c,invert_class_c):
 
         chord_t=step_1()
         chord_l=chord_t.chord()
-        chord_l.remove('')
         while chord_l[-1].note_num_mode()[0]>high:
             chord_t=step_1()
             chord_l=chord_t.chord()
-            chord_l.remove('')
         return chord_t
     chord_t=step_2()
     return chord_t
