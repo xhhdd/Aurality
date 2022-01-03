@@ -435,3 +435,17 @@ def random_create_interval(low_c,high_c,sharpe_flat_l,interval_num_l,property_l)
     t1=step_5()
     return t1
 
+# 根据音程的根音与音程的名称，生成音程的冠音
+def interval_to_note(t1,interval_c):
+    interval_num,interval_name=interval_c
+    interval_num-=1
+    note_num=t1.note_num_mode()[0]
+    t2_note_num=note_num+interval_num
+    # 循环生成一个t2的音符实例
+    for v1 in [0,1,2,-1,-2]:
+        t2=module_note(t2_note_num,v1)
+        t3=module_interval(t1,t2)
+        if t3.property_name()==interval_name:
+            break
+    errors=t3.step_3()[1]
+    return t1,t2,errors
