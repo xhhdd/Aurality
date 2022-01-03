@@ -18,7 +18,7 @@ def create_ly(ly_layout_c,chord,clef,main,lyric,file):
     \header { \n\
     tagline = ##f %去掉默认的页脚 \n\
     } \n\
-    blackNote = #(define-music-function (my-music) (ly:music?)	#{	\override NoteHead.color = #black $my-music	#}) \n\
+    darkcyanNote = #(define-music-function (my-music) (ly:music?)	#{	\override NoteHead.color = #black $my-music	#}) \n\
     redNote = #(define-music-function (my-music) (ly:music?)	#{	\override NoteHead.color = #red $my-music	#}) \n\
     blueNote = #(define-music-function (my-music) (ly:music?)	#{	\override NoteHead.color = #blue $my-music	#})' 
     # 这个变量负责音符下面的文字

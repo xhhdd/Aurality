@@ -365,4 +365,3 @@ def write_chord_note():
     question="write_chord_name"
     t3.write_chord_name(question,main_answer,lyric_answer)
     return '运行完成'
-
