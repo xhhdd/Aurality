@@ -793,7 +793,7 @@ def random_create_chromatic_scale(low_c,high_c,key_num_c,sharpe_flat_c,key_class
         for v1,v2 in zip([1,3,6,8,10],chromatic_l):
             scale_l.insert(v1,v2)
     else:
-        for v1,v2 in zip([0,3,5,8,10],chromatic_l):
+        for v1,v2 in zip([1,4,6,9,11],chromatic_l):
             scale_l.insert(v1,v2) 
 
     # 根据上行或下行调整列表顺序

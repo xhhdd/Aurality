@@ -4,12 +4,12 @@ import module
 import create_ly
 # 与音相关
 # 列表前一个是音名，后一个是组别
-low_c=['c',-1]
-high_c=['e',1] 
+low_c=['a',0]
+high_c=['c',3] 
 # 这是能选择的升降记号
 sharpe_flat_l=[0,1] # -2重降，-1降，0无，1升，2重升
 # 选择谱号
-clef='B' 
+clef='S' 
 # ly文件生成
 flatsharpe_kind='@1'# ['all','@1','@12','@2','@0']  0是所有记号都有，1是没有重升重降，2是含有重升重降，3是只有重升重降，4是没有升降记号
 
@@ -422,10 +422,10 @@ def write_Mm_scale():
 
 def write_chromatic_scale():
     # 专有参数
-    key_num_c=[0]
+    key_num_c=[0,1,2,3,4,5,6,7]
     sharpe_flat_c=['sharpe','flat'] # 控制升降记号|['sharpe','flat']
-    key_class_c=['major'] # 控制大小调|['major','minor']
-    asc_dsc_c=['上行'] # 控制音阶上行或下行
+    key_class_c=['major','minor'] # 控制大小调|['major','minor']
+    asc_dsc_c=['上行','下行'] # 控制音阶上行或下行
     key_sign_random_c=['使用调号','不使用调号']
 
     main=''
@@ -437,21 +437,22 @@ def write_chromatic_scale():
         skip=''
         for i in range(1):
             # 生成题目的一个空五线谱
-            skip+='\skip1'+' '
+            skip+=' \skip1*13 '
             # 生成实例
             t1,scale_l,asc_des=module.random_create_chromatic_scale(low_c,high_c,key_num_c,sharpe_flat_c,key_class_c,asc_dsc_c)
             # 是否书写调号
             key_sign_random=random.choice(key_sign_random_c)
             # 调名
-            key_name=t1.key_name_Mm_zh()[0]+','+asc_des+','+key_sign_random
-            topic+=key_name+'1 '
+            key_name=t1.key_name_Mm_zh()[1]+'半音阶,'+asc_des+','+key_sign_random
+            topic+=key_name+'1*13 '
             # 音阶列表
             scale=[]
             for v1 in scale_l:
                 scale.append(v1.note_all())
             # 给第2个音下面加上调名、给第一个音添加时值
             scale[0]+='1'
-            scale[1]+='_"'+key_name+'"'
+            scale[0]+='_"'+key_name+'"'
+
             scale=' '.join(scale)
             # 带上调号的ly模式
             if key_sign_random=='使用调号':
@@ -469,8 +470,8 @@ def write_chromatic_scale():
     main_answer=main_answer
     lyric_answer=''
     t3=create_ly.ly_set(flatsharpe_kind,low_c,high_c,clef,main,lyric)
-    question="write_Mm_scale_note"
-    t3.write_Mm_scale(question,main_answer,lyric_answer)
+    question="write_chromatic_scale"
+    t3.write_chromatic_scale(question,main_answer,lyric_answer)
     return '运行完成'
 
 write_chromatic_scale()

@@ -28,7 +28,7 @@ def create_ly(ly_layout_c,chord,clef,main,lyric,file):
     lyric = \lyricmode{ %s }' %lyric
     # 这个变量负责谱面上的音符，同时会有谱号、和弦模式两个控制
     main='\n\
-    main=%s{ %s %s }'%(chord,clef,main)
+    main=%s{ %s %s %s }'%(chord,clef,main_before,main)
 
     # 下面的变量都是对于谱子上其他内容的控制，通常来说，1就是显示，0就是不显示
     score_1=' \n\
@@ -297,7 +297,7 @@ class ly_set:
         time='\\time 26/2' 
         key_sign_c='\override Staff.KeySignature.break-visibility = ##(#f #f #f)' #调号控制 
         clef_sign_c='\override Score.Clef.break-visibility = ##(#f #f #t)' #换行后谱号不再重写
-        main_before='' #\skip
+        main_before=' \override Staff.BarLine.stencil = ##f ' #\skip
         ly_layout_1=[bar_num_c,time_sign_c,midi_c,tempo_c,tempo,time,key_sign_c,clef_sign_c,main_before]
         ly_layout_2=[bar_num_c,time_sign_c,midi_c,tempo_c,tempo,time,key_sign_c,clef_sign_c,main_before]
         # 文件名
