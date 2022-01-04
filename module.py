@@ -1,115 +1,253 @@
 # -*- coding: utf-8 -*-
 import random
-
-
-def num_to_str(num):
-    _MAPPING = ('零', '一', '二', '三', '四', '五', '六', '七', '八', '九', '十', '十一', '十二', '十三', '十四', '十五', '十六', '十七','十八', '十九')
-    _P0 = ('', '十', '百', '千',)
-    _S4 = 10 ** 4
-    assert (0 <= num and num < _S4)
-    if num < 20:
-        return _MAPPING[num]
-    else:
-        lst = []
-        while num >= 10:
-            lst.append(num % 10)
-            num = num / 10
-        lst.append(num)
-        c = len(lst)  # 位数
-        result = u''
-
-        for idx, val in enumerate(lst):
-            val = int(val)
-            if val != 0:
-                result += _P0[idx] + _MAPPING[val]
-                if idx < c - 1 and lst[idx + 1] == 0:
-                    result += u'零'
-        return result[::-1]
 class module_note:
-    def __init__(self,note_num_all,sharpe_flat_num):
-        self.note_num_all=note_num_all
-        self.sharpe_flat_num=sharpe_flat_num
+    def __init__(self,note_num,accidental_num):
+        self.note_num=note_num
+        self.accidental_num=accidental_num
     # 根据数字分离出音与vavb
-    def converter(self): #此函数作为工具，生成实例后不调用
+    def converter(self): #此函数作为工具，生成实例后不调用  
         # 计算出vavb的数值
-        if self.note_num_all<=7 or self.note_num_all>=1:
-            vavb_num=0
-        if self.note_num_all > 7:
-            if self.note_num_all%7==0:
-                vavb_num=(self.note_num_all-7)//7
+        if self.note_num<=7 and self.note_num>=1:
+            octave_num=0
+        elif self.note_num > 7:
+            if self.note_num%7==0:
+                octave_num=(self.note_num-7)//7
             else:
-                vavb_num=self.note_num_all//7
-        if self.note_num_all<=0:
-            v2=self.note_num_all-1
-            vavb_num=v2//7
-        # 计算出音符的数值
-        note_num=self.note_num_all-vavb_num*7
-        return note_num,vavb_num
+                octave_num=self.note_num//7
+        else: 
+            v2=self.note_num-1
+            octave_num=v2//7
+        # 计算出不含高八度低八度的音符
+        note_base_num=self.note_num-octave_num*7
+        return note_base_num,octave_num
     # 音的三个基本性质
     def note(self):
-        note_list=('r','c','d','e','f','g','a','b')
-        note_num=(self.converter())[0]
-        note=note_list[note_num]
+        note_list=['r','c','d','e','f','g','a','b']
+        note=note_list[self.converter()[0]]
         return note
-    def vavb(self):
-        vavb_list=('',"'","''","'''","''''","'''''",",,,,,",",,,,",",,,",",,",",")
-        vavb_num=(self.converter())[1]
-        vavb=vavb_list[vavb_num]
-        return vavb
-    def sharpe_flat(self):
-        sharpe_flat_list=["","is","isis","eses","es"]
-        sharpe_flat=sharpe_flat_list[self.sharpe_flat_num]
-        return sharpe_flat
+    def octave(self):
+        octave_list=['',"'","''","'''","''''","'''''",",,,,,",",,,,",",,,",",,",","]
+        octave=octave_list[self.converter()[1]]
+        return octave
+    def accidental(self):
+        accidental_list=["","is","isis","eses","es"]
+        accidental=accidental_list[self.accidental_num]
+        return accidental
     # 音符的完整形式
     def note_all(self):
-        note_all=self.note()+self.sharpe_flat()+self.vavb()
+        note_all=self.note()+self.accidental()+self.octave()
         return note_all
     # 各种音符的数值
     def note_num_mode(self):
-        note_num_all=self.note_num_all
-        note_num=(self.converter())[0]
-        vavb_num=(self.converter())[1]# 仅表示第几组
-        sharpe_flat_num=self.sharpe_flat_num
-        return note_num_all,note_num,sharpe_flat_num,vavb_num
+        note_num=self.note_num
+        note_base_num=(self.converter())[0]
+        octave_num=(self.converter())[1] # 仅表示第几组
+        accidental_num=self.accidental_num
+        return note_num,note_base_num,accidental_num,octave_num
     # 音符名称本地化
     def note_name(self):
         # 对升降记号进行一定的处理
-        sharpe_flat_name_list_zh=["","升","重升","重降","降"]
-        sharpe_flat_name_list_en=["","sharpe","double sharpe","double flat","flat"]
-        sharpe_flat_name_list_sign=["","#","x","bb","b"]
-        sharpe_flat_name_zh=sharpe_flat_name_list_zh[self.sharpe_flat_num]
-        sharpe_flat_name_en=sharpe_flat_name_list_en[self.sharpe_flat_num]
-        sharpe_flat_name_sign=sharpe_flat_name_list_sign[self.sharpe_flat_num]
-        sharpe_name=[sharpe_flat_name_zh,sharpe_flat_name_en,sharpe_flat_name_sign]
+        accidental_name_list_zh=["","升","重升","重降","降"]
+        accidental_name_list_en=["","sharpe","double sharpe","double flat","flat"]
+        accidental_name_list_sign=["","#","x","bb","b"]
+        accidental_name=[accidental_name_list_zh[self.accidental_num],accidental_name_list_en[self.accidental_num],accidental_name_list_sign[self.accidental_num]]
         # 对组别的名称进行一定的处理
-        vavb_name_list=('小字组',"小字一组","小字二组","小字三组","小字四组","小字五组","大字四组","大字三组","大字二组","大字一组","大字组")
-        vavb_num=(self.converter())[1]
-        vavb_name=vavb_name_list[vavb_num]
-        return sharpe_name,vavb_name
+        octave_name_list=['小字组',"小字一组","小字二组","小字三组","小字四组","小字五组","大字四组","大字三组","大字二组","大字一组","大字组"]
+        octave_name=octave_name_list[self.converter()[1]]
+        return accidental_name,octave_name
     # 加上升降记号计算音数
     def count_num(self):
         if self.note() in ['d','g','a']:
-            sharpe_flat_num=self.note_num_mode()[2]*0.5
+            accidental_num=self.note_num_mode()[2]*0.5
         if self.note() in ['c','f']:
             if self.note_num_mode()[2] in [1,2]:
-                sharpe_flat_num=self.note_num_mode()[2]*0.5
+                accidental_num=self.note_num_mode()[2]*0.5
             elif self.note_num_mode()[2] ==-1:
-                sharpe_flat_num=-1
+                accidental_num=-1
             elif self.note_num_mode()[2]==-2:
-                sharpe_flat_num=-1.5
+                accidental_num=-1.5
             else:
-                sharpe_flat_num=0
+                accidental_num=0
         if self.note() in ['e','b']:
             if self.note_num_mode()[2] in [-1,-2]:
-                sharpe_flat_num=self.note_num_mode()[2]*0.5
+                accidental_num=self.note_num_mode()[2]*0.5
             elif self.note_num_mode()[2]==1:
-                sharpe_flat_num=1
+                accidental_num=1
             elif self.note_num_mode()[2]==2:
-                sharpe_flat_num=1.5
+                accidental_num=1.5
             else:
-                sharpe_flat_num=0
-        count_num=self.note_num_mode()[0]+sharpe_flat_num
+                accidental_num=0
+        count_num=self.note_num_mode()[0]+accidental_num
         return count_num
+
+class module_interval:
+    def __init__(self,note_t1,note_t2):
+        self.note_t1=note_t1
+        self.note_t2=note_t2
+        self.minor=[['e','f'],['b','c'],['d','f'],['e','g'],['a','c'],['b','d'],['e','c'],['a','f'],['b','g'],['d','c'],['e','d'],['g','f'],['a','g'],['b','a']]
+        self.aug=(('f','b'),)
+        self.dim=(('b','f'),)
+        self.property_1=['d_d','d','m','M','A','d_A']
+        self.property_2=['d_d','d','p','A','d_A']
+    def step1(self):
+        interval_step1_num=self.note_t2.note_num_mode()[0]-self.note_t1.note_num_mode()[0]
+        interval_step1_num+=1 # 调整成正确的度数
+        return interval_step1_num
+    def step2(self):
+        # 排除复音程的影响
+        interval_step2_num=self.step1()
+        while interval_step2_num>8:
+            interval_step2_num-=7
+        # 计算音程的性质
+        inter_list=[self.note_t1.note(),self.note_t2.note()]
+            # 一四五八叫做纯
+        if interval_step2_num in [1,8]:
+            property_num=2
+        if interval_step2_num in [4] and inter_list not in self.aug:
+            property_num=2
+        if interval_step2_num in [5] and inter_list not in self.dim:
+            property_num=2
+            # 二三六七有大小
+        if interval_step2_num in [2,3,6,7] and inter_list in self.minor:
+            property_num=2
+        if interval_step2_num in [2,3,6,7] and inter_list not in self.minor:
+            property_num=3
+            # 增四减五也叫三全音
+        if interval_step2_num in [4] and inter_list in self.aug:
+            property_num=3
+        if interval_step2_num in [5] and inter_list in self.dim:
+            property_num=1
+        return interval_step2_num,property_num
+    def step3(self):
+        interval_step3_num,property_step3_num=self.step2()
+        property_step3_num+=self.note_t2.note_num_mode()[2]-self.note_t1.note_num_mode()[2]
+        # 防止错误的性质出现
+        if interval_step3_num in [3,6,7]:
+            errors='fail' if property_step3_num<0 or property_step3_num>5 else ''
+        elif interval_step3_num in [4,5,8]:
+            errors='fail' if property_step3_num<0 or property_step3_num>4 else ''
+        elif interval_step3_num in [2]:
+            errors='fail' if property_step3_num<1 or property_step3_num>4 else ''
+        elif interval_step3_num in [1]:
+            errors='fail' if property_step3_num<2 or property_step3_num>4 else ''
+        else:
+            errors=''
+        return property_step3_num,errors
+    def property_name(self):
+        # 确定性质列表
+        interval_step_2_num=self.step2()[0]
+        property_l=self.property_1 if interval_step_2_num in [2,3,6,7] else self.property_2
+        # 得出性质的名字
+        property_step3_num,errors=self.step3()
+        property_name='fail' if errors=='fail' else property_l[property_step3_num]
+        return property_name
+    def interval_name(self):
+        # 性质名称本地化
+        l_1=['d_d','d','m','M','A','d_A','p','fail']
+        l_2=['倍减','减','小','大','增','倍增','纯','fail']
+        property_name=l_2[l_1.index(self.property_name())]
+        # 得出音程的名称
+        interval_num_name=num_to_zh(self.step2()[0])
+        if self.step1()>8:
+            interval_name="复"+property_name+interval_num_name+'度'
+            interval_name_co=property_name+num_to_zh(self.step1())+'度'
+        else:
+            interval_name=property_name+interval_num_name+'度'
+            interval_name_co=interval_name
+        return interval_name,interval_name_co
+    def interval_name_en(self):
+        l_1=['d_d','d','m','M','A','d_A','p','fail']
+        l_2=['double_diminished','diminished','minor','major','augmented','double_augmented','perfect','fail']
+        property_name=l_2[l_1.index(self.property_name())]
+        return # 考虑以后写
+
+class module_chord:
+    def __init__(self,root_note_t,chord_name,invert_num):
+        self.root_note_t=root_note_t
+        self.chord_name=chord_name
+        self.invert_class=invert_num
+        self.triad_chord=['major','minor','aug','dim']
+        self.seventh_chord=['MM7','Mm7','mm7','dm7','dd7']
+    def create_chord_note(self):
+        # 各种和弦的结构，以后可以扩展
+        if self.chord_name=='major':
+            interval_c_3=[3,'M']
+            interval_c_5=[3,'m']
+        if self.chord_name=='minor':
+            interval_c_3=[3,'m']
+            interval_c_5=[3,'M']
+        if self.chord_name=='aug':
+            interval_c_3=[3,'M']
+            interval_c_5=[3,'M']
+        if self.chord_name=='dim':
+            interval_c_3=[3,'m']
+            interval_c_5=[3,'m']
+        # 七和弦
+        if self.chord_name=='MM7':
+            interval_c_3=[3,'M']
+            interval_c_5=[3,'m']
+            interval_c_7=[3,'M']
+        if self.chord_name=='Mm7':
+            interval_c_3=[3,'M']
+            interval_c_5=[3,'m']
+            interval_c_7=[3,'m']
+        if self.chord_name=='mm7':
+            interval_c_3=[3,'m']
+            interval_c_5=[3,'M']
+            interval_c_7=[3,'m']
+        if self.chord_name=='dm7':
+            interval_c_3=[3,'m']
+            interval_c_5=[3,'m']
+            interval_c_7=[3,'M']
+        if self.chord_name=='dd7':
+            interval_c_3=[3,'m']
+            interval_c_5=[3,'m']
+            interval_c_7=[3,'m']
+        note_3,errors_3=interval_to_note(self.root_note,interval_c_3)
+        note_5,errors_5=interval_to_note(note_3,interval_c_5)
+        if self.chord_name in self.triad_chord:
+            note_7=''
+            errors_7=''
+        else:
+            note_7,errors_7=interval_to_note(note_5,interval_c_7)
+        errors=[errors_3,errors_5,errors_7]
+
+        return self.root_note,note_3,note_5,note_7,errors
+    def chord(self):
+        invert=lambda x:module_note(x.note_num_mode()[0]+7,x.note_num_mode()[2])
+        # 考虑转位音程
+        root_note,note_3,note_5,note_7,errors=self.create_chord_note()
+        if self.invert_class==1:
+            chord_l=[note_3,note_5,note_7,invert(root_note)]
+        if self.invert_class==2:
+            chord_l=[note_5,note_7,invert(root_note),invert(note_3)]
+        if self.invert_class==3:
+            chord_l=[note_7,invert(root_note),invert(note_3),invert(note_5)]
+        if self.invert_class==0:
+            chord_l=[root_note,note_3,note_5,note_7]
+        
+        if '' in chord_l:
+            chord_l.remove('')
+        return chord_l
+    def chord_name_zh(self):
+        # 和弦种类本地化
+        triad_chord_name=['大','小','减','增']
+        seventh_chord_name=['大大','大小','小小','减小','减减']
+        if self.chord_name in self.triad_chord:
+            chord_name=triad_chord_name[self.triad_chord.index(self.chord_name)]
+        else:
+            chord_name=seventh_chord_name[self.seventh_chord.index(self.chord_name)]
+        # 和弦转位本地化
+        triad_invert_l=['三和弦','六和弦','四六和弦','']
+        seven_invert_l=['七和弦','五六和弦','三四和弦','二和弦']
+
+        if self.chord_name in self.triad_chord:
+            invert_name=triad_invert_l[self.invert_class]
+        else:
+            invert_name=seven_invert_l[self.invert_class]
+
+        return chord_name+invert_name
+
 # 根据音域转换成数字
 def range_to_num(low_c,high_c):
     # 主要元素
@@ -293,108 +431,7 @@ def note_list_space_c(low_c,high_c,sharpe_flat_l,space,list_num):
         
     return note_list
 
-class module_interval:
-    def __init__(self,t1,t2):
-        self.t1=t1
-        self.t2=t2
-        self.minor=(
-            ('e','f'),('b','c'),
-            ('d','f'),('e','g'),('a','c'),('b','d'),
-            ('e','c'),('a','f'),('b','g'),
-            ('d','c'),('e','d'),('g','f'),('a','g'),('b','a'))
-        self.aug=(('f','b'),)
-        self.dim=(('b','f'),)
-        self.property_1=['d_d','d','m','M','A','d_A']
-        self.property_2=['d_d','d','p','A','d_A']
-    def step_1(self):
-        interval_step_1_num=self.t2.note_num_mode()[0]-self.t1.note_num_mode()[0]
-        interval_step_1_num+=1 # 调整成正确的度数
-        return interval_step_1_num
-    def step_2(self):
-        interval_step_2_num=self.step_1()
-        while interval_step_2_num > 8:
-            interval_step_2_num-=7
-        # 计算音程的性质
-        inter_list=(self.t1.note(),self.t2.note())
-        # 一四五八叫做纯
-        if interval_step_2_num in [1,8]:
-            property_num=2
-        if interval_step_2_num in [4] and inter_list in self.aug:
-            property_num=3
 
-        if interval_step_2_num in [4] and inter_list not in self.aug:
-            property_num=2
-
-        if interval_step_2_num in [5] and inter_list in self.dim:
-            property_num=1
-        if interval_step_2_num in [5] and inter_list not in self.dim:
-            property_num=2
-        if interval_step_2_num in [2,3,6,7] and inter_list in self.minor:
-            property_num=2
-        if interval_step_2_num in [2,3,6,7] and inter_list not in self.minor:
-            property_num=3
-        return interval_step_2_num,property_num
-    def step_3(self):
-        interval_step_2_num,property_step_3_num=self.step_2()
-        property_step_3_num=self.t2.note_num_mode()[2]-self.t1.note_num_mode()[2]+property_step_3_num
-        # 防止错误的性质出现
-        if interval_step_2_num in [3,6,7]:
-            if property_step_3_num<0 or property_step_3_num>5:
-                errors='fail'
-            else:
-                errors=''
-        elif interval_step_2_num in [4,5,8]:
-            if property_step_3_num<0 or property_step_3_num>4:
-                errors='fail'
-            else:
-                errors=''
-        elif interval_step_2_num in [2]:
-            if property_step_3_num<1 or property_step_3_num>4:
-                errors='fail'
-            else:
-                errors=''
-        elif interval_step_2_num in [1]:
-            if property_step_3_num<2 or property_step_3_num>4:
-                errors='fail'
-            else:
-                errors=''
-        else:
-            errors=''
-        return property_step_3_num,errors
-    def property_name(self):
-        # 确定性质列表
-        interval_step_2_num=self.step_2()[0]
-        if interval_step_2_num in [2,3,6,7]:
-            property_l=self.property_1
-        else:
-            property_l=self.property_2
-        # 得出性质的名字
-        property_step_3_num,errors=self.step_3()
-        if errors=='fail':
-            property_name='fail'
-        else:
-            property_name=property_l[property_step_3_num]
-        return property_name
-    def interval_name(self):
-        # 性质名称本地化
-        l_1=['d_d','d','m','M','A','d_A','p','fail']
-        l_2=['倍减','减','小','大','增','倍增','纯','fail']
-        property_name=l_2[l_1.index(self.property_name())]
-
-        # 得出音程的名称
-        interval_num_name=num_to_str(self.step_2()[0])
-        if self.step_1()>8:
-            interval_name="复"+property_name+interval_num_name+'度'
-            interval_name_co=property_name+num_to_str(self.step_1())+'度'
-        else:
-            interval_name=property_name+interval_num_name+'度'
-            interval_name_co=interval_name
-        return interval_name,interval_name_co
-    def interval_name_en(self):
-        l_1=['d_d','d','m','M','A','d_A','p','fail']
-        l_2=['double_diminished','diminished','minor','major','augmented','double_augmented','perfect','fail']
-        property_name=l_2[l_1.index(self.property_name())]
-        return # 还没写好
 
 def random_create_interval(low_c,high_c,sharpe_flat_l,interval_num_l,property_l):
     def step_1():
@@ -444,92 +481,7 @@ def interval_to_note(t1,interval_c):
     errors=t3.step_3()[1]
     return t2,errors
 
-class module_chord:
-    def __init__(self,note_t1,chord_name,invert_class):
-        self.root_note=note_t1
-        self.chord_name=chord_name
-        self.invert_class=invert_class
-        self.triad_chord=['major','minor','aug','dim']
-        self.seventh_chord=['MM7','Mm7','mm7','dm7','dd7']
-    def create_chord_note(self):
-        # 各种和弦的结构，以后可以扩展
-        if self.chord_name=='major':
-            interval_c_3=[3,'M']
-            interval_c_5=[3,'m']
-        if self.chord_name=='minor':
-            interval_c_3=[3,'m']
-            interval_c_5=[3,'M']
-        if self.chord_name=='aug':
-            interval_c_3=[3,'M']
-            interval_c_5=[3,'M']
-        if self.chord_name=='dim':
-            interval_c_3=[3,'m']
-            interval_c_5=[3,'m']
-        # 七和弦
-        if self.chord_name=='MM7':
-            interval_c_3=[3,'M']
-            interval_c_5=[3,'m']
-            interval_c_7=[3,'M']
-        if self.chord_name=='Mm7':
-            interval_c_3=[3,'M']
-            interval_c_5=[3,'m']
-            interval_c_7=[3,'m']
-        if self.chord_name=='mm7':
-            interval_c_3=[3,'m']
-            interval_c_5=[3,'M']
-            interval_c_7=[3,'m']
-        if self.chord_name=='dm7':
-            interval_c_3=[3,'m']
-            interval_c_5=[3,'m']
-            interval_c_7=[3,'M']
-        if self.chord_name=='dd7':
-            interval_c_3=[3,'m']
-            interval_c_5=[3,'m']
-            interval_c_7=[3,'m']
-        note_3,errors_3=interval_to_note(self.root_note,interval_c_3)
-        note_5,errors_5=interval_to_note(note_3,interval_c_5)
-        if self.chord_name in self.triad_chord:
-            note_7=''
-            errors_7=''
-        else:
-            note_7,errors_7=interval_to_note(note_5,interval_c_7)
-        errors=[errors_3,errors_5,errors_7]
 
-        return self.root_note,note_3,note_5,note_7,errors
-    def chord(self):
-        invert=lambda x:module_note(x.note_num_mode()[0]+7,x.note_num_mode()[2])
-        # 考虑转位音程
-        root_note,note_3,note_5,note_7,errors=self.create_chord_note()
-        if self.invert_class==1:
-            chord_l=[note_3,note_5,note_7,invert(root_note)]
-        if self.invert_class==2:
-            chord_l=[note_5,note_7,invert(root_note),invert(note_3)]
-        if self.invert_class==3:
-            chord_l=[note_7,invert(root_note),invert(note_3),invert(note_5)]
-        if self.invert_class==0:
-            chord_l=[root_note,note_3,note_5,note_7]
-        
-        if '' in chord_l:
-            chord_l.remove('')
-        return chord_l
-    def chord_name_zh(self):
-        # 和弦种类本地化
-        triad_chord_name=['大','小','减','增']
-        seventh_chord_name=['大大','大小','小小','减小','减减']
-        if self.chord_name in self.triad_chord:
-            chord_name=triad_chord_name[self.triad_chord.index(self.chord_name)]
-        else:
-            chord_name=seventh_chord_name[self.seventh_chord.index(self.chord_name)]
-        # 和弦转位本地化
-        triad_invert_l=['三和弦','六和弦','四六和弦','']
-        seven_invert_l=['七和弦','五六和弦','三四和弦','二和弦']
-
-        if self.chord_name in self.triad_chord:
-            invert_name=triad_invert_l[self.invert_class]
-        else:
-            invert_name=seven_invert_l[self.invert_class]
-
-        return chord_name+invert_name
 
 def random_create_chord(low_c,high_c,sharpe_flat_l,chord_name_c,invert_class_c):
     def create_chord_t():
@@ -800,3 +752,35 @@ def random_create_chromatic_scale(low_c,high_c,key_num_c,sharpe_flat_c,key_class
     if asc_des=='下行':
         scale_l.reverse()
     return key_t,scale_l,asc_des
+
+
+
+def num_to_zh(num):
+    _MAPPING = ('零', '一', '二', '三', '四', '五', '六', '七', '八', '九', '十', '十一', '十二', '十三', '十四', '十五', '十六', '十七','十八', '十九')
+    _P0 = ('', '十', '百', '千',)
+    _S4 = 10 ** 4
+    assert (0 <= num and num < _S4)
+    if num < 20:
+        return _MAPPING[num]
+    else:
+        lst = []
+        while num >= 10:
+            lst.append(num % 10)
+            num = num / 10
+        lst.append(num)
+        c = len(lst)  # 位数
+        result = ''
+
+        for idx, val in enumerate(lst):
+            val = int(val)
+            if val != 0:
+                result += _P0[idx] + _MAPPING[val]
+                if idx < c - 1 and lst[idx + 1] == 0:
+                    result += '零'
+        return result[::-1]
+
+note_t1=module_note(1,0)
+note_t2=module_note(10,0)
+interval_t=module_interval(note_t1,note_t2)
+print('interval_t.property_name():',interval_t.property_name())
+print('interval_t.interval_name():',interval_t.interval_name())
