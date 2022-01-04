@@ -18,9 +18,11 @@ def create_ly(ly_layout_c,chord,clef,main,lyric,file):
     \header { \n\
     tagline = ##f %去掉默认的页脚 \n\
     } \n\
-    darkcyanNote = #(define-music-function (my-music) (ly:music?)	#{	\override NoteHead.color = #black $my-music	#}) \n\
-    redNote = #(define-music-function (my-music) (ly:music?)	#{	\override NoteHead.color = #red $my-music	#}) \n\
-    blueNote = #(define-music-function (my-music) (ly:music?)	#{	\override NoteHead.color = #blue $my-music	#})' 
+    colorNote =#(define-music-function (my-color my-music) (color? ly:music?) #{	\override NoteHead.color = #my-color $my-music #}) \n\
+    colorStem =#(define-music-function (my-color my-music) (color? ly:music?) #{	\override Stem.color = #my-color $my-music #}) \n\
+    colorBeam =#(define-music-function (my-color my-music) (color? ly:music?) #{	\override Beam.color = #my-color $my-music #}) \n\
+    colorAccidental =#(define-music-function (my-color my-music) (color? ly:music?) #{	\override Accidental.color = #my-color $my-music #})' 
+    
     # 这个变量负责音符下面的文字
     lyric='\n\
     lyric = \lyricmode{ %s }' %lyric
@@ -253,6 +255,46 @@ class ly_set:
         tempo_c=0
         tempo='\\tempo 4 = 150'
         time='\\time 2/2' 
+        key_sign_c='\override Staff.KeySignature.break-visibility = ##(#f #f #f)' #调号控制 
+        clef_sign_c='\override Score.Clef.break-visibility = ##(#f #f #t)' #换行后谱号不再重写
+        main_before='' #\skip
+        ly_layout_1=[bar_num_c,time_sign_c,midi_c,tempo_c,tempo,time,key_sign_c,clef_sign_c,main_before]
+        ly_layout_2=[bar_num_c,time_sign_c,midi_c,tempo_c,tempo,time,key_sign_c,clef_sign_c,main_before]
+        # 文件名
+        file=file_name()
+        file=file.base_range(question,self.clef_file,self.flatsharpe_kind,self.low_c,self.high_c)
+        # 拉起ly文件
+        create_ly(ly_layout_1,chord,self.clef,self.main,self.lyric,file)
+        create_ly(ly_layout_2,chord,self.clef,main_answer,lyric_answer,file+'-answer')
+        return 'ly文件生成完毕'
+    def write_Mm_scale(self,question,main_answer,lyric_answer):
+        chord=''
+        bar_num_c=1
+        time_sign_c=0
+        midi_c=0
+        tempo_c=0
+        tempo='\\tempo 4 = 150'
+        time='\\time 4/4' 
+        key_sign_c='\override Staff.KeySignature.break-visibility = ##(#f #f #f)' #调号控制 
+        clef_sign_c='\override Score.Clef.break-visibility = ##(#f #f #t)' #换行后谱号不再重写
+        main_before='' #\skip
+        ly_layout_1=[bar_num_c,time_sign_c,midi_c,tempo_c,tempo,time,key_sign_c,clef_sign_c,main_before]
+        ly_layout_2=[bar_num_c,time_sign_c,midi_c,tempo_c,tempo,time,key_sign_c,clef_sign_c,main_before]
+        # 文件名
+        file=file_name()
+        file=file.base_range(question,self.clef_file,self.flatsharpe_kind,self.low_c,self.high_c)
+        # 拉起ly文件
+        create_ly(ly_layout_1,chord,self.clef,self.main,self.lyric,file)
+        create_ly(ly_layout_2,chord,self.clef,main_answer,lyric_answer,file+'-answer')
+        return 'ly文件生成完毕'
+    def write_chromatic_scale(self,question,main_answer,lyric_answer):
+        chord=''
+        bar_num_c=1
+        time_sign_c=0
+        midi_c=0
+        tempo_c=0
+        tempo='\\tempo 4 = 150'
+        time='\\time 26/2' 
         key_sign_c='\override Staff.KeySignature.break-visibility = ##(#f #f #f)' #调号控制 
         clef_sign_c='\override Score.Clef.break-visibility = ##(#f #f #t)' #换行后谱号不再重写
         main_before='' #\skip

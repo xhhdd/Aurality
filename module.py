@@ -140,14 +140,12 @@ class module_tone_semitone:
         # 当两音音级相同时
         if self.scale_degree==0:
             if self.sharpe_flat_Dvalue==0:
-                print('两音为等音')
                 tone_semitone='fail'
             elif abs(self.sharpe_flat_Dvalue)==1:
                 tone_semitone='semitone'
             elif abs(self.sharpe_flat_Dvalue)==2:
                 tone_semitone='tone'
             else:
-                print('超过全音半音的范围')
                 tone_semitone='fail'
         # 当两音为二度时
         if self.scale_degree==1:
@@ -157,7 +155,6 @@ class module_tone_semitone:
                 elif self.sharpe_flat_Dvalue==1:
                     tone_semitone='tone'
                 else:
-                    print('超过全音半音的范围')
                     tone_semitone='fail'
             else:
                 if self.sharpe_flat_Dvalue==0:
@@ -165,7 +162,6 @@ class module_tone_semitone:
                 elif self.sharpe_flat_Dvalue==-1:
                     tone_semitone='semitone'
                 else:
-                    print('超过全音半音的范围')
                     tone_semitone='fail'
         # 当两音为三度时
         if self.scale_degree==2:
@@ -175,7 +171,6 @@ class module_tone_semitone:
                 elif self.sharpe_flat_Dvalue==-2:
                     tone_semitone='tone'
                 else:
-                    print('超过全音半音的范围')
                     tone_semitone='fail'
             else:
                 if self.sharpe_flat_Dvalue==-2:
@@ -183,7 +178,6 @@ class module_tone_semitone:
                 elif self.sharpe_flat_Dvalue==-1:
                     tone_semitone='tone'
                 else:
-                    print('超过全音半音的范围')
                     tone_semitone='fail'
         tone_semitone_zh='全音' if tone_semitone=='tone' else '半音'
         tone_semitone_en=tone_semitone
@@ -561,3 +555,248 @@ def random_create_chord(low_c,high_c,sharpe_flat_l,chord_name_c,invert_class_c):
         return chord_t
     chord_t=step_2()
     return chord_t
+
+class module_key:
+    def __init__(self,key_num,sharpe_flat,key_class,key_kind):
+        # 基本元素
+        self.key_num=key_num
+        self.sharpe_flat=sharpe_flat
+        self.key_class=key_class
+        self.key_kind=key_kind
+        # 基本音级
+        self.scale_base=['c','d','e','f','g','a','b']
+        # 大小调的调名
+        self.major_sharpe=['c','g','d','a','e','b','fis','cis']
+        self.major_flat=['c','f','bes','ees','aes','des','ges','ces']
+        self.minor_sharpe=['a','e','b','fis','cis','gis','dis','ais']
+        self.minor_flat=['a','d','g','c','f','bes','ees','aes']
+        # 调号列表
+        self.key_sign_sharpe_l=['','f','c','g','d','a','e','b','']
+        self.key_sign_flat_l=['','b','e','a','d','g','c','f','']
+    # 本函数计算出主音，返回两个结果。
+    def key_tonic(self):
+        # 计算出主音
+        if self.key_class=='major':
+            if self.sharpe_flat=='sharpe':
+                key_tonic=self.major_sharpe[self.key_num]
+            else:
+                key_tonic=self.major_flat[self.key_num]
+        if self.key_class=='minor':
+            if self.sharpe_flat=='sharpe':
+                key_tonic=self.minor_sharpe[self.key_num]
+            else:
+                key_tonic=self.minor_flat[self.key_num]
+        # 计算出不带es、is的主音
+        key_tonic_base=key_tonic
+        if 'is' in key_tonic:
+            key_tonic_base=key_tonic.replace('is','')
+        if 'es' in key_tonic:
+            key_tonic_base=key_tonic.replace('es','')
+
+        return key_tonic,key_tonic_base
+    # 本函数计算出主音的6级音与7级音，并带上升或降的建议
+    def scale_67th(self):
+        key_tonic,key_tonic_base=self.key_tonic()
+        # 找到6、7级
+        scale_base=self.scale_base*2
+        scale_6th=scale_base[scale_base.index(key_tonic_base)+5]
+        scale_7th=scale_base[scale_base.index(key_tonic_base)+6]
+        # 根据调式种类输出6、7级
+        if self.key_kind=='nature':
+            scale_67th=[]
+        if self.key_kind=='harmony':
+            if self.key_class=='major':
+                scale_67th=[scale_6th]
+            else:
+                scale_67th=[scale_7th]
+        if self.key_kind=='melody':
+            scale_67th=[scale_6th,scale_7th]
+        # 根据升降给出add_dim的建议
+        if self.key_class=='major':
+            add_dim=-1
+        else:
+            add_dim=1
+        return scale_67th,add_dim
+    # 本函数输出调号列表
+    def key_sign_list(self):
+        # 调号列表
+        if self.sharpe_flat=='sharpe':
+            key_sign_list=self.key_sign_sharpe_l[:self.key_num+1]
+        else:
+            key_sign_list=self.key_sign_flat_l[:self.key_num+1]
+        # 升降记号的建议
+        if self.sharpe_flat=='sharpe':
+            add_dim=1
+        else:
+            add_dim=-1
+        return key_sign_list,add_dim
+    # 本函数输出ly格式的调号标记
+    def key_sign_ly(self):
+        sharpe_list = ['\key c \major','\key g \major','\key d \major','\key a \major','\key e \major','\key b \major','\key fis \major','\key cis \major',]
+        flat_list = ['\key c \major','\key f \major','\key bes \major','\key ees \major','\key aes \major','\key des \major','\key ges \major','\key ces \major']
+        if self.sharpe_flat=='sharpe':
+            key_sign_ly=sharpe_list[self.key_num]
+        else:
+            key_sign_ly=flat_list[self.key_num]
+        return key_sign_ly
+    # 调名字符化
+    def key_name_Mm_zh(self):
+        # 大调或小调
+        if self.key_class=='major':
+            key_class_str='大调'
+        else:
+            key_class_str='小调'
+        # 得出主音与升降
+        key_tonic=self.key_tonic()[0]
+        if 'is' not in key_tonic and 'es' not in key_tonic:
+            key_sharpeflat_str=''
+        if 'is' in key_tonic:
+            key_sharpeflat_str='升'
+            key_tonic=key_tonic.replace('is','')
+        if 'es' in key_tonic:
+            key_sharpeflat_str='降'
+            key_tonic=key_tonic.replace('es','')
+        # 得出调式种类
+        key_kind_str_l=('自然','和声','旋律')
+        key_kind_l=('nature','harmony','melody')
+        key_kind_str=key_kind_str_l[key_kind_l.index(self.key_kind)]
+        # 主音进行大小写的转换
+        if self.key_class=='major':
+            key_tonic=key_tonic.upper()
+        # 合成最后的两个名字
+        key_sign_str=key_sharpeflat_str+key_tonic+key_kind_str+key_class_str
+        key_sign_str_base=key_sharpeflat_str+key_tonic+key_class_str
+        return key_sign_str,key_sign_str_base
+
+def random_create_key(key_num_c,sharpe_flat_c,key_class_c,key_kind_c):
+    key_num=random.choice(key_num_c)
+    sharpe_flat=random.choice(sharpe_flat_c)
+    key_class=random.choice(key_class_c)
+    key_kind=random.choice(key_kind_c)
+    key_t=module_key(key_num,sharpe_flat,key_class,key_kind)
+    return key_t
+
+def range_to_notelist_addkey(low_c,high_c,key_num_c,sharpe_flat_c,key_class_c,key_kind_c):
+    # 本函数求出一个音域里面的所有音，并且附加了升降记号为0的列表
+    def range_all_note():
+        # 限制一个音域
+        low,high=range_to_num(low_c,high_c)
+        note_num_l=[]
+        sharp_flat_l=[]
+        # 取得这个音域里面的所有音
+        for i in range(high-low+1):
+            note_num_l.append(low)
+            low+=1
+        # 根据上面这个列表生成升降记号，为生成note实例做准备
+        sharp_flat_l=[0]*len(note_num_l)
+        return note_num_l,sharp_flat_l
+
+    # 本函数根据列表生成音的同时，改变其中的升降记号
+    def note_add_key():
+        note_num_l,sharp_flat_l=range_all_note()
+        # 生成一个跟调号有关的实例
+        key_t=random_create_key(key_num_c,sharpe_flat_c,key_class_c,key_kind_c)
+        key_sign_list,add_dim=key_t.key_sign_list()
+        scale_67th,add_dim_67th=key_t.scale_67th()
+        # 先给音加上调号，形成一条新的升降记号列表
+        sharp_flat_l_update=[]
+        for v1,v2 in zip(note_num_l,sharp_flat_l):
+            t2=module_note(v1,v2)
+            if t2.note() in key_sign_list:
+                sharp_flat=0+add_dim
+            if t2.note() not in key_sign_list:
+                sharp_flat=0
+            # 接着再考虑调内6、7级的情况
+            if t2.note() in scale_67th:
+                sharp_flat+=add_dim_67th
+            sharp_flat_l_update.append(sharp_flat)
+        return note_num_l,sharp_flat_l_update,key_t
+        
+    # 本函数把音进行转换，并得到其他的相关信息
+    def note_to_scale():
+        note_num_l,sharp_flat_l_update,key_t=note_add_key()
+        # 得到一条所有音的列表
+        note_t_l=[]
+        for v1,v2 in zip(note_num_l,sharp_flat_l_update):
+            t2=module_note(v1,v2)
+            note_t_l.append(t2)
+        return key_t,note_t_l
+    key_t,note_t_l=note_to_scale()
+    return key_t,note_t_l
+
+def create_scale_8th(low_c,high_c,key_num_c,sharpe_flat_c,key_class_c,key_kind_c):
+    key_t,t2_l=range_to_notelist_addkey(low_c,high_c,key_num_c,sharpe_flat_c,key_class_c,key_kind_c)
+    # 首先抽出所有的调式主音
+    tonic_base=key_t.key_tonic()[1]
+    scale_tonic_l=[]
+    for v1 in t2_l:
+        if tonic_base==v1.note():
+            scale_tonic_l.append(v1)
+    # 随机抽取一个范围内的主音
+    scale_tonic=random.choice(scale_tonic_l[:len(scale_tonic_l)-1])
+    # 截取8个实例
+    if t2_l.index(scale_tonic)+8 >= len(t2_l):
+        scale_l=t2_l[int(t2_l.index(scale_tonic)):]
+    else:
+        scale_l=t2_l[int(t2_l.index(scale_tonic)):int(t2_l.index(scale_tonic)+8)]
+    return key_t,scale_l
+
+# 生成大小调音阶的准备
+def random_create_Mm_scale(low_c,high_c,key_num_c,sharpe_flat_c,key_class_c,key_kind_c,asc_dsc_c):
+    key_t,scale_l=create_scale_8th(low_c,high_c,key_num_c,sharpe_flat_c,key_class_c,key_kind_c)
+    # 确定上行或下行
+    asc_des=random.choice(asc_dsc_c)
+    # 如果是旋律调式的话则更新列表
+    if key_t.key_kind=='melody':
+        add_dim=0
+        if key_t.key_class=='major' and asc_des=='上行':
+            add_dim=1
+        if key_t.key_class=='minor' and asc_des=='下行':
+            add_dim=-1
+        sharpeflate_uppdate_6th=(scale_l[5].note_num_mode())[2]+add_dim
+        sharpeflate_uppdate_7th=(scale_l[6].note_num_mode())[2]+add_dim
+        # 根据新的升降记号数字替换之前的实例
+        scale_l[5]=module_note(scale_l[5].note_num_mode()[0],sharpeflate_uppdate_6th)
+        scale_l[6]=module_note(scale_l[6].note_num_mode()[0],sharpeflate_uppdate_7th)
+    # 根据上行或下行调整列表顺序
+    if asc_des=='下行':
+        scale_l.reverse()
+    return key_t,scale_l,asc_des
+
+# 生成一条半音阶
+def random_create_chromatic_scale(low_c,high_c,key_num_c,sharpe_flat_c,key_class_c,asc_dsc_c):
+    key_t,scale_l=create_scale_8th(low_c,high_c,key_num_c,sharpe_flat_c,key_class_c,['nature'])
+    # 确定上行或下行
+    asc_des=random.choice(asc_dsc_c)
+    add=lambda x:module_note(x.note_num_mode()[0],x.note_num_mode()[2]+1)
+    dim=lambda x:module_note(x.note_num_mode()[0],x.note_num_mode()[2]-1)
+    # 生成5个半音
+    chromatic_l=[]
+    if key_t.key_class=='major':
+        if asc_des=='上行':
+            for v1 in [0,1,3,4]:
+                chromatic_l.append(add(scale_l[v1]))
+            chromatic_l.append(dim(scale_l[6]))
+        else:
+            chromatic_l.append(dim(scale_l[1]))
+            chromatic_l.append(dim(scale_l[2]))
+            chromatic_l.append(add(scale_l[3]))
+            chromatic_l.append(dim(scale_l[5]))
+            chromatic_l.append(dim(scale_l[6]))
+    else:
+        chromatic_l.append(dim(scale_l[1]))
+        for v1 in [2,3,5,6]:
+            chromatic_l.append(add(scale_l[v1]))
+        
+    # 放到音阶里面去
+    if key_t.key_class=='major':
+        for v1,v2 in zip([1,3,6,8,10],chromatic_l):
+            scale_l.insert(v1,v2)
+    else:
+        for v1,v2 in zip([0,3,5,8,10],chromatic_l):
+            scale_l.insert(v1,v2) 
+
+    # 根据上行或下行调整列表顺序
+    if asc_des=='下行':
+        scale_l.reverse()
+    return key_t,scale_l,asc_des

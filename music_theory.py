@@ -7,7 +7,7 @@ import create_ly
 low_c=['c',-1]
 high_c=['e',1] 
 # 这是能选择的升降记号
-sharpe_flat_l=[0] # -2重降，-1降，0无，1升，2重升
+sharpe_flat_l=[0,1] # -2重降，-1降，0无，1升，2重升
 # 选择谱号
 clef='B' 
 # ly文件生成
@@ -138,7 +138,7 @@ def tone_semitone_1_2():
                 tone_semitone,t_l,t3=step_1()
                 tone_semitone_all+=tone_semitone[0]+'1*2 '
                 main_row+=t_l[0].note_all()+'1 '+t3.note_all()+'1 '
-                main_answer_row+=' \\blackNote '+t_l[0].note_all()+'1 '+' \\redNote '+t_l[1].note_all()+'1 '
+                main_answer_row+=' \colorAccidental #black '+t_l[0].note_all()+'1 '+' \colorAccidental #red '+t_l[1].note_all()+'1 '
             # 行数
             start_row=0
             row_name=" \\break \set Score.currentBarNumber = #%s " %(o+2+start_row)
@@ -200,7 +200,7 @@ def write_enharmonica():
             note_row+=t1.note_all()+'1 '+' \skip1 '
             for v1 in enharmonica_l:
                 note_answer_row_1+=v1.note_all()+' '
-            note_answer_row+=' \\blackNote '+t1.note_all()+'1 '+' \\blueNote '+" < "+note_answer_row_1+" >1 "
+            note_answer_row+=' \colorNote #black '+t1.note_all()+'1 '+' \colorNote #darkcyan '+" < "+note_answer_row_1+" >1 "
         # 行数
         start_row=0
         row_name=" \\break \set Score.currentBarNumber = #%s " %(o+2+start_row)
@@ -271,7 +271,7 @@ def write_interval_note():
             random.shuffle(note_l)
             note_row+=note_l[0]+" \skip1 "
             # 音程的答案
-            note_row_answer+=' \\blackNote '+note_l[0]+' \\redNote '+note_l[1]
+            note_row_answer+=' \colorNote #black '+note_l[0]+' \colorNote #darkcyan  '+note_l[1]
             # 音程的名称
             interval_name=t1.interval_name()[0]
             if note_l[0] !=t1.t1.note_all()+'1 ':
@@ -365,3 +365,112 @@ def write_chord_note():
     question="write_chord_name"
     t3.write_chord_name(question,main_answer,lyric_answer)
     return '运行完成'
+
+def write_Mm_scale():
+    # 专有参数
+    key_num_c=[1,2,3]
+    sharpe_flat_c=['sharpe','flat'] # 控制升降记号|['sharpe','flat']
+    key_class_c=['minor'] # 控制大小调|['major','minor']
+    key_kind_c=['nature','harmony','melody'] # 控制调式种类|['nature','harmony','melody']
+    asc_dsc_c=['上行','下行'] # 控制音阶上行或下行
+    key_sign_random_c=['使用调号','不使用调号']
+
+    main=''
+    key_name=''
+    topic=''
+    main_answer=''
+    for o in range(100):
+        scale_all=''
+        skip=''
+        for i in range(2):
+            # 生成题目的一个空五线谱
+            skip+='\skip1'+' '
+            # 生成实例
+            t1,scale_l,asc_des=module.random_create_Mm_scale(low_c,high_c,key_num_c,sharpe_flat_c,key_class_c,key_kind_c,asc_dsc_c)
+            # 是否书写调号
+            key_sign_random=random.choice(key_sign_random_c)
+            # 调名
+            key_name=t1.key_name_Mm_zh()[0]+','+asc_des+','+key_sign_random
+            topic+=key_name+'1 '
+            # 音阶列表
+            scale=[]
+            for v1 in scale_l:
+                scale.append(v1.note_all())
+            # 给第2个音下面加上调名、给第一个音添加时值
+            scale[0]+='8'
+            scale[1]+='_"'+key_name+'"'
+            scale=' '.join(scale)
+            # 带上调号的ly模式
+            if key_sign_random=='使用调号':
+                scale_all+=t1.key_sign_ly()+' '+scale+' '
+            else:
+                scale_all+='\key c \major'+' '+scale+' '
+        # 行数
+        start_row=0
+        row_name=" \\break \set Score.currentBarNumber = #%s " %(o+2+start_row)
+        main+=skip+row_name
+        main_answer+=scale_all+row_name
+    # 拉起ly文件
+    main=main
+    lyric=topic
+    main_answer=main_answer
+    lyric_answer=''
+    t3=create_ly.ly_set(flatsharpe_kind,low_c,high_c,clef,main,lyric)
+    question="write_Mm_scale_note"
+    t3.write_Mm_scale(question,main_answer,lyric_answer)
+    return '运行完成'
+
+def write_chromatic_scale():
+    # 专有参数
+    key_num_c=[0]
+    sharpe_flat_c=['sharpe','flat'] # 控制升降记号|['sharpe','flat']
+    key_class_c=['major'] # 控制大小调|['major','minor']
+    asc_dsc_c=['上行'] # 控制音阶上行或下行
+    key_sign_random_c=['使用调号','不使用调号']
+
+    main=''
+    key_name=''
+    topic=''
+    main_answer=''
+    for o in range(100):
+        scale_all=''
+        skip=''
+        for i in range(1):
+            # 生成题目的一个空五线谱
+            skip+='\skip1'+' '
+            # 生成实例
+            t1,scale_l,asc_des=module.random_create_chromatic_scale(low_c,high_c,key_num_c,sharpe_flat_c,key_class_c,asc_dsc_c)
+            # 是否书写调号
+            key_sign_random=random.choice(key_sign_random_c)
+            # 调名
+            key_name=t1.key_name_Mm_zh()[0]+','+asc_des+','+key_sign_random
+            topic+=key_name+'1 '
+            # 音阶列表
+            scale=[]
+            for v1 in scale_l:
+                scale.append(v1.note_all())
+            # 给第2个音下面加上调名、给第一个音添加时值
+            scale[0]+='1'
+            scale[1]+='_"'+key_name+'"'
+            scale=' '.join(scale)
+            # 带上调号的ly模式
+            if key_sign_random=='使用调号':
+                scale_all+=t1.key_sign_ly()+' '+scale+' '
+            else:
+                scale_all+='\key c \major'+' '+scale+' '
+        # 行数
+        start_row=0
+        row_name=" \\break \set Score.currentBarNumber = #%s " %(o+2+start_row)
+        main+=skip+row_name
+        main_answer+=scale_all+row_name
+    # 拉起ly文件
+    main=main
+    lyric=topic
+    main_answer=main_answer
+    lyric_answer=''
+    t3=create_ly.ly_set(flatsharpe_kind,low_c,high_c,clef,main,lyric)
+    question="write_Mm_scale_note"
+    t3.write_Mm_scale(question,main_answer,lyric_answer)
+    return '运行完成'
+
+write_chromatic_scale()
