@@ -80,14 +80,14 @@ def create_ly(ly_layout_c,chord,clef,main,lyric,file):
 
 # 生成文件名
 class file_name:
-    def base_range(self,question,clef_file,flatsharpe_kind,low_c,high_c):
+    def base_range(self,question,clef_file,accidental_ly,low_c,high_c):
         # 关于题型
         f1=question+'-'
         # 关于基本属性
             # 谱号
         f2=clef_file
             # 升降记号
-        f3=flatsharpe_kind
+        f3=accidental_ly
             # 音域
         f4=low_c[0]+str(low_c[1])+high_c[0]+str(high_c[1])
         f_base=f2+f3+f4
@@ -97,19 +97,20 @@ class file_name:
 
 # 生成Ly文件的准备
 class ly_set:
-    def __init__(self,flatsharpe_kind,low_c,high_c,clef,main,lyric):
-        self.flatsharpe_kind=flatsharpe_kind
+    def __init__(self,accidental_ly,low_c,high_c,clef,main,lyric,main_answer,lyric_answer):
+        self.accidental_ly=accidental_ly
         self.low_c=low_c
         self.high_c=high_c
         self.main=main
         self.lyric=lyric
+        self.main_answer=main_answer
+        self.lyric_answer=lyric_answer
         # 对谱号进行处理
         clef_l=['\clef treble','\clef alto','\clef tenor','\clef bass']
         clef_suoxie=['S','A','T','B']
         self.clef_file=clef
         self.clef=clef_l[clef_suoxie.index(clef)]
-    def read_note_1(self,main_answer,lyric_answer):
-        question='read_note_1'
+    def write_note_name(self,question):
         chord=''
         bar_num_c=1
         time_sign_c=0
@@ -123,12 +124,12 @@ class ly_set:
         ly_layout_c=[bar_num_c,time_sign_c,midi_c,tempo_c,tempo,time,key_sign_c,clef_sign_c,main_before]
         # 文件名
         file=file_name()
-        file=file.base_range(question,self.clef_file,self.flatsharpe_kind,self.low_c,self.high_c)
+        file=file.base_range(question,self.clef_file,self.accidental_ly,self.low_c,self.high_c)
         # 拉起ly文件
         create_ly(ly_layout_c,chord,self.clef,self.main,self.lyric,file)
-        create_ly(ly_layout_c,chord,self.clef,main_answer,lyric_answer,file+'-answer')
+        create_ly(ly_layout_c,chord,self.clef,self.main_answer,self.lyric_answer,file+'-answer')
         return 'ly文件生成完毕'
-    def tone_semitone(self,question,main_answer,lyric_answer):
+    def blank_filling_semi_tone(self,question):
         chord=''
         bar_num_c=1
         time_sign_c=0
@@ -142,12 +143,12 @@ class ly_set:
         ly_layout_c=[bar_num_c,time_sign_c,midi_c,tempo_c,tempo,time,key_sign_c,clef_sign_c,main_before]
         # 文件名
         file=file_name()
-        file=file.base_range(question,self.clef_file,self.flatsharpe_kind,self.low_c,self.high_c)
+        file=file.base_range(question,self.clef_file,self.accidental_ly,self.low_c,self.high_c)
         # 拉起ly文件
         create_ly(ly_layout_c,chord,self.clef,self.main,self.lyric,file)
-        create_ly(ly_layout_c,chord,self.clef,main_answer,lyric_answer,file+'-answer')
+        create_ly(ly_layout_c,chord,self.clef,self.main_answer,self.lyric_answer,file+'-answer')
         return 'ly文件生成完毕'
-    def write_enharmonica(self,question,main_answer,lyric_answer):
+    def write_enharmonica(self,question):
         chord=''
         bar_num_c=1
         time_sign_c=0
@@ -161,10 +162,10 @@ class ly_set:
         ly_layout_c=[bar_num_c,time_sign_c,midi_c,tempo_c,tempo,time,key_sign_c,clef_sign_c,main_before]
         # 文件名
         file=file_name()
-        file=file.base_range(question,self.clef_file,self.flatsharpe_kind,self.low_c,self.high_c)
+        file=file.base_range(question,self.clef_file,self.accidental_ly,self.low_c,self.high_c)
         # 拉起ly文件
         create_ly(ly_layout_c,chord,self.clef,self.main,self.lyric,file)
-        create_ly(ly_layout_c,chord,self.clef,main_answer,lyric_answer,file+'-answer')
+        create_ly(ly_layout_c,chord,self.clef,self.main_answer,self.lyric_answer,file+'-answer')
         return 'ly文件生成完毕'
     def pitch_ear(self,question,main_answer,lyric_answer):
         chord=''
@@ -206,7 +207,7 @@ class ly_set:
         create_ly(ly_layout_1,chord,self.clef,self.main,self.lyric,file)
         create_ly(ly_layout_2,chord,self.clef,main_answer,lyric_answer,file+'-answer')
         return 'ly文件生成完毕'
-    def write_interval_name(self,question,main_answer,lyric_answer):
+    def write_interval_name(self,question):
         chord=''
         bar_num_c=1
         time_sign_c=0
@@ -221,10 +222,10 @@ class ly_set:
         ly_layout_2=[bar_num_c,time_sign_c,0,tempo_c,tempo,time,key_sign_c,clef_sign_c,main_before]
         # 文件名
         file=file_name()
-        file=file.base_range(question,self.clef_file,self.flatsharpe_kind,self.low_c,self.high_c)
+        file=file.base_range(question,self.clef_file,self.accidental_ly,self.low_c,self.high_c)
         # 拉起ly文件
         create_ly(ly_layout_1,chord,self.clef,self.main,self.lyric,file)
-        create_ly(ly_layout_2,chord,self.clef,main_answer,lyric_answer,file+'-answer')
+        create_ly(ly_layout_2,chord,self.clef,self.main_answer,self.lyric_answer,file+'-answer')
         return 'ly文件生成完毕'
     def interval_ear(self,question,main_answer,lyric_answer):
         chord=''
@@ -246,8 +247,26 @@ class ly_set:
         create_ly(ly_layout_1,chord,self.clef,self.main,self.lyric,file)
         create_ly(ly_layout_2,chord,self.clef,main_answer,lyric_answer,file+'-answer')
         return 'ly文件生成完毕'
-
-    def write_chord_name(self,question,main_answer,lyric_answer):
+    def interval_resolution(self,question):
+        chord=''
+        bar_num_c=1
+        time_sign_c=0
+        midi_c=0
+        tempo_c=0
+        tempo='\\tempo 4 = 150'
+        time='\\time 2/2'  
+        key_sign_c='\override Staff.KeySignature.break-visibility = ##(#f #f #f)' #调号控制 
+        clef_sign_c='\override Score.Clef.break-visibility = ##(#f #f #t)' #换行后谱号不再重写
+        main_before='' #\skip
+        ly_layout_c=[bar_num_c,time_sign_c,midi_c,tempo_c,tempo,time,key_sign_c,clef_sign_c,main_before]
+        # 文件名
+        file=file_name()
+        file=file.base_range(question,self.clef_file,self.accidental_ly,self.low_c,self.high_c)
+        # 拉起ly文件
+        create_ly(ly_layout_c,chord,self.clef,self.main,self.lyric,file)
+        create_ly(ly_layout_c,chord,self.clef,self.main_answer,self.lyric_answer,file+'-answer')
+        return 'ly文件生成完毕'
+    def write_chord_name(self,question):
         chord=''
         bar_num_c=1
         time_sign_c=0
@@ -262,12 +281,12 @@ class ly_set:
         ly_layout_2=[bar_num_c,time_sign_c,midi_c,tempo_c,tempo,time,key_sign_c,clef_sign_c,main_before]
         # 文件名
         file=file_name()
-        file=file.base_range(question,self.clef_file,self.flatsharpe_kind,self.low_c,self.high_c)
+        file=file.base_range(question,self.clef_file,self.accidental_ly,self.low_c,self.high_c)
         # 拉起ly文件
         create_ly(ly_layout_1,chord,self.clef,self.main,self.lyric,file)
-        create_ly(ly_layout_2,chord,self.clef,main_answer,lyric_answer,file+'-answer')
+        create_ly(ly_layout_2,chord,self.clef,self.main_answer,self.lyric_answer,file+'-answer')
         return 'ly文件生成完毕'
-    def write_Mm_scale(self,question,main_answer,lyric_answer):
+    def write_Mm_scale(self,question):
         chord=''
         bar_num_c=1
         time_sign_c=0
@@ -277,15 +296,15 @@ class ly_set:
         time='\\time 4/4' 
         key_sign_c='\override Staff.KeySignature.break-visibility = ##(#f #f #f)' #调号控制 
         clef_sign_c='\override Score.Clef.break-visibility = ##(#f #f #t)' #换行后谱号不再重写
-        main_before='' #\skip
+        main_before=' \override Staff.BarLine.stencil = ##f '
         ly_layout_1=[bar_num_c,time_sign_c,midi_c,tempo_c,tempo,time,key_sign_c,clef_sign_c,main_before]
         ly_layout_2=[bar_num_c,time_sign_c,midi_c,tempo_c,tempo,time,key_sign_c,clef_sign_c,main_before]
         # 文件名
         file=file_name()
-        file=file.base_range(question,self.clef_file,self.flatsharpe_kind,self.low_c,self.high_c)
+        file=file.base_range(question,self.clef_file,self.accidental_ly,self.low_c,self.high_c)
         # 拉起ly文件
         create_ly(ly_layout_1,chord,self.clef,self.main,self.lyric,file)
-        create_ly(ly_layout_2,chord,self.clef,main_answer,lyric_answer,file+'-answer')
+        create_ly(ly_layout_2,chord,self.clef,self.main_answer,self.lyric_answer,file+'-answer')
         return 'ly文件生成完毕'
     def write_chromatic_scale(self,question,main_answer,lyric_answer):
         chord=''

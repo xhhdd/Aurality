@@ -7,417 +7,692 @@ import create_ly
 low_c=['a',0]
 high_c=['c',3] 
 # 这是能选择的升降记号
-sharpe_flat_l=[0,1] # -2重降，-1降，0无，1升，2重升
+accidental_l=[0,1,-1,2,-2] # -2重降，-1降，0无，1升，2重升
 # 选择谱号
 clef='S' 
 # ly文件生成
-flatsharpe_kind='@1'# ['all','@1','@12','@2','@0']  0是所有记号都有，1是没有重升重降，2是含有重升重降，3是只有重升重降，4是没有升降记号
+accidental_ly='@1'# ['all','@1','@12','@2','@0']  0是所有记号都有，1是没有重升重降，2是含有重升重降，3是只有重升重降，4是没有升降记号
 
 
 
 # 根据五线谱上的音符写出音名
-def read_note_1_1():
+def write_note_name():
     def step_1():
-        t=module.random_create_note(low_c,high_c,sharpe_flat_l)
-        note_all=t.note_all()
-        note_name=t.note_name()[0][2]+t.note().upper()
+        note_t=module.random_create_note(low_c,high_c,accidental_l)
+        note_all=note_t.note_all()
+        note_name=note_t.note_name()[0][2]+note_t.note().upper()
         return note_all,note_name
     def step_2():
-        note_name_all,main_all='',''
+        note_all,note_name_all='',''
         for o in range(100):
-            main_row=''
+            note_row,note_name_row='',''
             for i in range(10):
-                note_all,note_name=step_1()
-                main_row+=note_all+'1 '
-                note_name_all+='"'+note_name+'"'+'1 '
+                note,note_name=step_1()
+                note_row+=note+'1 '
+                note_name_row+=' "'+note_name+'"1 '
             # 行数
             start_row=0
             row_name=" \\break \set Score.currentBarNumber = #%s " %(o+2+start_row)
-            main_all+=main_row+row_name
+            note_all+=note_row+row_name
+            note_name_all+=note_name_row+row_name
         # 拉起ly文件
-        main=main_all
+        main=note_all
         lyric=''
-        main_answer=main
+        main_answer=note_all
         lyric_answer=note_name_all
-        t=create_ly.ly_set(flatsharpe_kind,low_c,high_c,clef,main,lyric)
-        t.read_note_1(main_answer,lyric_answer)
+        ly_t=create_ly.ly_set(accidental_ly,low_c,high_c,clef,main,lyric,main_answer,lyric_answer)
+        question='write_note_name'
+        ly_t.write_note_name(question)
         return 
     step_2()
     return '运行完成'
 
-def read_note_1_2(low_c,high_c,sharpe_flat_l):
-    def step_1():
-        t=module.random_create_note(low_c,high_c,sharpe_flat_l)
-        note_all=t.note_all()
-        vavb_name=t.note_name()[1]
-        if '小' in vavb_name:
-            note=t.note()
-        else:
-            note=t.note().upper()
-        note_name=vavb_name+','+t.note_name()[0][0]+note
+def write_note():
+    def step1():
+        note_t=module.random_create_note(low_c,high_c,accidental_l)
+        note_all=note_t.note_all()
+        octave_name=note_t.note_name()[1]
+        # 根据小字几组来大小写音名
+        note=note_t.note() if '小' in octave_name else note_t.note().upper()
+        note_name=octave_name+','+note_t.note_name()[0][0]+note
         return note_all,note_name
-    def step_2():
-        note_name_all,main_all,skip_all='','',''
+    def step2():
+        skip_all,note_name_all,note_all='','',''
         for o in range(100):
-            main_row,skip_row='',''
+            skip_row,note_name_row,note_row='','',''
             for i in range(4):
+                note,note_name=step1()
                 skip_row+=' \skip1 '
-                note_all,note_name=step_1()
-                main_row+=note_all+'1 '
-                note_name_all+='"'+note_name+'"'+'1 '
+                note_name_row+=note_name+'1 '
+                note_row+=note+'1 '
             # 行数
             start_row=0
             row_name=" \\break \set Score.currentBarNumber = #%s " %(o+2+start_row)
-            main_all+=main_row+row_name
             skip_all+=skip_row+row_name
+            note_name_all+=note_name_row+row_name
+            note_all+=note_row+row_name
         # 拉起ly文件
         main=skip_all
         lyric=note_name_all
-        main_answer=main_all
+        main_answer=note_all
         lyric_answer=note_name_all
-        t=create_ly.ly_set(flatsharpe_kind,low_c,high_c,clef,main,lyric)
-        t.read_note_1(main_answer,lyric_answer)
+        ly_t=create_ly.ly_set(accidental_ly,low_c,high_c,clef,main,lyric,main_answer,lyric_answer)
+        question='write_note'
+        ly_t.write_note_name(question)
         return 
-    step_2()
+    step2()
     return '运行完成'
 
-# 全音、半音生成相关
-
-
-def tone_semitone_1_1():
-    # 两个专属参数
-    t2_c=[0,1,2]
-    tone_semitone_c=['tone','semitone'] #['tone','semitone']
-    
-    tone_semitone_all,main_all='',''
-    for o in range(100):
-        main_row=''
-        for i in range(8):
-            t=module.random_create_tone_semitone(low_c,high_c,sharpe_flat_l,t2_c)
-            tone_semitone,t1,t2=t.simpel(tone_semitone_c)
-            note_l=[t1.note_all()+'1',t2.note_all()+'1']
-            random.shuffle(note_l)
-            note=' '.join(note_l)
-            main_row+=note+' ' # 音符
-            tone_semitone_all+=tone_semitone[0]+'1*2 '
-        # 行数
-        start_row=0
-        row_name=" \\break \set Score.currentBarNumber = #%s " %(o+2+start_row)
-        main_all+=main_row+row_name+' '
-    # 拉起ly文件
-    main=main_all
-    lyric=''
-    main_answer=main_all
-    lyric_answer=tone_semitone_all
-    t3=create_ly.ly_set(flatsharpe_kind,low_c,high_c,clef,main,lyric)
-    question="tone_semitone_1_1"
-    t3.tone_semitone(question,main_answer,lyric_answer)
-    return '运行完成'
-def tone_semitone_1_2():
-    # 两个专属参数
-    t2_c=[0,1]
-    tone_semitone_c=['tone','semitone'] #['tone','semitone']
-    def step_1():
-        t=module.random_create_tone_semitone(low_c,high_c,sharpe_flat_l,t2_c)
-        tone_semitone,t1,t2=t.simpel(tone_semitone_c)
-        scale_degree=t2.note_num_mode()[0]-t1.note_num_mode()[0]
-        t_l=[t1,t2]
-        random.shuffle(t_l)
-        # 当两个音是一度关系时
-        if scale_degree==0:
-            t_l=[t1,t2]
-            t3=module.module_note(t2.note_num_mode()[0],t1.note_num_mode()[2])
-        else:
-            t3=module.module_note(t_l[1].note_num_mode()[0],0)
-        return tone_semitone,t_l,t3
-    def step_2():
-        tone_semitone_all,main_all,main_answer_all='','',''
+# 判断全音半音
+def blank_filling_semi_tone_simple():
+    # 专属参数
+    space_l=[1,2,3]
+    def step1():
+        semi_tone_t=module.random_create_semi_tone(low_c,high_c,accidental_l,space_l)
+        name=semi_tone_t.simple()[0]+'1*2 '
+        note_l=[semi_tone_t.note_t1.note_all(),semi_tone_t.note_t2.note_all()]
+        random.shuffle(note_l) # 把两个音打乱
+        return name,note_l
+    def step2():
+        mame_all,note_all='',''
         for o in range(100):
-            main_row,main_answer_row='',''
+            name_row,note_row='',''
             for i in range(8):
-                tone_semitone,t_l,t3=step_1()
-                tone_semitone_all+=tone_semitone[0]+'1*2 '
-                main_row+=t_l[0].note_all()+'1 '+t3.note_all()+'1 '
-                main_answer_row+=' \colorAccidental #black '+t_l[0].note_all()+'1 '+' \colorAccidental #red '+t_l[1].note_all()+'1 '
+                name,note_l=step1()
+                name_row+=name
+                note_row+=note_l[0]+'1 '+note_l[1]+'1 '
             # 行数
             start_row=0
             row_name=" \\break \set Score.currentBarNumber = #%s " %(o+2+start_row)
-            main_all+=main_row+row_name+' '
-            main_answer_all+=main_answer_row+row_name+' '
+            mame_all+=name_row+row_name
+            note_all+=note_row+row_name
         # 拉起ly文件
-        main=main_all
-        lyric=tone_semitone_all
-        main_answer=main_answer_all
-        lyric_answer=tone_semitone_all
-        t3=create_ly.ly_set(flatsharpe_kind,low_c,high_c,clef,main,lyric)
-        question="tone_semitone_1_2"
-        t3.tone_semitone(question,main_answer,lyric_answer)
-        return '运行完成'
-    step_2()
+        main=note_all
+        lyric=''
+        main_answer=note_all
+        lyric_answer=mame_all
+        ly_t=create_ly.ly_set(accidental_ly,low_c,high_c,clef,main,lyric,main_answer,lyric_answer)
+        question='bf_semi_tone_simple'
+        ly_t.blank_filling_semi_tone(question)
+        return 
+    step2()
     return '运行完成'
-def tone_semitone_2_1():
-    # 两个专属参数
-    t2_c=[0,1,2]
-    tone_semitone_c=['nature tone','nature semitone','chromatic tone','chromatic semitone'] #['nature tone','nature semitone','chromatic tone','chromatic semitone']
-    
-    tone_semitone_all,main_all='',''
-    for o in range(100):
-        main_row=''
-        for i in range(8):
-            t=module.random_create_tone_semitone(low_c,high_c,sharpe_flat_l,t2_c)
-            tone_semitone,t1,t2=t.hard(tone_semitone_c)
-            note_l=[t1.note_all()+'1',t2.note_all()+'1']
-            random.shuffle(note_l)
-            note=' '.join(note_l)
-            main_row+=note+' ' # 音符
-            tone_semitone_all+=tone_semitone[0]+'1*2 '
-        # 行数
-        start_row=0
-        row_name=" \\break \set Score.currentBarNumber = #%s " %(o+2+start_row)
-        main_all+=main_row+row_name+' '
-    # 拉起ly文件
-    main=main_all
-    lyric=''
-    main_answer=main_all
-    lyric_answer=tone_semitone_all
-    t3=create_ly.ly_set(flatsharpe_kind,low_c,high_c,clef,main,lyric)
-    question="tone_semitone_2_1"
-    t3.tone_semitone(question,main_answer,lyric_answer)
+
+def add_accidental_semi_tone():
+    # 专属参数
+    space_l=[1,2,3]
+
+    def step1():
+        semi_tone_t=module.random_create_semi_tone(low_c,high_c,accidental_l,space_l)
+        note_t1,note_t2=semi_tone_t.note_t1,semi_tone_t.note_t2
+        # 选择往上或往下
+        asc_des=random.choice(['asc','des'])
+        if asc_des=='des':
+            note_t1,note_t2=note_t2,note_t1
+            asc_des_name='往下，'
+        else:
+            asc_des_name='往上，'
+        # 题目名称
+        name=asc_des_name+semi_tone_t.simple()[0]+'1*2 ' 
+        # 接下来去掉第二个音的升降记号，但是需要注意，在两音为1度时，后音的升降记号跟前面的一致。
+        accidental=note_t1.accidental_num if note_t1.note_num==note_t2.note_num else 0
+        note_t3=module.module_note(semi_tone_t.note_t2.note_num,accidental)
+        note_hide_accidental=note_t1.note_all()+'1 '+note_t3.note_all()+'1 ' 
+        # 题目的答案，并标记好颜色
+        note=' \colorAccidental #black '+note_t1.note_all()+'1 '+' \colorAccidental #red '+note_t2.note_all()+'1 '
+        return note,name,note_hide_accidental
+    def step2():
+        note_all,name_all,note_hide_all='','',''
+        for o in range(100):
+            note_row,name_row,note_hide_row='','',''
+            for i in range(4):
+                note,name,note_hide_accidental=step1()
+                note_row+=note
+                name_row+=name
+                note_hide_row+=note_hide_accidental
+            # 行数
+            start_row=0
+            row_name=" \\break \set Score.currentBarNumber = #%s " %(o+2+start_row)
+            note_all+=note_row+row_name
+            name_all+=name_row+row_name
+            note_hide_all+=note_hide_row+row_name
+        # 拉起ly文件
+        main=note_hide_all
+        lyric=name_all
+        main_answer=note_all
+        lyric_answer=name_all
+
+        ly_t=create_ly.ly_set(accidental_ly,low_c,high_c,clef,main,lyric,main_answer,lyric_answer)
+        question='add_accidental'
+        ly_t.blank_filling_semi_tone(question)
+        return '运行完成'
+    step2()
+    return '运行完成'
+
+
+def blank_filling_semi_tone_hard():
+    # 专属参数
+    space_l=[1,2,3]
+    def step1():
+        semi_tone_t=module.random_create_semi_tone(low_c,high_c,accidental_l,space_l)
+        name=semi_tone_t.hard()[0]+'1*2 '
+        note_l=[semi_tone_t.note_t1.note_all(),semi_tone_t.note_t2.note_all()]
+        random.shuffle(note_l) # 把两个音打乱
+        return name,note_l
+    def step2():
+        mame_all,note_all='',''
+        for o in range(100):
+            name_row,note_row='',''
+            for i in range(8):
+                name,note_l=step1()
+                name_row+=name
+                note_row+=note_l[0]+'1 '+note_l[1]+'1 '
+            # 行数
+            start_row=0
+            row_name=" \\break \set Score.currentBarNumber = #%s " %(o+2+start_row)
+            mame_all+=name_row+row_name
+            note_all+=note_row+row_name
+        # 拉起ly文件
+        main=note_all
+        lyric=''
+        main_answer=note_all
+        lyric_answer=mame_all
+        ly_t=create_ly.ly_set(accidental_ly,low_c,high_c,clef,main,lyric,main_answer,lyric_answer)
+        question='bf_semi_tone_hard'
+        ly_t.blank_filling_semi_tone(question)
+        return 
+    step2()
     return '运行完成'
 
 # 书写等音
 def write_enharmonica():
-    note_all=''
-    note_answer_all=''
-    for  o in range(100):
-        note_answer_row=''
-        note_row=''
-        for i in range(5):
-            note_answer_row_1=''#清零
-
-            t1=module.random_create_note(low_c,high_c,sharpe_flat_l)
-            enharmonica_l=module.enharmonica(t1)
-            note_row+=t1.note_all()+'1 '+' \skip1 '
-            for v1 in enharmonica_l:
-                note_answer_row_1+=v1.note_all()+' '
-            note_answer_row+=' \colorNote #black '+t1.note_all()+'1 '+' \colorNote #darkcyan '+" < "+note_answer_row_1+" >1 "
-        # 行数
-        start_row=0
-        row_name=" \\break \set Score.currentBarNumber = #%s " %(o+2+start_row)
-        note_all+=note_row+row_name
-        note_answer_all+=note_answer_row+row_name
-    # 拉起ly文件
-    main=note_all
-    lyric=''
-    main_answer=note_answer_all
-    lyric_answer=''
-    t3=create_ly.ly_set(flatsharpe_kind,low_c,high_c,clef,main,lyric)
-    question="write_enharmonica"
-    t3.write_enharmonica(question,main_answer,lyric_answer)
+    def step1():
+        # 题目的主要音
+        note_t1=module.random_create_note(low_c,high_c,accidental_l)
+        # 生成一个等音列表
+        enharmonica_l=module.enharmonica(note_t1)
+        enharmonica=''
+        for v1 in enharmonica_l:
+            enharmonica+=v1.note_all()+' '
+        # 答案的音符
+        note_answer=' \colorNote #black '+note_t1.note_all()+'1 '+' \colorNote #darkcyan '+" < "+enharmonica+" >1 "
+        # 题目的音符
+        note=note_t1.note_all()+'1 '+' \skip1 '
+        return note,note_answer
+    def step2():   
+        note_all,note_answer_all='',''
+        for  o in range(100):
+            note_row,note_answer_row='',''
+            for i in range(5):
+                note,note_answer=step1()
+                note_row+=note
+                note_answer_row+=note_answer
+            # 行数
+            start_row=0
+            row_name=" \\break \set Score.currentBarNumber = #%s " %(o+2+start_row)
+            note_all+=note_row+row_name
+            note_answer_all+=note_answer_row+row_name
+        # 拉起ly文件
+        main=note_all
+        lyric=''
+        main_answer=note_answer_all
+        lyric_answer=''
+        ly_t=create_ly.ly_set(accidental_ly,low_c,high_c,clef,main,lyric,main_answer,lyric_answer)
+        question='write_enharmonica'
+        ly_t.write_enharmonica(question)
+        return '运行完成'
+    step2()
     return '运行完成'
 
 def write_interval_name():
     # 特殊参数
     interval_num_l=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]
     property_l=['d_d','d','m','M','A','d_A','p'] # ['d_d','d','m','M','A','d_A','p','fail']
-
-    interval_rall=''
-    lyric_answer_all=''
-    for o in range(100):
-        lyric_row=''
-        interval_row=''
-        for i in range(8):
-            # 生成实例
-            t1=module.random_create_interval(low_c,high_c,sharpe_flat_l,interval_num_l,property_l)
-            # 音程的答案
-            interval_name=t1.interval_name()[0]
-            lyric_row+=interval_name+'1*2 '
-            # 音程的两个音
-            note_l=[t1.t1.note_all()+'1 ',t1.t2.note_all()+'1 ']
-            random.shuffle(note_l)
-            interval_row+=' '.join(note_l)
-        # 行数
-        start_row=0
-        row_name=" \\break \set Score.currentBarNumber = #%s " %(o+2+start_row)
-        interval_rall+=interval_row+row_name
-        lyric_answer_all+=lyric_row
-    # 拉起ly文件
-    main=interval_rall
-    lyric=''
-    main_answer=interval_rall
-    lyric_answer=lyric_answer_all
-    t3=create_ly.ly_set(flatsharpe_kind,low_c,high_c,clef,main,lyric)
-    question="write_interval_name"
-    t3.write_interval_name(question,main_answer,lyric_answer)
-    return '运行完成'
+    def step1():
+        # 生成实例
+        interval_t=module.random_create_interval(low_c,high_c,accidental_l,interval_num_l,property_l)
+        # 音程的答案
+        interval_name=interval_t.interval_name()[0]+'1*2 '
+        # 音程的两个音
+        note_l=[interval_t.note_t1.note_all()+'1 ',interval_t.note_t2.note_all()+'1 ']
+        random.shuffle(note_l) # 打乱两个音
+        interval=' '.join(note_l)
+        return interval,interval_name
+    def step2():
+        interval_all,interval_name_all='',''
+        for o in range(100):
+            interval_row,interval_name_row='',''
+            for i in range(8):
+                interval,interval_name=step1()
+                interval_row+=interval+' '
+                interval_name_row+=interval_name
+            # 行数
+            start_row=0
+            row_name=" \\break \set Score.currentBarNumber = #%s " %(o+2+start_row)
+            interval_all+=interval_row+row_name
+            interval_name_all+=interval_name_row+row_name
+        # 拉起ly文件
+        main=interval_all
+        lyric=''
+        main_answer=interval_all
+        lyric_answer=interval_name_all
+        ly_t=create_ly.ly_set(accidental_ly,low_c,high_c,clef,main,lyric,main_answer,lyric_answer)
+        question='write_interval_name'
+        ly_t.write_interval_name(question)
+        return '运行完成'
+    step2()
+    return
 
 def write_interval_note():
     # 特殊参数
-    interval_num_l=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]
+    interval_num_l=[5]
     property_l=['d_d','d','m','M','A','d_A','p'] # ['d_d','d','m','M','A','d_A','p','fail']
+    def step1():
+        # 生成实例
+        interval_t=module.random_create_interval(low_c,high_c,accidental_l,interval_num_l,property_l)
+        note_t1,note_t2=interval_t.note_t1,interval_t.note_t2
+        # 随机两音的高低
+        asc_des=random.choice(['asc','des'])
+        if asc_des=='des':
+            note_t1,note_t2=note_t2,note_t1
+            asc_des_name='往下，'
+        else:
+            asc_des_name='往上，'
+        # 音程的名称
+        interval_name=asc_des_name+interval_t.interval_name()[0]+'1*2 '
+        # 音程的题目
+        interval=note_t1.note_all()+'1 '+' \skip1 '
+        # 音程的答案
+        interval_answer=' \colorNote #black '+note_t1.note_all()+'1 '+' \colorNote #darkcyan  '+note_t2.note_all()+'1 '
+        return interval,interval_answer,interval_name
+    def step2():
+        interval_all,interval_answer_all,interval_name_all='','',''
+        for o in range(100):
+            interval_row,interval_answer_row,interval_name_row='','',''
+            for i in range(4):
+                interval,interval_answer,interval_name=step1()
+                interval_row+=interval
+                interval_answer_row+=interval_answer
+                interval_name_row+=interval_name
+            # 行数
+            start_row=0
+            row_name=" \\break \set Score.currentBarNumber = #%s " %(o+2+start_row)
+            interval_all+=interval_row+row_name
+            interval_answer_all+=interval_answer_row+row_name
+            interval_name_all+=interval_name_row+row_name
+        # 拉起ly文件
+        main=interval_all
+        lyric=interval_name_all
+        main_answer=interval_answer_all
+        lyric_answer=interval_name_all
+        ly_t=create_ly.ly_set(accidental_ly,low_c,high_c,clef,main,lyric,main_answer,lyric_answer)
+        question='write_interval_note'
+        ly_t.write_interval_name(question)
+        return '运行完成'
+    step2()
+    return
 
-    lyric_all=''
-    interval_all=''
-    interval_answer_all=''
-    for o in range(100):
-        lyric_row=''
-        note_row=''
-        note_row_answer=''
-        for i in range(4):
-            # 生成实例
-            t1=module.random_create_interval(low_c,high_c,sharpe_flat_l,interval_num_l,property_l)
-            # 音程的题目
-            note_l=[t1.t1.note_all()+'1 ',t1.t2.note_all()+'1 ']
-            random.shuffle(note_l)
-            note_row+=note_l[0]+" \skip1 "
-            # 音程的答案
-            note_row_answer+=' \colorNote #black '+note_l[0]+' \colorNote #darkcyan  '+note_l[1]
-            # 音程的名称
-            interval_name=t1.interval_name()[0]
-            if note_l[0] !=t1.t1.note_all()+'1 ':
-                asc_des=' 往下'
-            else:
-                asc_des=' 往上'
-            lyric_row+=asc_des+interval_name+'1*2 '
-        # 行数
-        start_row=0
-        row_name=" \\break \set Score.currentBarNumber = #%s " %(o+2+start_row)
-        interval_all+=note_row+row_name
-        interval_answer_all+=note_row_answer+row_name
-        lyric_all+=lyric_row
-    # 拉起ly文件
-    main=interval_all
-    lyric=lyric_all
-    main_answer=interval_answer_all
-    lyric_answer=lyric_all
-    t3=create_ly.ly_set(flatsharpe_kind,low_c,high_c,clef,main,lyric)
-    question="write_interval_note"
-    t3.write_interval_name(question,main_answer,lyric_answer)
+def interval_resolution():
+    # 专属参数
+    key_num_l=[0,1,2,3,4,5,6,7]
+    sharpe_flat_l=['sharpe','flat']
+    modal_l=['major','minor'],['nature','harmony']
+    def step1():
+        [note_t1,note_t2],interval_resolution_l,Mm_t=module.random_interval_resolution(low_c,high_c,key_num_l,sharpe_flat_l,modal_l)
+        interval=' < '+note_t1.note_all()+' '+note_t2.note_all()+' >1 '
+        interval_resolution=' < '+interval_resolution_l[0].note_all()+' '+interval_resolution_l[1].note_all()+' >1 '
+        key_name='"'+Mm_t.scale_name_zh()[0]+Mm_t.scale_name_zh()[1]+Mm_t.scale_name_zh()[2]+'"'+'1*2 '
+        return interval,interval_resolution,key_name
+    def step2():
+        interval_all,interval_resolution_all,key_name_all='','',''
+        for o in range(100):
+            interval_row,interval_resolution_row,key_name_row='','',''
+            for i in range(4):
+                interval,interval_resolution,key_name=step1()
+                interval_row+=interval+' \skip1 '
+                interval_resolution_row+=' \colorNote #black '+interval+' \colorNote #darkcyan  '+interval_resolution
+                key_name_row+=key_name
+            # 行数
+            start_row=0
+            row_name=" \\break \set Score.currentBarNumber = #%s " %(o+2+start_row)
+            interval_all+=interval_row+row_name
+            interval_resolution_all+=interval_resolution_row+row_name
+            key_name_all+=key_name_row
+        main=interval_all
+        lyric=key_name_all
+        main_answer=interval_resolution_all
+        lyric_answer=key_name_all
+        ly_t=create_ly.ly_set(accidental_ly,low_c,high_c,clef,main,lyric,main_answer,lyric_answer)
+        question='interval_resolution'
+        ly_t.interval_resolution(question)
+        return '运行完成'
+    step2()
     return '运行完成'
+
+
 
 def write_chord_name():
     # 专有参数
-    chord_name_c=['major','minor']  #'major','minor','aug','dim'|'MM7','Mm7','mm7','dm7','dd7'
-    invert_class_c=[0,1,2] # 最多输入3 三和弦在第三转位则没有任何变化
-
-
-    chord_all=''
-    chord_name_row=''
-    for o in range(100):
-        chord_row_2=''
-        for i in range(5):
-            chord_row_1=''
-            chord_t=module.random_create_chord(low_c,high_c,sharpe_flat_l,chord_name_c,invert_class_c)
-            # 和弦名称
-            chord_name_row+=chord_t.chord_name_zh()+'1 ' 
-            # 和弦的音
-            chord_l=chord_t.chord()
-            for v1 in chord_l:
-                chord_row_1+=v1.note_all()+' '
-            chord_row_2+=' < '+chord_row_1+' >1 '
-        # 行数
-        start_row=0
-        row_name=" \\break \set Score.currentBarNumber = #%s " %(o+2+start_row)
-        chord_all+=chord_row_2+row_name
-    # 拉起ly文件
-    main=chord_all
-    lyric=''
-    main_answer=chord_all
-    lyric_answer=chord_name_row
-    t3=create_ly.ly_set(flatsharpe_kind,low_c,high_c,clef,main,lyric)
-    question="write_chord_name"
-    t3.write_chord_name(question,main_answer,lyric_answer)
-    return '运行完成'
+    chord_name_l=['major','MM7']  #'major','minor','aug','dim'|'MM7','Mm7','mm7','dm7','dd7'
+    invert_l=[0,1,2] # 最多输入3 三和弦在第三转位整体升高一个八度
+    def step1():
+        chord_t=module.random_create_chord(low_c,high_c,accidental_l,chord_name_l,invert_l)
+        chord_l=chord_t.chord()[1]
+        # 和弦的音
+        chord_note_l=[v1.note_all() for v1 in chord_l]
+        chord_note=' < '+' '.join(chord_note_l)+' >1 '
+        # 和弦的名称
+        chord_name=chord_t.chord_name_zh()[0]+chord_t.chord_name_zh()[1]+'1 '
+        return chord_note,chord_name
+    def step2():
+        chord_all,chord_name_all='',''
+        for o in range(100):
+            chord_row,chord_name_row='',''
+            for i in range(5):
+                chord_note,chord_name=step1()
+                chord_row+=chord_note
+                chord_name_row+=chord_name
+            # 行数
+            start_row=0
+            row_name=" \\break \set Score.currentBarNumber = #%s " %(o+2+start_row)
+            chord_all+=chord_row+row_name
+            chord_name_all+=chord_name_row+row_name
+        # 拉起ly文件
+        main=chord_all
+        lyric=''
+        main_answer=chord_all
+        lyric_answer=chord_name_all
+        ly_t=create_ly.ly_set(accidental_ly,low_c,high_c,clef,main,lyric,main_answer,lyric_answer)
+        question='write_chord_name'
+        ly_t.write_chord_name(question)
+        return '运行完成'
+    step2()
+    return
 
 def write_chord_note():
     # 专有参数
-    chord_name_c=['MM7','Mm7','mm7','dm7','dd7']  #'major','minor','aug','dim'|'MM7','Mm7','mm7','dm7','dd7'
-    invert_class_c=[0,1,2,3] # 最多输入3 三和弦在第三转位则没有任何变化
+    chord_name_l=['MM7','Mm7','mm7','dm7','dd7']  #'major','minor','aug','dim'|'MM7','Mm7','mm7','dm7','dd7'
+    invert_l=[0,1,2,3] # 最多输入3 三和弦在第三转位整体升高一个八度
+    def step1():
+        chord_t=module.random_create_chord(low_c,high_c,accidental_l,chord_name_l,invert_l)
+        chord_l=chord_t.chord()[1]
+        # 和弦的名称
+        chord_name=chord_t.chord_name_zh()[0]+chord_t.chord_name_zh()[1]+'1 '
+        # 和弦的根音
+        chord_root=chord_t.root_note.note_all()+'1 '
+        # 完整的和弦音
+        chord_note_l=[v1.note_all() for v1 in chord_l]
+        chord_note=' < '+' '.join(chord_note_l)+' >1 '
+        return chord_root,chord_name,chord_note
+    def step2():
+        chord_root_all,chord_name_all,chord_note_all='','',''
+        for o in range(100):
+            chord_root_row,chord_name_row,chord_note_row='','',''
+            for i in range(5):
+                chord_root,chord_name,chord_note=step1()
+                chord_root_row+=chord_root
+                chord_name_row+=chord_name
+                chord_note_row+=chord_note
+            # 行数
+            start_row=0
+            row_name=" \\break \set Score.currentBarNumber = #%s " %(o+2+start_row)
+            chord_root_all+=chord_root_row+row_name
+            chord_name_all+=chord_name_row+row_name
+            chord_note_all+=chord_note_row+row_name
+        # 拉起ly文件
+        main=chord_root_all
+        lyric=chord_name_all
+        main_answer=chord_note_all
+        lyric_answer=chord_name_all
+        ly_t=create_ly.ly_set(accidental_ly,low_c,high_c,clef,main,lyric,main_answer,lyric_answer)
+        question='write_chord_note'
+        ly_t.write_chord_name(question)
+        return '运行完成'
+    step2()
+    return '运行完成'
 
-    chord_name_row=''
-    chord_all=''
-    chord_answer_all=''
-    for o in range(100):
-        chord_row_2=''
-        chord_row_3=''
-        for i in range(5):
-            chord_row_1=''
-            chord_t=module.random_create_chord(low_c,high_c,sharpe_flat_l,chord_name_c,invert_class_c)
-            # 和弦名称
-            chord_name_row+=chord_t.chord_name_zh()+'1 ' 
-            # 和弦的音
-            chord_l=chord_t.chord()
-            for v1 in chord_l:
-                chord_row_1+=v1.note_all()+' '
-            chord_row_2+=' < '+chord_row_1+' >1 '
-            chord_row_3+=chord_l[0].note_all()+' '
-        # 行数
-        start_row=0
-        row_name=" \\break \set Score.currentBarNumber = #%s " %(o+2+start_row)
-        chord_answer_all+=chord_row_2+row_name
-        chord_all+=chord_row_3+row_name
-    # 拉起ly文件
-    main=chord_all
-    lyric=chord_name_row
-    main_answer=chord_answer_all
-    lyric_answer=chord_name_row
-    t3=create_ly.ly_set(flatsharpe_kind,low_c,high_c,clef,main,lyric)
-    question="write_chord_name"
-    t3.write_chord_name(question,main_answer,lyric_answer)
+def chord_resolution():
+    # 专属参数
+    key_num_l=[0]
+    sharpe_flat_l=['sharpe','flat']
+    modal_l=['major','minor'],['nature','harmony']
+    chord_name_l=['Mm7','dd7']# 'major','minor','aug','dim'|'MM7','Mm7','mm7','dm7','dd7'
+    invert_l=[3]
+    def step0(chord_resolution_l): # 关于属七和弦原位解决有三个同样的音而lilypond不支持这件事
+        chord_resolution_0=''
+        for i in range(1):
+            chord_resolution_0+=chord_resolution_l[i].note_all()+'1 '
+        chord_resolution_0=' \colorNote #darkcyan  { << '+chord_resolution_0+' >>} \\\\ '
+
+        chord_resolution_1=''
+        for v2 in chord_resolution_l[1:]:
+            chord_resolution_1+=v2.note_all()+'1 '
+        chord_resolution_1=' \colorNote #darkcyan { << '+chord_resolution_1+' >>} '
+        chord_resolution=chord_resolution_0+chord_resolution_1
+        return chord_resolution
+    def step1():
+        Mm_t,chord_t,chord_l,chord_resolution_l=module.random_chord_resolution(low_c,high_c,key_num_l,sharpe_flat_l,modal_l,chord_name_l,invert_l)
+        # 和弦的音
+        chord_0=''
+        for v1 in chord_l:
+            chord_0+=v1.note_all()+' '
+        chord=' < '+chord_0+' >1 '
+        # 和弦解决的音，注意两个音上不能叠在一起的事情
+        if chord_t.chord_name=='Mm7' and chord_t.invert_num==0:
+            chord_resolution=step0(chord_resolution_l)
+        else:
+            chord_resolution_0=''
+            for v2 in chord_resolution_l:
+                chord_resolution_0+=v2.note_all()+' '
+            chord_resolution=' < '+chord_resolution_0+' >1 '
+        # 和弦的名字
+        key_name='"'+Mm_t.scale_name_zh()[0]+Mm_t.scale_name_zh()[1]+Mm_t.scale_name_zh()[2]+'"'+'1*2 '
+        return chord,chord_resolution,key_name
+    def step2():
+        chord_all,chord_resolution_all,key_name_all='','',''
+        for o in range(100):
+            chord_row,chord_resolution_row,key_name_row='','',''
+            for i in range(4):
+                chord,chord_resolution,key_name=step1()
+                chord_row+=chord+' \skip1 '
+                chord_resolution_row+=' \colorNote #black '+chord+' \colorNote #darkcyan '+' << '+chord_resolution+' >> '
+                key_name_row+=key_name
+            # 行数
+            start_row=0
+            row_name=" \\break \set Score.currentBarNumber = #%s " %(o+2+start_row)
+            chord_all+=chord_row+row_name
+            chord_resolution_all+=chord_resolution_row+row_name
+            key_name_all+=key_name_row
+        main=chord_all
+        lyric=key_name_all
+        main_answer=chord_resolution_all
+        lyric_answer=key_name_all
+        ly_t=create_ly.ly_set(accidental_ly,low_c,high_c,clef,main,lyric,main_answer,lyric_answer)
+        question='chord_resolution'
+        ly_t.interval_resolution(question)
+        return '运行完成'
+    step2()
     return '运行完成'
 
 def write_Mm_scale():
     # 专有参数
-    key_num_c=[1,2,3]
-    sharpe_flat_c=['sharpe','flat'] # 控制升降记号|['sharpe','flat']
-    key_class_c=['minor'] # 控制大小调|['major','minor']
-    key_kind_c=['nature','harmony','melody'] # 控制调式种类|['nature','harmony','melody']
-    asc_dsc_c=['上行','下行'] # 控制音阶上行或下行
-    key_sign_random_c=['使用调号','不使用调号']
+    key_num_l=[0,1,2,3,4,5,6,7]
+    sharpe_flat_l=['sharpe','flat']
+    modal_l=[['major','minor'],['nature','harmony','melody']]
+    def step1():
+        Mm_t,octave_l,asc_des=module.random_Mm_scale(low_c,high_c,key_num_l,sharpe_flat_l,modal_l)
+        # 调号是否使用
+        key_sign=random.choice(['使用调号','不使用调号'])
+        key_ly=Mm_t.key_t.key_sign_ly() if key_sign=='使用调号' else '\key c \major'
+        # 音阶的音
+        scale_l=[v1.note_all() for v1 in octave_l]
+        scale=' \colorAccidental #darkcyan '+key_ly+' '+'1 '.join(scale_l)
+        # 音阶的名称
+        tonic,modal2,modal1=Mm_t.scale_name_zh()
+        if Mm_t.modal_l==['minor','melody'] and asc_des=='des':
+            modal2=random.choice(['旋律','自然'])
+        asc_des_name='，上行' if asc_des=='asc' else '，下行'
+        scale_name=tonic+modal2+modal1+asc_des_name+'，'+key_sign+'1*8'
+        # 跳过的空白
+        scale_skip=' \skip1*8 '
+        return scale,scale_skip,scale_name
+    def step2():
+        scale_all,scale_skip_all,scale_name_all='','',''
+        for o in range(100):
+            scale_row,scale_skip_row,scale_name_row='','',''
+            for i in range(1):
+                scale,scale_skip,scale_name=step1()
+                scale_row+=scale
+                scale_skip_row+=scale_skip
+                scale_name_row+=scale_name
+            # 行数
+            start_row=0
+            row_name=" \\break \set Score.currentBarNumber = #%s " %(o+2+start_row)
+            scale_all+=scale_row+row_name
+            scale_skip_all+=scale_skip_row+row_name
+            scale_name_all+=scale_name_row+row_name
+        # 拉起ly文件
+        main=scale_skip_all
+        lyric=scale_name_all
+        main_answer=scale_all
+        lyric_answer=scale_name_all
+        ly_t=create_ly.ly_set(accidental_ly,low_c,high_c,clef,main,lyric,main_answer,lyric_answer)
+        question='write_Mm_scale'
+        ly_t.write_Mm_scale(question)
+        return '运行完成'
+    step2()
+    return '运行完成'
+    
+def write_church_scale():
+    # 专有参数
+    key_num_l=[0,1,2,3,4,5,6,7]
+    sharpe_flat_l=['sharpe','flat']
+    modal_num_l=[1,2,3,4,5,6,7]
+    def step1():
+        church_t,octave_l,asc_des=module.random_church_scale(low_c,high_c,key_num_l,sharpe_flat_l,modal_num_l)
+        # 调号是否使用
+        key_sign=random.choice(['使用调号','不使用调号'])
+        key_ly=church_t.key_t.key_sign_ly() if key_sign=='使用调号' else '\key c \major'
+        # 音阶的音
+        scale_l=[v1.note_all() for v1 in octave_l]
+        scale=' \colorAccidental #darkcyan '+key_ly+' '+'1 '.join(scale_l)
+        # 音阶的名称
+        asc_des_name='，上行' if asc_des=='asc' else '，下行'
+        scale_name=church_t.scale_name_zh()+asc_des_name+'，'+key_sign+' 1*8 '
+        # 跳过的空白
+        scale_skip=' \skip1*8 '
+        return scale,scale_skip,scale_name
+    def step2():
+        scale_all,scale_skip_all,scale_name_all='','',''
+        for o in range(100):
+            scale_row,scale_skip_row,scale_name_row='','',''
+            for i in range(1):
+                scale,scale_skip,scale_name=step1()
+                scale_row+=scale
+                scale_skip_row+=scale_skip
+                scale_name_row+=scale_name
+            # 行数
+            start_row=0
+            row_name=" \\break \set Score.currentBarNumber = #%s " %(o+2+start_row)
+            scale_all+=scale_row+row_name
+            scale_skip_all+=scale_skip_row+row_name
+            scale_name_all+=scale_name_row+row_name
+        # 拉起ly文件
+        main=scale_skip_all
+        lyric=scale_name_all
+        main_answer=scale_all
+        lyric_answer=scale_name_all
+        ly_t=create_ly.ly_set(accidental_ly,low_c,high_c,clef,main,lyric,main_answer,lyric_answer)
+        question='write_church_scale'
+        ly_t.write_Mm_scale(question)
+        return '运行完成'
+    step2()
+    return '运行完成'
 
-    main=''
-    key_name=''
-    topic=''
-    main_answer=''
-    for o in range(100):
-        scale_all=''
-        skip=''
-        for i in range(2):
-            # 生成题目的一个空五线谱
-            skip+='\skip1'+' '
-            # 生成实例
-            t1,scale_l,asc_des=module.random_create_Mm_scale(low_c,high_c,key_num_c,sharpe_flat_c,key_class_c,key_kind_c,asc_dsc_c)
-            # 是否书写调号
-            key_sign_random=random.choice(key_sign_random_c)
-            # 调名
-            key_name=t1.key_name_Mm_zh()[0]+','+asc_des+','+key_sign_random
-            topic+=key_name+'1 '
-            # 音阶列表
-            scale=[]
-            for v1 in scale_l:
-                scale.append(v1.note_all())
-            # 给第2个音下面加上调名、给第一个音添加时值
-            scale[0]+='8'
-            scale[1]+='_"'+key_name+'"'
-            scale=' '.join(scale)
-            # 带上调号的ly模式
-            if key_sign_random=='使用调号':
-                scale_all+=t1.key_sign_ly()+' '+scale+' '
-            else:
-                scale_all+='\key c \major'+' '+scale+' '
-        # 行数
-        start_row=0
-        row_name=" \\break \set Score.currentBarNumber = #%s " %(o+2+start_row)
-        main+=skip+row_name
-        main_answer+=scale_all+row_name
-    # 拉起ly文件
-    main=main
-    lyric=topic
-    main_answer=main_answer
-    lyric_answer=''
-    t3=create_ly.ly_set(flatsharpe_kind,low_c,high_c,clef,main,lyric)
-    question="write_Mm_scale_note"
-    t3.write_Mm_scale(question,main_answer,lyric_answer)
+def write_chinese_scale():
+    # 专有参数
+    key_num_l=[0,1,2,3,4,5,6,7]
+    sharpe_flat_l=['sharpe','flat']
+    modal_num_l=[1,2,3,4,5]
+    modal_hexa_l=[0,1]
+    modal_hepta_l=[0,1,2] 
+    def step1():
+        chinese_scale_t=module.random_chinese_scale(low_c,high_c,key_num_l,sharpe_flat_l,modal_num_l,modal_hexa_l,modal_hepta_l)
+        # 调号是否使用
+        key_sign=random.choice(['使用调号'])
+        key_ly=chinese_scale_t.random_chinese_t.chinese_t.key_t.key_sign_ly() if key_sign=='使用调号' else '\key c \major'
+        # 是否上下行
+        asc_des=random.choice(['上行','下行'])
+        # 抽取五声、六声或七声调式
+        modal_kind=random.choice(['penta','hexa','hepta'])
+        # 五声调式
+        if modal_kind=='penta':
+            penta_octave_l,scale_name=chinese_scale_t.penta()
+            # 音阶里面的音 
+            scale_note_l=[v1.note_all() for v1 in penta_octave_l]
+            # 改变上下行
+            if asc_des=='下行':
+                scale_note_l.reverse()
+            scale_note=key_ly+' '+'1 '.join(scale_note_l)+' \skip1*2 '
+        # 六声调式
+        if modal_kind=='hexa':
+            hexa_octave_l,add_note,scale_name=chinese_scale_t.hexa()
+            # 标记那个偏音
+            add_note_num=hexa_octave_l.index([v1 for v1 in hexa_octave_l if v1.note()==add_note][0])
+            # 音阶里面的音
+            scale_note_l=[v1.note_all() for v1 in hexa_octave_l]
+            black_note_l=[i for i in range(7) if i !=add_note_num ]
+            for v1 in black_note_l:
+                scale_note_l[v1]=' \colorNote #black '+scale_note_l[v1]
+            scale_note_l[add_note_num]=' \colorNote #red '+scale_note_l[add_note_num] # 给偏音做标记
+            # 改变上下行
+            if asc_des=='下行':
+                scale_note_l.reverse()
+            scale_note=key_ly+' '+'1 '.join(scale_note_l)+' \skip1 '
+        # 七声调式
+        if modal_kind=='hepta':
+            hepta_octave_l,note_47th,scale_name=chinese_scale_t.hepta()
+            # 标记两个偏音
+            note_47th_l=[v1 for v1 in hepta_octave_l if v1.note() in note_47th]
+            note_47th_num=[hepta_octave_l.index(v1) for v1 in note_47th_l]
+            # 音阶里面的音
+            scale_note_l=[v1.note_all() for v1 in hepta_octave_l]
+            black_note_l=[i for i in range(8) if i not in note_47th_num ]
+            for v1 in black_note_l:
+                scale_note_l[v1]=' \colorNote #black '+scale_note_l[v1]
+            scale_note_l[note_47th_num[0]]=' \colorNote #red '+scale_note_l[note_47th_num[0]]
+            scale_note_l[note_47th_num[1]]=' \colorNote #red '+scale_note_l[note_47th_num[1]]
+            # 改变上下行
+            if asc_des=='下行':
+                scale_note_l.reverse()
+            scale_note=key_ly+' '+'1 '.join(scale_note_l)
+        scale_skip=' \skip1*8 '
+        return scale_note,scale_skip,scale_name+'，'+asc_des+'，'+key_sign+'1*8 '
+    def step2():
+        scale_all,scale_skip_all,scale_name_all='','',''
+        for o in range(100):
+            scale_row,scale_skip_row,scale_name_row='','',''
+            for i in range(1):
+                scale,scale_skip,scale_name=step1()
+                scale_row+=scale
+                scale_skip_row+=scale_skip
+                scale_name_row+=scale_name
+            # 行数
+            start_row=0
+            row_name=" \\break \set Score.currentBarNumber = #%s " %(o+2+start_row)
+            scale_all+=scale_row+row_name
+            scale_skip_all+=scale_skip_row+row_name
+            scale_name_all+=scale_name_row+row_name
+        # 拉起ly文件
+        main=scale_skip_all
+        lyric=scale_name_all
+        main_answer=scale_all
+        lyric_answer=scale_name_all
+        ly_t=create_ly.ly_set(accidental_ly,low_c,high_c,clef,main,lyric,main_answer,lyric_answer)
+        question='write_chinese_scale'
+        ly_t.write_Mm_scale(question)
+        return '运行完成'
+    step2()
     return '运行完成'
 
 def write_chromatic_scale():
@@ -474,4 +749,3 @@ def write_chromatic_scale():
     t3.write_chromatic_scale(question,main_answer,lyric_answer)
     return '运行完成'
 
-write_chromatic_scale()
