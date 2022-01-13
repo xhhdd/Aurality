@@ -695,4 +695,47 @@ def write_chinese_scale():
     step2()
     return '运行完成'
 
+def write_chromatic_scale():
+    # 专有参数
+    key_num_l=[0,1,2,3,4,5,6,7]
+    sharpe_flat_l=['sharpe','flat']
 
+    def step1():
+        chromatic_scale_t=module.random_chromatic_scale(low_c,high_c,key_num_l,sharpe_flat_l)
+        # 选择大调半音阶或小调半音阶
+        modal_kind=random.choice(['minor'])
+        # 大调半音阶
+        if modal_kind=='major':
+            Mm_t,asc_octave_l,des_octave_l,scale_name=chromatic_scale_t.major()
+        # 小调半音阶
+        if modal_kind=='minor':
+            Mm_t,octave_l,scale_name=chromatic_scale_t.minor()
+            # 音阶中的音
+            scale_note_l=[v1.note_all() for v1 in octave_l]
+            
+    def step2():
+        scale_all,scale_skip_all,scale_name_all='','',''
+        for o in range(100):
+            scale_row,scale_skip_row,scale_name_row='','',''
+            for i in range(1):
+                scale,scale_skip,scale_name=step1()
+                scale_row+=scale
+                scale_skip_row+=scale_skip
+                scale_name_row+=scale_name
+            # 行数
+            start_row=0
+            row_name=" \\break \set Score.currentBarNumber = #%s " %(o+2+start_row)
+            scale_all+=scale_row+row_name
+            scale_skip_all+=scale_skip_row+row_name
+            scale_name_all+=scale_name_row+row_name
+        # 拉起ly文件
+        main=scale_skip_all
+        lyric=scale_name_all
+        main_answer=scale_all
+        lyric_answer=scale_name_all
+        ly_t=create_ly.ly_set(accidental_ly,low_c,high_c,clef,main,lyric,main_answer,lyric_answer)
+        question='write_church_scale'
+        ly_t.write_Mm_scale(question)
+        return '运行完成'
+    step2()
+    return '运行完成'
