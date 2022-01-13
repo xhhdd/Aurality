@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import random
+from turtle import color
 import module
 import create_ly
 # 与音相关
@@ -703,16 +704,50 @@ def write_chromatic_scale():
     def step1():
         chromatic_scale_t=module.random_chromatic_scale(low_c,high_c,key_num_l,sharpe_flat_l)
         # 选择大调半音阶或小调半音阶
-        modal_kind=random.choice(['minor'])
+        modal_kind=random.choice(['major'])
+        # 调号是否使用
+        key_sign=random.choice(['使用调号','不使用调号'])
+        # 是否上下行
+        asc_des=random.choice(['上行','下行'])
         # 大调半音阶
         if modal_kind=='major':
             Mm_t,asc_octave_l,des_octave_l,scale_name=chromatic_scale_t.major()
+            # 关于调号
+            key_ly=Mm_t.key_t.key_sign_ly() if key_sign=='使用调号' else '\key c \major'
+            # 根据上下行选择不同的列表
+            octave_l=asc_octave_l if asc_des=='上行' else des_octave_l
+            # 音阶中的音
+            scale_note_l=[v1.note_all() for v1 in octave_l]
+            for v1 in [1,3,6,8,10]:
+                scale_note_l[v1]=' \colorNote #darkcyan '+scale_note_l[v1]
+            for v1 in range(len(scale_note_l)):
+                if v1 not in [1,3,6,8,10]:
+                    scale_note_l[v1]=' \colorNote #black '+scale_note_l[v1]
+            if asc_des=='下行':
+                scale_note_l.reverse()
+            scale_note=key_ly+' '+'1 '.join(scale_note_l)
+            # 音阶的名称
+            scale_name=scale_name+','+asc_des+','+key_sign+'1*13 '
         # 小调半音阶
         if modal_kind=='minor':
             Mm_t,octave_l,scale_name=chromatic_scale_t.minor()
+            # 关于调号
+            key_ly=Mm_t.key_t.key_sign_ly() if key_sign=='使用调号' else '\key c \major'
             # 音阶中的音
             scale_note_l=[v1.note_all() for v1 in octave_l]
-            
+            for v1 in [1,4,6,9,11]:
+                scale_note_l[v1]=' \colorNote #darkcyan '+scale_note_l[v1]
+            for v1 in range(len(scale_note_l)):
+                if v1 not in [1,4,6,9,11]:
+                    scale_note_l[v1]=' \colorNote #black '+scale_note_l[v1]
+            if asc_des=='下行':
+                scale_note_l.reverse()
+            scale_note=key_ly+' '+'1 '.join(scale_note_l)
+            # 音阶的名称
+            scale_name=scale_name+','+asc_des+','+key_sign+'1*13 '
+        # 跳过的空白
+        scale_skip=' \skip1*13 '
+        return scale_note,scale_skip,scale_name
     def step2():
         scale_all,scale_skip_all,scale_name_all='','',''
         for o in range(100):
@@ -734,8 +769,10 @@ def write_chromatic_scale():
         main_answer=scale_all
         lyric_answer=scale_name_all
         ly_t=create_ly.ly_set(accidental_ly,low_c,high_c,clef,main,lyric,main_answer,lyric_answer)
-        question='write_church_scale'
+        question='write_chromatic_scale'
         ly_t.write_Mm_scale(question)
         return '运行完成'
     step2()
     return '运行完成'
+
+write_chromatic_scale()
