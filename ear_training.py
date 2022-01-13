@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from ntpath import join
 import random
 import module
 import create_ly
@@ -11,42 +12,58 @@ sharpe_flat_l=[0,1,-1] # -2重降，-1降，0无，1升，2重升
 # 选择谱号
 clef='S' 
 # ly文件生成
-flatsharpe_kind='@1'# ['all','@1','@12','@2','@0']  0是所有记号都有，1是没有重升重降，2是含有重升重降，3是只有重升重降，4是没有升降记号
+accidental_ly='@1'# ['all','@1','@12','@2','@0']  0是所有记号都有，1是没有重升重降，2是含有重升重降，3是只有重升重降，4是没有升降记号
 
 
-def pitch_ear_1():
+def pitch_Mm():
     # 特殊参数
-    space=[1,8]
-    list_num=10
-
-    note_all=''
-    note_all_answer=''
-    for o in range(100):
-        note_list_row=[]
-        note_row=[]
-        for i in range(1):
-            note_list=module.note_list_space_c(low_c,high_c,sharpe_flat_l,space,list_num)
-            for v1 in note_list:
-                note_list_row.append(module.module_note(v1[0],v1[1]))
-            # 一行音
-            for v2 in note_list_row:
-                note_row.append(v2.note_all()+'1')
-        # 行数
-        start_row=0
-        row_name=" \\break \set Score.currentBarNumber = #%s " %(o+2+start_row)
-        note_all+=' \skip1 '+' '.join(note_row)+' \skip1 '
-        note_all_answer+=' '.join(note_row)+row_name
-    # 拉起ly文件
-    main=note_all
-    lyric=''
-    main_answer=note_all_answer
-    lyric_answer=''
-    t=create_ly.ly_set(flatsharpe_kind,low_c,high_c,clef,main,lyric)
-    question='pitch_ear_1'
-    t.pitch_ear(question,main_answer,lyric_answer)
+    key_num_l=[3]
+    sharpe_flat_l=['sharpe']
+    modal_l=[['major'],['nature']]
+    space_l=[[2,'M'],[3,'M']]
+    def step1():
+        list_num=10 # 控制一次有多少个单音
+        # 生成一个大调或小调的音组
+        note_list,Mm_t=module.random_Mm_note_list(low_c,high_c,key_num_l,sharpe_flat_l,modal_l)
+        key_list=Mm_t.key_t.key_list()[0]
+        note_list=module.random_select_note(note_list,space_l,list_num,key_list)
+        # 答案上体现的音符
+        note_l=[v1.note_all() for v1 in note_list]
+        note='1 '.join(note_l)
+        # 给到midi软件的音符
+        note_midi=' \skip1 '+note+' \skip1 '
+        # 调式名字
+        tonic,modal2,modal1=Mm_t.scale_name_zh()
+        key_name=tonic+modal2+modal1+'1*%d'%(list_num)
+        return note,note_midi,key_name
+    def step2():
+        note_all,note_midi_all,key_name_all='','',''
+        for o in range(100):
+            note_row,note_midi_row,key_name_row='','',''
+            for i in range(1):
+                note,note_midi,key_name=step1()
+                note_row+=note
+                note_midi_row+=note_midi
+                key_name_row+=key_name
+            # 行数
+            start_row=0
+            row_name=" \\break \set Score.currentBarNumber = #%s " %(o+2+start_row)
+            note_all+=note_row+row_name
+            note_midi_all+=note_midi_row+row_name
+            key_name_all+=key_name_row+row_name
+        # 拉起ly文件
+        main=note_midi_all
+        lyric=''
+        main_answer=note_all
+        lyric_answer=key_name_all
+        ly_t=create_ly.ly_set(accidental_ly,low_c,high_c,clef,main,lyric,main_answer,lyric_answer)
+        question='pitch_Mm'
+        ly_t.write_note_name(question)
+        return 
+    step2()
     return '运行完成'
 
-def pitch_group_ear_1():
+def pitch_group_Mm():
     # 特殊参数
     space=[2,5]
     list_num=4
@@ -151,4 +168,4 @@ def interval_group_ear():
     t3.interval_ear(question,main_answer,lyric_answer)
     return '运行完成'
 
-interval_group_ear()
+

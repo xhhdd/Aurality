@@ -568,7 +568,7 @@ def scale_step(tonic,note): # tonic|str主音 note|str将要比较的那个音
     return scale_step
 
 # 根据音程的根音与音程的名称，生成音程的冠音
-def interval_to_note(note_t1,interval_l): # interval_l包含了音程的数字以及音程的数字
+def interval_to_note(note_t1,interval_l): # interval_l包含了音程的名称以及音程的数字
     interval_num,interval_name=interval_l
     interval_num-=1
     note_num=note_t1.note_num_mode()[0]
@@ -626,7 +626,7 @@ def judge_Mm_chord(Mm_t,root_note): # root_note|str这里传入根音的基本�
     triad_chord_name,seventh_chord_name=step2()
     return triad_chord_name,seventh_chord_name
 
-# 根据传入的音组[随机]截取其中的一个八度
+# 根据传入的音组找到所有能用的八度
 def cut_octave(note_list,tonic): # tonic|实例 主音的实例
     # 抽取这个列表里面的所有主音
     tonic_list=[v1 for v1 in note_list if v1.note()+v1.accidental()==tonic.note()+tonic.accidental()]
@@ -650,6 +650,13 @@ def list_insert_list(note_list,insert_list):
             if v2.count_num()-v1.count_num()==1:
                 note_list.insert(note_list.index(v2),v1)
     return note_list
+
+# 音程转音数
+def interval_to_num(interval_l): # 这个音数算的是两个音的音数之差，没有做别的处理。
+    note_t1=module_note(1,0)
+    note_t2=interval_to_note(note_t1,interval_l)[0]
+    count_num=abs(note_t2.count_num()-note_t1.count_num())
+    return count_num
 
 
 # 随机生成一个音符实例
@@ -985,3 +992,30 @@ class random_chromatic_scale:
         octave_l=random.choice(cut_octave(note_list,tonic))
         return Mm_t,octave_l,scale_name
 
+# 根据传入的音组，随机选出几个|每两个音之间需要在一定的间隔之内
+def random_select_note(note_list,space_l,list_num,key_list):
+    def step1():
+        # 算出间隔的音数
+        space_min,space_max=interval_to_num(space_l[0]),interval_to_num(space_l[1])
+        # 选出一个种子音
+        max_num=len(note_list)-1
+        note_seed=note_list[random.randint(0,max_num)]
+        # 挑出音的列表
+        result_list=[note_seed]
+        while len(result_list)!=list_num:
+            note_new=note_list[random.randint(0,max_num-1)]
+            count_num1,count_num2=note_new.count_num(),result_list[-1].count_num()
+            while abs(count_num1-count_num2)>space_max or abs(count_num1-count_num2)<space_min:
+                note_new=note_list[random.randint(0,max_num-1)]
+                count_num1,count_num2=note_new.count_num(),result_list[-1].count_num()
+            result_list.append(note_new)
+        return result_list
+    def step2(): # 控制最少出现一个调号音
+        result_list=step1()
+        key_note=[v1 for v1 in result_list if v1.note() in key_list]
+        while len(key_note)<2:
+            result_list=step1()
+            key_note=[v1 for v1 in result_list if v1.note() in key_list]
+        return result_list
+    result_list=step2()
+    return result_list
