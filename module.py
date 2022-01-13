@@ -922,7 +922,9 @@ class random_chromatic_note_list:
 def random_Mm_scale(low_c,high_c,key_num_l,sharpe_flat_l,modal_l):
     def step1(): # 生成一个八度音的列表
         note_list,Mm_t=random_Mm_note_list(low_c,high_c,key_num_l,sharpe_flat_l,modal_l)
-        octave_l=cut_octave(note_list,Mm_t.tonic()[0])
+        # 生成一个主音的实例
+        tonic=add_key_to_note_l([module_note(Mm_t.tonic()[1],0)],Mm_t.key_t.key_list())[0]
+        octave_l=random.choice(cut_octave(note_list,tonic))
         return Mm_t,octave_l
     def step2(): # 随机上行或下行
         Mm_t,octave_l=step1()
@@ -936,7 +938,9 @@ def random_Mm_scale(low_c,high_c,key_num_l,sharpe_flat_l,modal_l):
 # 随机生成一组中古调式的音阶
 def random_church_scale(low_c,high_c,key_num_l,sharpe_flat_l,modal_num_l):
     note_list,church_t=random_church_note_list(low_c,high_c,key_num_l,sharpe_flat_l,modal_num_l)
-    octave_l=cut_octave(note_list,church_t.tonic())
+    # 生成一个主音的实例
+    tonic=add_key_to_note_l([module_note(church_t.key_t.tonic()[1],0)],church_t.key_t.key_list())[0]
+    octave_l=random.choice(cut_octave(note_list,tonic))
     # 随机上下行
     asc_des=random.choice(['asc','des'])
     if asc_des=='des':
@@ -947,18 +951,19 @@ def random_church_scale(low_c,high_c,key_num_l,sharpe_flat_l,modal_num_l):
 class random_chinese_scale():
     def __init__(self,low_c,high_c,key_num_l,sharpe_flat_l,modal_num_l,modal_hexa_l,modal_hepta_l):
         self.random_chinese_t=random_chinese_note_list(low_c,high_c,key_num_l,sharpe_flat_l,modal_num_l,modal_hexa_l,modal_hepta_l)
-        self.tonic=self.random_chinese_t.chinese_t.tonic()
+        # 生成一个主音的实例
+        self.tonic=add_key_to_note_l([module_note(self.random_chinese_t.chinese_t.key_tonic,0)],self.random_chinese_t.chinese_t.key_t.key_list())[0]
     def penta(self):
         note_list,scale_name=self.random_chinese_t.penta()
-        penta_octave_l=cut_octave(note_list,self.tonic)
+        penta_octave_l=random.choice(cut_octave(note_list,self.tonic))
         return penta_octave_l,scale_name
     def hexa(self):
         note_list,add_note,scale_name=self.random_chinese_t.hexa()
-        hexa_octave_l=cut_octave(note_list,self.tonic)
+        hexa_octave_l=random.choice(cut_octave(note_list,self.tonic))
         return hexa_octave_l,add_note,scale_name
     def hepta(self):
         note_list,note_47th,scale_name=self.random_chinese_t.hepta()
-        hepta_octave_l=cut_octave(note_list,self.tonic)
+        hepta_octave_l=random.choice(cut_octave(note_list,self.tonic))
         return hepta_octave_l,note_47th,scale_name
 
 # 随机生成一组半音阶
@@ -980,14 +985,3 @@ class random_chromatic_scale:
         octave_l=random.choice(cut_octave(note_list,tonic))
         return Mm_t,octave_l,scale_name
 
-# 与音相关
-# 列表前一个是音名，后一个是组别
-low_c=['a',0]
-high_c=['c',3] 
-# 这是能选择的升降记号
-accidental_l=[0,1,-1,2,-2] # -2重降，-1降，0无，1升，2重升
-key_num_l=[1]
-sharpe_flat_l=['flat']
-modal_num_l=[1]
-modal_hexa_l=[0]
-modal_hepta_l=[1]

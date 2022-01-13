@@ -563,7 +563,7 @@ def write_Mm_scale():
         return '运行完成'
     step2()
     return '运行完成'
-    
+
 def write_church_scale():
     # 专有参数
     key_num_l=[0,1,2,3,4,5,6,7]
@@ -620,7 +620,7 @@ def write_chinese_scale():
     def step1():
         chinese_scale_t=module.random_chinese_scale(low_c,high_c,key_num_l,sharpe_flat_l,modal_num_l,modal_hexa_l,modal_hepta_l)
         # 调号是否使用
-        key_sign=random.choice(['使用调号'])
+        key_sign=random.choice(['使用调号','不使用调号'])
         key_ly=chinese_scale_t.random_chinese_t.chinese_t.key_t.key_sign_ly() if key_sign=='使用调号' else '\key c \major'
         # 是否上下行
         asc_des=random.choice(['上行','下行'])
@@ -704,7 +704,7 @@ def write_chromatic_scale():
     def step1():
         chromatic_scale_t=module.random_chromatic_scale(low_c,high_c,key_num_l,sharpe_flat_l)
         # 选择大调半音阶或小调半音阶
-        modal_kind=random.choice(['major'])
+        modal_kind=random.choice(['major','minor'])
         # 调号是否使用
         key_sign=random.choice(['使用调号','不使用调号'])
         # 是否上下行
@@ -774,5 +774,4 @@ def write_chromatic_scale():
         return '运行完成'
     step2()
     return '运行完成'
-
 write_chromatic_scale()
