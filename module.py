@@ -690,7 +690,7 @@ def random_create_semi_tone(low_c,high_c,accidental_l,space_l):
     return semi_tone_t
 
 # 随机生成一个音程的实例
-def random_create_interval(low_c,high_c,accidental_l,interval_num_l,property_l):
+def random_interval_t(low_c,high_c,accidental_l,interval_num_l,property_l):
     def step1():
         note_t1=random_create_note(low_c,high_c,accidental_l)
         # 生成一个上方的音
@@ -728,7 +728,7 @@ def random_interval_resolution(low_c,high_c,key_num_l,sharpe_flat_l,modal_l):
     return [note_t1,note_t2],interval_resolution_l,interval_resolution.Mm_t
 
 # 随机生成一个和弦实例
-def random_create_chord(low_c,high_c,accidental_l,chord_name_l,invert_l): # 后面几个参数都是生成和弦需要的
+def random_chord_t(low_c,high_c,accidental_l,chord_name_l,invert_l): # 后面几个参数都是生成和弦需要的
     def create_chord_t():
         # 更新最低音
         invert_num=random.choice(invert_l)

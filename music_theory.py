@@ -251,7 +251,7 @@ def write_interval_name():
     property_l=['d_d','d','m','M','A','d_A','p'] # ['d_d','d','m','M','A','d_A','p','fail']
     def step1():
         # 生成实例
-        interval_t=module.random_create_interval(low_c,high_c,accidental_l,interval_num_l,property_l)
+        interval_t=module.random_interval_t(low_c,high_c,accidental_l,interval_num_l,property_l)
         # 音程的答案
         interval_name=interval_t.interval_name()[0]+'1*2 '
         # 音程的两个音
@@ -290,7 +290,7 @@ def write_interval_note():
     property_l=['d_d','d','m','M','A','d_A','p'] # ['d_d','d','m','M','A','d_A','p','fail']
     def step1():
         # 生成实例
-        interval_t=module.random_create_interval(low_c,high_c,accidental_l,interval_num_l,property_l)
+        interval_t=module.random_interval_t(low_c,high_c,accidental_l,interval_num_l,property_l)
         note_t1,note_t2=interval_t.note_t1,interval_t.note_t2
         # 随机两音的高低
         asc_des=random.choice(['asc','des'])
@@ -377,7 +377,7 @@ def write_chord_name():
     chord_name_l=['major','MM7']  #'major','minor','aug','dim'|'MM7','Mm7','mm7','dm7','dd7'
     invert_l=[0,1,2] # 最多输入3 三和弦在第三转位整体升高一个八度
     def step1():
-        chord_t=module.random_create_chord(low_c,high_c,accidental_l,chord_name_l,invert_l)
+        chord_t=module.random_chord_t(low_c,high_c,accidental_l,chord_name_l,invert_l)
         chord_l=chord_t.chord()[1]
         # 和弦的音
         chord_note_l=[v1.note_all() for v1 in chord_l]
@@ -415,7 +415,7 @@ def write_chord_note():
     chord_name_l=['MM7','Mm7','mm7','dm7','dd7']  #'major','minor','aug','dim'|'MM7','Mm7','mm7','dm7','dd7'
     invert_l=[0,1,2,3] # 最多输入3 三和弦在第三转位整体升高一个八度
     def step1():
-        chord_t=module.random_create_chord(low_c,high_c,accidental_l,chord_name_l,invert_l)
+        chord_t=module.random_chord_t(low_c,high_c,accidental_l,chord_name_l,invert_l)
         chord_l=chord_t.chord()[1]
         # 和弦的名称
         chord_name=chord_t.chord_name_zh()[0]+chord_t.chord_name_zh()[1]+'1 '

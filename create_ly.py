@@ -187,7 +187,7 @@ class ly_set:
         create_ly(ly_layout_1,chord,self.clef,self.main,self.lyric,file)
         create_ly(ly_layout_2,chord,self.clef,self.main_answer,self.lyric_answer,file+'-answer')
         return 'ly文件生成完毕'
-    def pitch_group_ear(self,time_sign,question,main_answer,lyric_answer):
+    def pitch_group_ear(self,time_sign,question):
         chord=''
         bar_num_c=1
         time_sign_c=0
@@ -202,10 +202,10 @@ class ly_set:
         ly_layout_2=[bar_num_c,time_sign_c,0,tempo_c,tempo,time,key_sign_c,clef_sign_c,main_before]
         # 文件名
         file=file_name()
-        file=file.base_range(question,self.clef_file,self.flatsharpe_kind,self.low_c,self.high_c)
+        file=file.base_range(question,self.clef_file,self.accidental_ly,self.low_c,self.high_c)
         # 拉起ly文件
         create_ly(ly_layout_1,chord,self.clef,self.main,self.lyric,file)
-        create_ly(ly_layout_2,chord,self.clef,main_answer,lyric_answer,file+'-answer')
+        create_ly(ly_layout_2,chord,self.clef,self.main_answer,self.lyric_answer,file+'-answer')
         return 'ly文件生成完毕'
     def write_interval_name(self,question):
         chord=''
