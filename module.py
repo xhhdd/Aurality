@@ -689,7 +689,7 @@ def random_create_semi_tone(low_c,high_c,accidental_l,space_l):
     semi_tone_t=step2()
     return semi_tone_t
 
-# 随机生成一组音程
+# 随机生成一个音程的实例
 def random_create_interval(low_c,high_c,accidental_l,interval_num_l,property_l):
     def step1():
         note_t1=random_create_note(low_c,high_c,accidental_l)
