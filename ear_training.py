@@ -64,10 +64,9 @@ def pitch_Mm():
     return '运行完成'
 
 
-
 def interval_property_ear():
     # 特殊参数
-    interval_num_l=[2]
+    interval_num_l=[6]
     property_l=['M','m']
     def step1():
         interval_t=module.random_interval_t(low_c,high_c,accidental_l,interval_num_l,property_l)
@@ -148,36 +147,49 @@ def pitch_group_Mm():
         return '运行完成'
     step2()
     return '运行完成'
-pitch_group_Mm()
+
 def interval_group_ear():
-    # 特殊参数
+    # 专有参数
     interval_num_l=[2,3,4,5,6,7,8]
-    property_l=['纯','大','小']
-    
-    interval_answer_all=''
-    interval_all=''
-    lyric_row=''
-    for o in range(100):
-        interval_row=''
-        for i in range(5):
-            # 生成实例
-            t1=module.random_create_interval(low_c,high_c,sharpe_flat_l,interval_num_l,property_l)
-            interval_row+=' <'+t1.t1.note_all()+' '+t1.t2.note_all()+'>1 '
-            lyric_row+=t1.interval_name()[0]+'1 '
-        # 行数
-        start_row=0
-        row_name=" \\break \set Score.currentBarNumber = #%s " %(o+2+start_row)
-        interval_all+=' \skip1 '+interval_row+'\skip1 \skip1'+interval_row+' \skip1 '
-        interval_answer_all+=interval_row+row_name
-    # 拉起ly文件
-    main=interval_all
-    lyric=''
-    main_answer=interval_answer_all
-    lyric_answer=lyric_row
-    t3=create_ly.ly_set(flatsharpe_kind,low_c,high_c,clef,main,lyric)
-    question="interval_group_ear"
-    t3.interval_ear(question,main_answer,lyric_answer)
+    property_l=['M','m','p']
+    space_l=[[2,'M'],[5,'p']]
+    list_num=5
+    # 设定拍号
+    time_sign=str(list_num)+"/"+"1"
+    # 设定ly文件中跳过的字符串
+    skip=' \\time %d/4 '%list_num+" \skip 4*%d "%list_num+' \\time '+time_sign
+    def step1():
+        interval_l=module.random_interval_list(low_c,high_c,accidental_l,interval_num_l,property_l,space_l,list_num)
+        # 音程的两个音
+        interval=[' < '+v1.note_t1.note_all()+' '+v1.note_t2.note_all()+' >1 ' for v1 in interval_l]
+        interval=' '.join(interval)
+        return  interval
+    def step2():
+        interval_all,interval_midi_all='',''
+        for o in range(100):
+            interval_row,interval_midi_row='',''
+            for i in range(1):
+                interval=step1()
+                interval_row+=interval
+                interval_midi_row+=interval+skip+interval
+            # 行数
+            start_row=0
+            row_name=" \\break \set Score.currentBarNumber = #%s " %(o+2+start_row)
+            interval_all+=interval_row+row_name
+            interval_midi_all+=skip+interval_midi_row+skip
+        # 拉起ly文件
+        main=interval_midi_all
+        lyric=''
+        main_answer=interval_all
+        lyric_answer=''
+        ly_t=create_ly.ly_set(accidental_ly,low_c,high_c,clef,main,lyric,main_answer,lyric_answer)
+        question='interval_group_ear'
+        ly_t.pitch_group_ear(time_sign,question)
+        return '运行完成'
+    step2()
     return '运行完成'
+
+
 
 # 和弦性质听辨
 def chord_property_ear():
@@ -219,3 +231,4 @@ def chord_property_ear():
         return '运行完成'
     step2()
     return '运行完成'
+

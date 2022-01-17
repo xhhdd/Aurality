@@ -717,6 +717,26 @@ def random_interval_t(low_c,high_c,accidental_l,interval_num_l,property_l):
     interval_t=step4()
     return interval_t
 
+# 随机生成一组音程
+def random_interval_list(low_c,high_c,accidental_l,interval_num_l,property_l,space_l,list_num):
+    def step1(): # 控制两个音程之间根音的间隔
+        # 算出间隔的音数
+        space_min,space_max=interval_to_num(space_l[0]),interval_to_num(space_l[1])
+        # 选出一个种子音程
+        interval_seed=random_interval_t(low_c,high_c,accidental_l,interval_num_l,property_l)
+        result_list=[interval_seed]
+        # 挑出剩余的音程
+        while len(result_list)!=list_num:
+            interval_new=random_interval_t(low_c,high_c,accidental_l,interval_num_l,property_l)
+            count_num1,count_num2=interval_new.note_t1.count_num(),result_list[-1].note_t1.count_num()
+            while abs(count_num1-count_num2)>space_max or abs(count_num1-count_num2)<space_min:
+                interval_new=random_interval_t(low_c,high_c,accidental_l,interval_num_l,property_l)
+                count_num1,count_num2=interval_new.note_t1.count_num(),result_list[-1].note_t1.count_num()
+            result_list.append(interval_new)
+        return result_list
+    result_list=step1()
+    return result_list
+
 # 随机生成一组音程的解决
 def random_interval_resolution(low_c,high_c,key_num_l,sharpe_flat_l,modal_l):
     # 生成带调号的一串音
@@ -1019,3 +1039,5 @@ def random_select_note(note_list,space_l,list_num,key_list):
         return result_list
     result_list=step2()
     return result_list
+
+
