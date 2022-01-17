@@ -63,44 +63,7 @@ def pitch_Mm():
     step2()
     return '运行完成'
 
-def pitch_group_Mm():
-    # 专有参数
-    key_num_l=[3]
-    sharpe_flat_l=['sharpe']
-    modal_l=[['major'],['nature']]
-    space_l=[[2,'M'],[3,'M']]
-    list_num=4
-    # 设定拍号
-    time_sign=str(list_num)+"/"+"16"
-    # 设定ly文件中跳过的字符串
-    skip=" \skip 16*"+str(list_num)+' '
-    def step1():
-        # 生成一个大调或小调的音组
-        note_list,Mm_t=module.random_Mm_note_list(low_c,high_c,key_num_l,sharpe_flat_l,modal_l)
-        key_list=Mm_t.key_t.key_list()[0]
-        note_list=module.random_select_note(note_list,space_l,list_num,key_list)
-        # 答案上的音符
-        note_l=[v1.note_all() for v1 in note_list]
-        note='1 '.join(note_l)
-        return note
-    def step2():
-        for o in range(100):
 
-            for i in range(5):
-
-        # 行数
-        start_row=0
-        row_name=" \\break \set Score.currentBarNumber = #%s " %(o+2+start_row)
-
-        # 拉起ly文件
-        main=
-        lyric=''
-        main_answer=
-        lyric_answer=''
-        ly_t=create_ly.ly_set(accidental_ly,low_c,high_c,clef,main,lyric,main_answer,lyric_answer)
-        question='pitch_group_Mm'
-        ly_t.pitch_group_ear(question)
-        return '运行完成'
 
 def interval_property_ear():
     # 特殊参数
@@ -141,7 +104,51 @@ def interval_property_ear():
     step2()
     return '运行完成'
 
-
+def pitch_group_Mm():
+    # 专有参数
+    key_num_l=[3]
+    sharpe_flat_l=['sharpe']
+    modal_l=[['major'],['nature']]
+    space_l=[[2,'M'],[3,'M']]
+    list_num=4
+    # 设定拍号
+    time_sign=str(list_num)+"/"+"16"
+    # 设定ly文件中跳过的字符串
+    skip=" \skip 16*%d "%list_num
+    def step1():
+        # 生成一个大调或小调的音组
+        note_list,Mm_t=module.random_Mm_note_list(low_c,high_c,key_num_l,sharpe_flat_l,modal_l)
+        key_list=Mm_t.key_t.key_list()[0]
+        note_list=module.random_select_note(note_list,space_l,list_num,key_list)
+        # 答案上的音符
+        note_l=[v1.note_all() for v1 in note_list]
+        note_l[0],note_l[1],note_l[-1]=note_l[0]+'16 '," [ "+note_l[1],note_l[-1]+" ] "
+        note=' '.join(note_l)+' '
+        return note
+    def step2():
+        note_all,note_midi_all='',''
+        for o in range(100):
+            note_row,note_midi_row='',''
+            for i in range(4):
+                note_row+=step1()
+                note_midi_row+=step1()+skip
+            # 行数
+            start_row=0
+            row_name=" \\break \set Score.currentBarNumber = #%s " %(o+2+start_row)
+            note_all+=note_row+row_name
+            note_midi_all+=skip+note_midi_row+row_name
+        # 拉起ly文件
+        main=note_midi_all
+        lyric=''
+        main_answer=note_all
+        lyric_answer=''
+        ly_t=create_ly.ly_set(accidental_ly,low_c,high_c,clef,main,lyric,main_answer,lyric_answer)
+        question='pitch_group_Mm'
+        ly_t.pitch_group_ear(time_sign,question)
+        return '运行完成'
+    step2()
+    return '运行完成'
+pitch_group_Mm()
 def interval_group_ear():
     # 特殊参数
     interval_num_l=[2,3,4,5,6,7,8]
@@ -175,7 +182,7 @@ def interval_group_ear():
 # 和弦性质听辨
 def chord_property_ear():
     # 专有参数
-    chord_name_l=['major','minor']
+    chord_name_l=['dim','minor']
     invert_l=[0]
     def step1():
         chord_t=module.random_chord_t(low_c,high_c,accidental_l,chord_name_l,invert_l)
