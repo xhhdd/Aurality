@@ -6,7 +6,7 @@ import create_ly
 # 与音相关
 # 列表前一个是音名，后一个是组别
 low_c=['a',0]
-high_c=['a',2] 
+high_c=['c',3] 
 # 这是能选择的升降记号
 accidental_l=[0,1,-1,2,-2] # -2重降，-1降，0无，1升，2重升
 # 选择谱号
@@ -336,10 +336,10 @@ def write_interval_note():
 def interval_resolution():
     # 专属参数
     key_num_l=[0,1,2,3,4,5,6,7]
-    sharpe_flat_l=['sharpe','flat']
+    sharp_flat_l=['sharp','flat']
     modal_l=['major','minor'],['nature','harmony']
     def step1():
-        [note_t1,note_t2],interval_resolution_l,Mm_t=module.random_interval_resolution(low_c,high_c,key_num_l,sharpe_flat_l,modal_l)
+        [note_t1,note_t2],interval_resolution_l,Mm_t=module.random_interval_resolution(low_c,high_c,key_num_l,sharp_flat_l,modal_l)
         interval=' < '+note_t1.note_all()+' '+note_t2.note_all()+' >1 '
         interval_resolution=' < '+interval_resolution_l[0].note_all()+' '+interval_resolution_l[1].note_all()+' >1 '
         key_name='"'+Mm_t.scale_name_zh()[0]+Mm_t.scale_name_zh()[1]+Mm_t.scale_name_zh()[2]+'"'+'1*2 '
@@ -374,8 +374,8 @@ def interval_resolution():
 
 def write_chord_name():
     # 专有参数
-    chord_name_l=['major','MM7']  #'major','minor','aug','dim'|'MM7','Mm7','mm7','dm7','dd7'
-    invert_l=[0,1,2] # 最多输入3 三和弦在第三转位整体升高一个八度
+    chord_name_l=['MM7','Mm7','mm7','dm7','dd7']  #'major','minor','aug','dim'|'MM7','Mm7','mm7','dm7','dd7'
+    invert_l=[0,1,2,3] # 最多输入3 三和弦在第三转位整体升高一个八度
     def step1():
         chord_t=module.random_chord_t(low_c,high_c,accidental_l,chord_name_l,invert_l)
         chord_l=chord_t.chord()[1]
@@ -389,7 +389,7 @@ def write_chord_name():
         chord_all,chord_name_all='',''
         for o in range(100):
             chord_row,chord_name_row='',''
-            for i in range(5):
+            for i in range(6):
                 chord_note,chord_name=step1()
                 chord_row+=chord_note
                 chord_name_row+=chord_name
@@ -412,7 +412,7 @@ def write_chord_name():
 
 def write_chord_note():
     # 专有参数
-    chord_name_l=['MM7','Mm7','mm7','dm7','dd7']  #'major','minor','aug','dim'|'MM7','Mm7','mm7','dm7','dd7'
+    chord_name_l=['MM7','Mm7','mm7','dm7','dd7']  # 'major','minor','aug','dim'|'MM7','Mm7','mm7','dm7','dd7'
     invert_l=[0,1,2,3] # 最多输入3 三和弦在第三转位整体升高一个八度
     def step1():
         chord_t=module.random_chord_t(low_c,high_c,accidental_l,chord_name_l,invert_l)
@@ -455,7 +455,7 @@ def write_chord_note():
 def chord_resolution():
     # 专属参数
     key_num_l=[0]
-    sharpe_flat_l=['sharpe','flat']
+    sharp_flat_l=['sharp','flat']
     modal_l=['major','minor'],['nature','harmony']
     chord_name_l=['Mm7','dd7']# 'major','minor','aug','dim'|'MM7','Mm7','mm7','dm7','dd7'
     invert_l=[3]
@@ -472,7 +472,7 @@ def chord_resolution():
         chord_resolution=chord_resolution_0+chord_resolution_1
         return chord_resolution
     def step1():
-        Mm_t,chord_t,chord_l,chord_resolution_l=module.random_chord_resolution(low_c,high_c,key_num_l,sharpe_flat_l,modal_l,chord_name_l,invert_l)
+        Mm_t,chord_t,chord_l,chord_resolution_l=module.random_chord_resolution(low_c,high_c,key_num_l,sharp_flat_l,modal_l,chord_name_l,invert_l)
         # 和弦的音
         chord_0=''
         for v1 in chord_l:
@@ -517,11 +517,11 @@ def chord_resolution():
 
 def write_Mm_scale():
     # 专有参数
-    key_num_l=[0,1,2,3,4,5,6,7]
-    sharpe_flat_l=['sharpe','flat']
-    modal_l=[['major','minor'],['nature','harmony','melody']]
+    key_num_l=[1,2,3,4,5,6,7]
+    sharp_flat_l=['sharp','flat']
+    modal_l=[[['major'],['nature']],[['minor'],['nature','harmony','melody']]]
     def step1():
-        Mm_t,octave_l,asc_des=module.random_Mm_scale(low_c,high_c,key_num_l,sharpe_flat_l,modal_l)
+        Mm_t,octave_l,asc_des=module.random_Mm_scale(low_c,high_c,key_num_l,sharp_flat_l,modal_l)
         # 调号是否使用
         key_sign=random.choice(['使用调号','不使用调号'])
         key_ly=Mm_t.key_t.key_sign_ly() if key_sign=='使用调号' else '\key c \major'
@@ -567,10 +567,10 @@ def write_Mm_scale():
 def write_church_scale():
     # 专有参数
     key_num_l=[0,1,2,3,4,5,6,7]
-    sharpe_flat_l=['sharpe','flat']
+    sharp_flat_l=['sharp','flat']
     modal_num_l=[1,2,3,4,5,6,7]
     def step1():
-        church_t,octave_l,asc_des=module.random_church_scale(low_c,high_c,key_num_l,sharpe_flat_l,modal_num_l)
+        church_t,octave_l,asc_des=module.random_church_scale(low_c,high_c,key_num_l,sharp_flat_l,modal_num_l)
         # 调号是否使用
         key_sign=random.choice(['使用调号','不使用调号'])
         key_ly=church_t.key_t.key_sign_ly() if key_sign=='使用调号' else '\key c \major'
@@ -613,12 +613,12 @@ def write_church_scale():
 def write_chinese_scale():
     # 专有参数
     key_num_l=[0,1,2,3,4,5,6,7]
-    sharpe_flat_l=['sharpe','flat']
+    sharp_flat_l=['sharp','flat']
     modal_num_l=[1,2,3,4,5]
     modal_hexa_l=[0,1]
     modal_hepta_l=[0,1,2] 
     def step1():
-        chinese_scale_t=module.random_chinese_scale(low_c,high_c,key_num_l,sharpe_flat_l,modal_num_l,modal_hexa_l,modal_hepta_l)
+        chinese_scale_t=module.random_chinese_scale(low_c,high_c,key_num_l,sharp_flat_l,modal_num_l,modal_hexa_l,modal_hepta_l)
         # 调号是否使用
         key_sign=random.choice(['使用调号','不使用调号'])
         key_ly=chinese_scale_t.random_chinese_t.chinese_t.key_t.key_sign_ly() if key_sign=='使用调号' else '\key c \major'
@@ -699,10 +699,10 @@ def write_chinese_scale():
 def write_chromatic_scale():
     # 专有参数
     key_num_l=[0,1,2,3,4,5,6,7]
-    sharpe_flat_l=['sharpe','flat']
+    sharp_flat_l=['sharp','flat']
 
     def step1():
-        chromatic_scale_t=module.random_chromatic_scale(low_c,high_c,key_num_l,sharpe_flat_l)
+        chromatic_scale_t=module.random_chromatic_scale(low_c,high_c,key_num_l,sharp_flat_l)
         # 选择大调半音阶或小调半音阶
         modal_kind=random.choice(['major','minor'])
         # 调号是否使用
@@ -775,4 +775,3 @@ def write_chromatic_scale():
     step2()
     return '运行完成'
 
-write_interval_name()

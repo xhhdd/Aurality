@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
 import random
-
+import pysnooper
 # 音符的类
 class module_note:
     def __init__(self,note_num,accidental_num):
         self.note_num=note_num
         self.accidental_num=accidental_num
-    # 根据数字分离出音与vavb
-    def converter(self): #此函数作为工具，生成实例后不调用  
-        # 计算出vavb的数值
+    #此函数作为工具，生成实例后不调用 
+    def converter(self):  
+        # 计算出音符在哪一组
         if self.note_num<=7 and self.note_num>=1:
             octave_num=0
         elif self.note_num > 7:
@@ -35,7 +35,7 @@ class module_note:
     def note_all(self):
         note_all=self.note()+self.accidental()+self.octave()
         return note_all
-    # 各种音符的数值
+    # 各音符的数值模式
     def note_num_mode(self):
         note_num=self.note_num
         note_base_num=(self.converter())[0]
@@ -46,7 +46,7 @@ class module_note:
     def note_name(self):
         # 对升降记号进行一定的处理
         zh=["","升","重升","重降","降"]
-        en=["","sharpe","double sharpe","double flat","flat"]
+        en=["","sharp","double sharp","double flat","flat"]
         sign=["","#","x","bb","b"]
         accidental_name=[zh[self.accidental_num],en[self.accidental_num],sign[self.accidental_num]]
         # 对组别的名称进行一定的处理
@@ -104,10 +104,9 @@ class module_interval:
         if interval_step2_num==5 and inter_list in self.dim:
             property_num=1
         return interval_step2_num,property_num
-    def step3(self):
+    def step3(self): # 标记错误的音程性质
         interval_step3_num,property_step3_num=self.step2()
         property_step3_num+=self.note_t2.note_num_mode()[2]-self.note_t1.note_num_mode()[2]
-        # 防止错误的性质出现
         if interval_step3_num in [3,6,7]:
             errors='fail' if property_step3_num<0 or property_step3_num>5 else ''
         elif interval_step3_num in [4,5,8]:
@@ -119,6 +118,7 @@ class module_interval:
         else:
             errors=''
         return property_step3_num,errors
+    # 得出音程的名称|M,A的格式
     def property_name(self):
         # 确定性质列表
         interval_step_2_num=self.step2()[0]
@@ -127,6 +127,7 @@ class module_interval:
         property_step3_num,errors=self.step3()
         property_name='fail' if errors=='fail' else property_l[property_step3_num]
         return property_name
+    # 音程名称本地化
     def interval_name(self):
         # 性质名称本地化
         l_1=['d_d','d','m','M','A','d_A','p','fail']
@@ -141,11 +142,12 @@ class module_interval:
             interval_name=property_name+interval_num_name+'度'
             interval_name_co=interval_name
         return interval_name,interval_name_co
+    # 以后再写吧
     def interval_name_en(self):
         l_1=['d_d','d','m','M','A','d_A','p','fail']
         l_2=['double_diminished','diminished','minor','major','augmented','double_augmented','perfect','fail']
         property_name=l_2[l_1.index(self.property_name())]
-        return # 考虑以后写
+        return 
 
 # 和弦的类
 class module_chord:
@@ -155,8 +157,10 @@ class module_chord:
         self.invert_num=invert_num
         self.triad_chord=['major','minor','aug','dim']
         self.seventh_chord=['MM7','Mm7','mm7','dm7','dd7']
+    # 根据根音以及和弦结构生成其他的和弦音
     def create_chord_note(self):
         # 各种和弦的结构，以后可以扩展
+        # 三和弦
         if self.chord_name=='major':
             interval_3,interval_5=[3,'M'],[3,'m']
         if self.chord_name=='minor':
@@ -186,6 +190,7 @@ class module_chord:
             note_7,errors_7=interval_to_note(note_5,interval_7)
         errors=[errors_3,errors_5,errors_7]
         return self.root_note,note_3,note_5,note_7,errors
+    # 生成包含和弦音的列表
     def chord(self):
         invert=lambda x:module_note(x.note_num_mode()[0]+7,x.note_num_mode()[2])
         root_note,note_3,note_5,note_7,errors=self.create_chord_note()
@@ -207,6 +212,7 @@ class module_chord:
         remove(chord_normal_l)
         remove(chord_invert_l)
         return chord_normal_l,chord_invert_l,errors
+    # 和弦名称本地化
     def chord_name_zh(self):
         # 和弦种类本地化
         triad_chord_name=['大','小','增','减']
@@ -226,44 +232,45 @@ class module_chord:
 
 # 调式的类
 class module_key:
-    def __init__(self,key_num,sharpe_flat):
+    def __init__(self,key_num,sharp_flat):
         self.key_num=key_num
-        self.sharpe_flat=sharpe_flat
+        self.sharp_flat=sharp_flat
         # 调式主音列表
-        self.sharpe_tonic_l=['c','g','d','a','e','b','f','c']
+        self.sharp_tonic_l=['c','g','d','a','e','b','f','c']
         self.flat_tonic_l=['c','f','b','e','a','d','g','c']
         # 调号列表
-        self.key_sharpe_l=['','f','c','g','d','a','e','b','']
+        self.key_sharp_l=['','f','c','g','d','a','e','b','']
         self.key_flat_l=['','b','e','a','d','g','c','f','']
         # 基本音级列表
         self.scale_base=['']+['c','d','e','f','g','a','b']*10
-    # 计算出调式主音(仅得出音级)
+    # 计算出调式主音
     def tonic(self):
-        tonic=self.sharpe_tonic_l[self.key_num] if self.sharpe_flat=='sharpe' else self.flat_tonic_l[self.key_num]
+        tonic=self.sharp_tonic_l[self.key_num] if self.sharp_flat=='sharp' else self.flat_tonic_l[self.key_num]
         tonic_num=self.scale_base.index(tonic)
         return tonic,tonic_num
     # 获取调号的信息
     def key_list(self):
         # 调号列表
-        key_list=self.key_sharpe_l[:self.key_num+1] if self.sharpe_flat=='sharpe' else self.key_flat_l[:self.key_num+1]
+        key_list=self.key_sharp_l[:self.key_num+1] if self.sharp_flat=='sharp' else self.key_flat_l[:self.key_num+1]
         # 升降记号的建议
-        add_dim=1 if self.sharpe_flat=='sharpe' else -1
+        add_dim=1 if self.sharp_flat=='sharp' else -1
         return key_list,add_dim
+    # 调号的ly格式
     def key_sign_ly(self):
-        sharpe_list = ['\key c \major','\key g \major','\key d \major','\key a \major','\key e \major','\key b \major','\key fis \major','\key cis \major',]
+        sharp_list = ['\key c \major','\key g \major','\key d \major','\key a \major','\key e \major','\key b \major','\key fis \major','\key cis \major',]
         flat_list = ['\key c \major','\key f \major','\key bes \major','\key ees \major','\key aes \major','\key des \major','\key ges \major','\key ces \major']
-        key_sign_ly=sharpe_list[self.key_num] if self.sharpe_flat=='sharpe' else flat_list[self.key_num]
+        key_sign_ly=sharp_list[self.key_num] if self.sharp_flat=='sharp' else flat_list[self.key_num]
         return key_sign_ly
 
 # 大小调的类
 class scale_Mm:
-    def __init__(self,key_num,sharpe_flat,modal_l):
+    def __init__(self,key_num,sharp_flat,modal_l):
         self.scale_base=['']+['c','d','e','f','g','a','b']*10
-        self.key_t=module_key(key_num,sharpe_flat)
+        self.key_t=module_key(key_num,sharp_flat)
         self.key_num=key_num
-        self.sharpe_flat=sharpe_flat
+        self.sharp_flat=sharp_flat
         self.modal_l=modal_l
-    # 小调主音的转换(仅得出音级)
+    # 得出主音|顺便转换小调主音
     def tonic(self):
         if self.modal_l[0]=='minor':
             tonic_num=self.key_t.tonic()[1]+5
@@ -271,6 +278,7 @@ class scale_Mm:
         else:
             tonic,tonic_num=self.key_t.tonic()
         return tonic,tonic_num
+    # 找到6、7级是哪几个音，升还是降
     def scale_67th(self):
         tonic_num=self.tonic()[1]
         # 找到6、7级音
@@ -285,6 +293,7 @@ class scale_Mm:
         # 根据升降给出add_dim的建议
         add_dim=-1 if self.modal_l[0]=='major' else 1
         return scale_67th,add_dim
+    # 调式音阶的名称
     def scale_name_zh(self):
         modal_l1_zh=['大调','小调']
         modal_l1=['major','minor']
@@ -294,40 +303,44 @@ class scale_Mm:
         modal1=modal_l1_zh[modal_l1.index(self.modal_l[0])]
         modal2=modal_l2_zh[modal_l2.index(self.modal_l[1])]
         # 关于主音
-        sharpe_flat=['','升','降']
-        tonic0=sharpe_flat[self.key_t.key_list()[1]] if self.tonic()[0] in self.key_t.key_list()[0] else ''
+        sharp_flat=['','升','降']
+        tonic0=sharp_flat[self.key_t.key_list()[1]] if self.tonic()[0] in self.key_t.key_list()[0] else ''
         tonic1=self.tonic()[0] if self.modal_l[0]=='minor' else self.tonic()[0].upper()
         tonic=tonic0+tonic1
         return tonic,modal2,modal1
 
 # 中国民族性调式的类
 class scale_chinese:
-    def __init__(self,key_num,sharpe_flat,modal_num):
+    def __init__(self,key_num,sharp_flat,modal_num):
         self.scale_base=['']+['c','d','e','f','g','a','b']*10
         self.modal_num=modal_num-1
-        self.key_t=module_key(key_num,sharpe_flat)
+        self.key_t=module_key(key_num,sharp_flat)
         self.key_tonic=self.key_t.tonic()[1] # 代表宫音的数字
+    # 主音的音级
     def tonic(self):
         add_num=self.modal_num if self.modal_num not in [3,4] else self.modal_num+1 
         tonic=self.scale_base[self.key_tonic+add_num]
         return tonic
+    # 调式的名字，只是函数内部进行调用
     def scale_name_zh(self):
         # 关于调式
         tonic_num_l=['宫','商','角','徵','羽']
         tonic2=tonic_num_l[self.modal_num]
         # 关于主音
-        sharpe_flat=['','升','降']
-        tonic0=sharpe_flat[self.key_t.key_list()[1]] if self.tonic() in self.key_t.key_list()[0] else ''
+        sharp_flat=['','升','降']
+        tonic0=sharp_flat[self.key_t.key_list()[1]] if self.tonic() in self.key_t.key_list()[0] else ''
         tonic1=self.tonic() if self.modal_num in [1,2,4] else self.tonic().upper()
         return tonic0+tonic1+tonic2
+    # 五声调式
     def pentatonic(self):
-        # 得出特别的列表
+        # 得出偏音的列表
         note_4th=self.scale_base[self.key_tonic+3]
         note_7th=self.scale_base[self.key_tonic+6]
         remove_list=[note_4th,note_7th]
         # 合成名字
         scale_name=self.scale_name_zh()+'五声调式'
         return remove_list,scale_name
+    # 六声调式
     def hexatonic(self,modal_hexa):
         # 得出特别的列表
         remove_list=self.pentatonic()[0]
@@ -337,8 +350,9 @@ class scale_chinese:
         modal_name='加清角' if modal_hexa==0 else '加变宫'
         scale_name=self.scale_name_zh()+'六声调式'+'('+modal_name+')'
         return add_note,remove_note,scale_name
+    # 七声调式
     def heptatonic(self,modal_hepta):
-        # 得出特别的列表
+        # 得出偏音的列表
         remove_list=self.pentatonic()[0]
         if modal_hepta==0: # 清乐
             note_47th=[[remove_list[0],0],[remove_list[1],0]]
@@ -353,31 +367,33 @@ class scale_chinese:
 
 # 中古调式的类
 class scale_church:
-    def __init__(self,key_num,sharpe_flat,modal_num):
+    def __init__(self,key_num,sharp_flat,modal_num):
         self.modal_num=modal_num-1
         self.scale_base=['']+['c','d','e','f','g','a','b']*10
-        self.key_t=module_key(key_num,sharpe_flat)
+        self.key_t=module_key(key_num,sharp_flat)
         self.key_tonic=self.key_t.tonic()[1] # 代表伊奥尼亚的数字
+    # 主音
     def tonic(self):
         tonic=self.scale_base[self.key_tonic+self.modal_num]
         return tonic
+    # 调式音阶的名称
     def scale_name_zh(self):
         scale_name_l=['伊奥尼亚','多利亚','弗利几亚','利底亚','混合利底亚','爱奥里亚','洛克利亚']
         scale_name=scale_name_l[self.modal_num]
         # 关于主音
-        sharpe_flat=['','升','降']
-        tonic0=sharpe_flat[self.key_t.key_list()[1]] if self.tonic() in self.key_t.key_list()[0] else ''
+        sharp_flat=['','升','降']
+        tonic0=sharp_flat[self.key_t.key_list()[1]] if self.tonic() in self.key_t.key_list()[0] else ''
         tonic1=self.tonic() if self.modal_num in [2,3,6,7] else self.tonic().upper()
         return tonic0+tonic1+scale_name+'调式'
 
 # 半音阶的类
 class scale_chromatic:
-    def __init__(self,key_num,sharpe_flat):
+    def __init__(self,key_num,sharp_flat):
         self.key_num=key_num
-        self.sharpe_flat=sharpe_flat
+        self.sharp_flat=sharp_flat
         self.scale_base=['']+['c','d','e','f','g','a','b']*10
     def major_chromatic(self):
-        Mm_t=scale_Mm(self.key_num,self.sharpe_flat,['major','nature'])
+        Mm_t=scale_Mm(self.key_num,self.sharp_flat,['major','nature'])
         tonic_num=Mm_t.tonic()[1]
         # 上行应该改变的音与升降建议
         chromatic_asc=[self.scale_base[tonic_num+v1] for v1 in [0,1,3,4,6]]
@@ -390,7 +406,7 @@ class scale_chromatic:
         scale_name=tonic+modal1+'半音阶'
         return Mm_t,asc_l,des_l,scale_name
     def minor_chromatic(self):
-        Mm_t=scale_Mm(self.key_num,self.sharpe_flat,['minor','nature'])
+        Mm_t=scale_Mm(self.key_num,self.sharp_flat,['minor','nature'])
         tonic_num=Mm_t.tonic()[1]
         # 应该改变的音与升降建议
         l1=[self.scale_base[tonic_num+v1] for v1 in [1,2,3,5,6]]
@@ -404,6 +420,7 @@ class scale_chromatic:
 class module_resolution:
     def __init__(self,Mm_t):
         self.Mm_t=Mm_t
+    # 音程解决
     def interval_resolution(self,note_t1,note_t2):
         # 根据传入的音找到需要解决的音级
         add_dim_1=-1 if scale_step(self.Mm_t.tonic()[0],note_t1.note()) in [2,4,6] else 1 if scale_step(self.Mm_t.tonic()[0],note_t1.note())==7 else 0
@@ -412,7 +429,9 @@ class module_resolution:
         change_l=self.Mm_t.key_t.key_list()
         interval_resolution_l=add_key_to_note_l([module_note(note_t1.note_num+add_dim_1,0),module_note(note_t2.note_num+add_dim_2,0)],change_l)
         return [note_t1,note_t2],interval_resolution_l
+    # 和弦解决|这怎么这么多缩进？
     def chord_resolution(self,chord_t):
+        # 属七和弦与导七和弦的解决
         def Mm7_dd7_resolution():
             if chord_t.chord_name=='Mm7':
                 chord_resolution=[]
@@ -585,6 +604,8 @@ def interval_to_note(note_t1,interval_l): # interval_l包含了音程的名称�
 
     return note_t2,errors
 
+
+
 # 在一个调内，根据给出的根音，判断生成的和弦应该是什么性质
 def judge_Mm_chord(Mm_t,root_note): # root_note|str这里传入根音的基本音级，晚点会把整个和弦加上升降记号
     def step1():
@@ -652,7 +673,7 @@ def list_insert_list(note_list,insert_list):
     return note_list
 
 # 音程转音数
-def interval_to_num(interval_l): # 这个音数算的是两个音的音数之差，没有做别的处理。
+def interval_to_num(interval_l): 
     note_t1=module_note(1,0)
     note_t2=interval_to_note(note_t1,interval_l)[0]
     count_num=abs(note_t2.count_num()-note_t1.count_num())
@@ -738,9 +759,9 @@ def random_interval_list(low_c,high_c,accidental_l,interval_num_l,property_l,spa
     return result_list
 
 # 随机生成一组音程的解决
-def random_interval_resolution(low_c,high_c,key_num_l,sharpe_flat_l,modal_l):
+def random_interval_resolution(low_c,high_c,key_num_l,sharp_flat_l,modal_l):
     # 生成带调号的一串音
-    note_l,Mm_t=random_Mm_note_list(low_c,high_c,key_num_l,sharpe_flat_l,modal_l)
+    note_l,Mm_t=random_Mm_note_list(low_c,high_c,key_num_l,sharp_flat_l,modal_l)
     # 抽取任意的两个音
     note_t1,note_t2=random.choice(note_l),random.choice(note_l)
     interval_resolution=module_resolution(Mm_t)
@@ -780,7 +801,7 @@ def random_chord_t(low_c,high_c,accidental_l,chord_name_l,invert_l): # 后面几
 
 
 # 随机生成一组和弦的解决
-def random_chord_resolution(low_c,high_c,key_num_l,sharpe_flat_l,modal_l,chord_name_l,invert_l):
+def random_chord_resolution(low_c,high_c,key_num_l,sharp_flat_l,modal_l,chord_name_l,invert_l):
     # 更新最低音
     invert_num=random.choice(invert_l)
     low_add=-2 if invert_num==1 else -4 if invert_num==2 else -6 if invert_num==3 else 0
@@ -789,7 +810,7 @@ def random_chord_resolution(low_c,high_c,key_num_l,sharpe_flat_l,modal_l,chord_n
     low_c_new=[low_t.note(),low_t.note_num_mode()[3]]
     def step1():
         # 随机一个大小调
-        Mm_t=random_Mm_t(key_num_l,sharpe_flat_l,modal_l)
+        Mm_t=random_Mm_t(key_num_l,sharp_flat_l,modal_l)
         # 随机一个根音，并求出在这个调里应该是什么和弦
         root_note_t=random_create_note(low_c_new,high_c,[0])
         triad_chord_name,seventh_chord_name=judge_Mm_chord(Mm_t,root_note_t.note())
@@ -831,40 +852,41 @@ def random_chord_resolution(low_c,high_c,key_num_l,sharpe_flat_l,modal_l,chord_n
     return Mm_t,chord_t,chord_l,chord_resolution_l
 
 # 随机生成一个大小调的实例
-def random_Mm_t(key_num_l,sharpe_flat_l,modal_l): # 此处modal是一个嵌套列表 前面是大调或小调 后面是什么和声旋律啥的
+def random_Mm_t(key_num_l,sharp_flat_l,modal_l): # 此处modal是一个嵌套列表 前面是大调或小调 后面是什么和声旋律啥的
     key_num=random.choice(key_num_l)
-    sharpe_flat=random.choice(sharpe_flat_l)
-    modal_l=[random.choice(modal_l[0]),random.choice(modal_l[1])]
-    Mm_t=scale_Mm(key_num,sharpe_flat,modal_l)
+    sharp_flat=random.choice(sharp_flat_l)
+    modal=random.choice(modal_l)
+    modal_list=[random.choice(modal[0]),random.choice(modal[1])]
+    Mm_t=scale_Mm(key_num,sharp_flat,modal_list)
     return Mm_t
 
 # 随机生成一个中古调式的实例
-def random_church_t(key_num_l,sharpe_flat_l,modal_num_l):
+def random_church_t(key_num_l,sharp_flat_l,modal_num_l):
     key_num=random.choice(key_num_l)
-    sharpe_flat=random.choice(sharpe_flat_l)
+    sharp_flat=random.choice(sharp_flat_l)
     modal_num=random.choice(modal_num_l)
-    church_t=scale_church(key_num,sharpe_flat,modal_num)
+    church_t=scale_church(key_num,sharp_flat,modal_num)
     return church_t
 
 # 随机生成一个五声调式的实例
-def random_chinese_t(key_num_l,sharpe_flat_l,modal_num_l):
+def random_chinese_t(key_num_l,sharp_flat_l,modal_num_l):
     key_num=random.choice(key_num_l)
-    sharpe_flat=random.choice(sharpe_flat_l)
+    sharp_flat=random.choice(sharp_flat_l)
     modal_num=random.choice(modal_num_l)
-    chinese_t=scale_chinese(key_num,sharpe_flat,modal_num)
+    chinese_t=scale_chinese(key_num,sharp_flat,modal_num)
     return chinese_t
 
 # 随机生成一个半音阶的实例
-def random_chromatic_t(key_num_l,sharpe_flat_l):
+def random_chromatic_t(key_num_l,sharp_flat_l):
     key_num=random.choice(key_num_l)
-    sharpe_flat=random.choice(sharpe_flat_l)
-    chromatic_t=scale_chromatic(key_num,sharpe_flat)
+    sharp_flat=random.choice(sharp_flat_l)
+    chromatic_t=scale_chromatic(key_num,sharp_flat)
     return chromatic_t
 
 # 随机生成一串大小调的音组
-def random_Mm_note_list(low_c,high_c,key_num_l,sharpe_flat_l,modal_l):
+def random_Mm_note_list(low_c,high_c,key_num_l,sharp_flat_l,modal_l):
     note_list=range_all_note(low_c,high_c)
-    Mm_t=random_Mm_t(key_num_l,sharpe_flat_l,modal_l)
+    Mm_t=random_Mm_t(key_num_l,sharp_flat_l,modal_l)
     # 给音加上调号
     key_list=Mm_t.key_t.key_list()
     note_list=add_key_to_note_l(note_list,key_list)
@@ -874,9 +896,9 @@ def random_Mm_note_list(low_c,high_c,key_num_l,sharpe_flat_l,modal_l):
     return note_list,Mm_t
 
 # 随机生成一串中古调式的音组|实际上就是生成一串大调音组
-def random_church_note_list(low_c,high_c,key_num_l,sharpe_flat_l,modal_num_l):
+def random_church_note_list(low_c,high_c,key_num_l,sharp_flat_l,modal_num_l):
     note_list=range_all_note(low_c,high_c)
-    church_t=random_church_t(key_num_l,sharpe_flat_l,modal_num_l)
+    church_t=random_church_t(key_num_l,sharp_flat_l,modal_num_l)
     # 给音加上调号
     key_list=church_t.key_t.key_list()
     note_list=add_key_to_note_l(note_list,key_list)
@@ -884,9 +906,9 @@ def random_church_note_list(low_c,high_c,key_num_l,sharpe_flat_l,modal_num_l):
 
 # 随机生成一串中国民族性调式的音组|包含五声、六声、七声
 class random_chinese_note_list:
-    def __init__(self,low_c,high_c,key_num_l,sharpe_flat_l,modal_num_l,modal_hexa_l,modal_hepta_l):
+    def __init__(self,low_c,high_c,key_num_l,sharp_flat_l,modal_num_l,modal_hexa_l,modal_hepta_l):
         self.note_list=range_all_note(low_c,high_c)
-        self.chinese_t=random_chinese_t(key_num_l,sharpe_flat_l,modal_num_l)
+        self.chinese_t=random_chinese_t(key_num_l,sharp_flat_l,modal_num_l)
         self.modal_hexa=random.choice(modal_hexa_l)
         self.modal_hepta=random.choice(modal_hepta_l)
     def penta(self):
@@ -916,9 +938,9 @@ class random_chinese_note_list:
 
 # 随机生成一组半音阶的音组
 class random_chromatic_note_list:
-    def __init__(self,low_c,high_c,key_num_l,sharpe_flat_l):
+    def __init__(self,low_c,high_c,key_num_l,sharp_flat_l):
         self.note_list=range_all_note(low_c,high_c)
-        self.chromatic_t=random_chromatic_t(key_num_l,sharpe_flat_l)
+        self.chromatic_t=random_chromatic_t(key_num_l,sharp_flat_l)
     def create_insert_note(self,note_list,chromatic_l):
         # 生成要插入的音的实例
         insert_list=[module_note(v1.note_num,v1.accidental_num) for v1 in note_list if v1.note() in [v2[0] for v2 in chromatic_l]] 
@@ -946,9 +968,9 @@ class random_chromatic_note_list:
         return Mm_t,note_list,scale_name
 
 # 随机生成一组大小调的音阶
-def random_Mm_scale(low_c,high_c,key_num_l,sharpe_flat_l,modal_l):
+def random_Mm_scale(low_c,high_c,key_num_l,sharp_flat_l,modal_l):
     def step1(): # 生成一个八度音的列表
-        note_list,Mm_t=random_Mm_note_list(low_c,high_c,key_num_l,sharpe_flat_l,modal_l)
+        note_list,Mm_t=random_Mm_note_list(low_c,high_c,key_num_l,sharp_flat_l,modal_l)
         # 生成一个主音的实例
         tonic=add_key_to_note_l([module_note(Mm_t.tonic()[1],0)],Mm_t.key_t.key_list())[0]
         octave_l=random.choice(cut_octave(note_list,tonic))
@@ -963,8 +985,8 @@ def random_Mm_scale(low_c,high_c,key_num_l,sharpe_flat_l,modal_l):
     return Mm_t,octave_l,asc_des
 
 # 随机生成一组中古调式的音阶
-def random_church_scale(low_c,high_c,key_num_l,sharpe_flat_l,modal_num_l):
-    note_list,church_t=random_church_note_list(low_c,high_c,key_num_l,sharpe_flat_l,modal_num_l)
+def random_church_scale(low_c,high_c,key_num_l,sharp_flat_l,modal_num_l):
+    note_list,church_t=random_church_note_list(low_c,high_c,key_num_l,sharp_flat_l,modal_num_l)
     # 生成一个主音的实例
     tonic=add_key_to_note_l([module_note(church_t.key_t.tonic()[1],0)],church_t.key_t.key_list())[0]
     octave_l=random.choice(cut_octave(note_list,tonic))
@@ -976,8 +998,8 @@ def random_church_scale(low_c,high_c,key_num_l,sharpe_flat_l,modal_num_l):
 
 # 随机生成一组中国民族调式音阶
 class random_chinese_scale():
-    def __init__(self,low_c,high_c,key_num_l,sharpe_flat_l,modal_num_l,modal_hexa_l,modal_hepta_l):
-        self.random_chinese_t=random_chinese_note_list(low_c,high_c,key_num_l,sharpe_flat_l,modal_num_l,modal_hexa_l,modal_hepta_l)
+    def __init__(self,low_c,high_c,key_num_l,sharp_flat_l,modal_num_l,modal_hexa_l,modal_hepta_l):
+        self.random_chinese_t=random_chinese_note_list(low_c,high_c,key_num_l,sharp_flat_l,modal_num_l,modal_hexa_l,modal_hepta_l)
         # 生成一个主音的实例
         self.tonic=add_key_to_note_l([module_note(self.random_chinese_t.chinese_t.key_tonic,0)],self.random_chinese_t.chinese_t.key_t.key_list())[0]
     def penta(self):
@@ -995,8 +1017,8 @@ class random_chinese_scale():
 
 # 随机生成一组半音阶
 class random_chromatic_scale:
-    def __init__(self,low_c,high_c,key_num_l,sharpe_flat_l):
-        self.random_chromatic_t=random_chromatic_note_list(low_c,high_c,key_num_l,sharpe_flat_l)
+    def __init__(self,low_c,high_c,key_num_l,sharp_flat_l):
+        self.random_chromatic_t=random_chromatic_note_list(low_c,high_c,key_num_l,sharp_flat_l)
     def major(self):
         Mm_t,asc_note_list,des_note_list,scale_name=self.random_chromatic_t.major()
         # 生成一个主音的实例

@@ -18,13 +18,13 @@ accidental_ly='@1'# ['all','@1','@12','@2','@0']  0是所有记号都有，1是�
 def pitch_Mm():
     # 特殊参数
     key_num_l=[3]
-    sharpe_flat_l=['sharpe']
+    sharp_flat_l=['sharp']
     modal_l=[['major'],['nature']]
     space_l=[[2,'M'],[3,'M']]
     def step1():
         list_num=10 # 控制一次有多少个单音
         # 生成一个大调或小调的音组
-        note_list,Mm_t=module.random_Mm_note_list(low_c,high_c,key_num_l,sharpe_flat_l,modal_l)
+        note_list,Mm_t=module.random_Mm_note_list(low_c,high_c,key_num_l,sharp_flat_l,modal_l)
         key_list=Mm_t.key_t.key_list()[0]
         note_list=module.random_select_note(note_list,space_l,list_num,key_list)
         # 答案上体现的音符
@@ -80,7 +80,7 @@ def interval_property_ear():
         interval_all,interval_midi_all,interval_name_all='','',''
         for o in range(100):
             interval_row,interval_midi_row,interval_name_row='','',''
-            for i in range(8):
+            for i in range(10):
                 interval,interval_name=step1()
                 interval_row+=interval
                 interval_midi_row+=interval
@@ -106,7 +106,7 @@ def interval_property_ear():
 def pitch_group_Mm():
     # 专有参数
     key_num_l=[3]
-    sharpe_flat_l=['sharpe']
+    sharp_flat_l=['sharp']
     modal_l=[['major'],['nature']]
     space_l=[[2,'M'],[3,'M']]
     list_num=4
@@ -116,7 +116,7 @@ def pitch_group_Mm():
     skip=" \skip 16*%d "%list_num
     def step1():
         # 生成一个大调或小调的音组
-        note_list,Mm_t=module.random_Mm_note_list(low_c,high_c,key_num_l,sharpe_flat_l,modal_l)
+        note_list,Mm_t=module.random_Mm_note_list(low_c,high_c,key_num_l,sharp_flat_l,modal_l)
         key_list=Mm_t.key_t.key_list()[0]
         note_list=module.random_select_note(note_list,space_l,list_num,key_list)
         # 答案上的音符
@@ -231,4 +231,3 @@ def chord_property_ear():
         return '运行完成'
     step2()
     return '运行完成'
-
