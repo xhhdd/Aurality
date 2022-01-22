@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 import random
-import pysnooper
 # 音符的类
 class module_note:
     def __init__(self,note_num,accidental_num):
@@ -506,6 +505,118 @@ class tone_semitone:
         kind_zh='自然' if kind_en=='nature' else '变化'
         return kind_zh+tone_semitone_zh,kind_en+' '+tone_semitone_en,errors
 
+# 节奏的类
+class module_rythem:
+    def __init__(self):
+        self.crotchet_list=['4','8 8','8 16 16','16 16 8','16 16 16 16','8. 16','16 8 16',"\\tuplet 3/2 {a' 8 8 8 }",'16 8.']
+        self.minim_list=['2','4. 8','4. 16 16','8 4 8','16 16 4 8','8 4 16 16','16 16 4 16 16','8 4.','16 16 4.']
+        self.dotted_minim_list=['2.','8 4 4 8','16 16 4 4 8','16 16 4 4 16 16']
+        self.semibreve_list=['1','8 4 4 4 8','16 16 4 4 4 8','16 16 4 4 4 16 16']
+        self.dotted_crotchet_1_list =['4.','4 8','8 4','4 16 16','16 16 4']
+        self.dotted_crotchet_2_list =['4.','8 8 8','16 16 8 8','8 16 16 8','8 8 16 16','16 16 16 16 8','16 16 8 16 16','8 16 16 16 16','16 16 16 16 16 16']
+        self.dotted_crotchet_3_list=['4.','8. 16 8','8 8. 16','8. 16 16 16','16 16 8. 16','16 8. 8','8 16 8.','16 8. 16 16','16 16 16 8.']
+        self.dotted_crotchet_4_list=['4.','16 8 16 8','8 16 8 16','8 16 8 16 16','16 16 16 8 16','16 8 8 16']
+        self.dotted_minim_list=['2.']
+        self.simple_time_list=[self.crotchet_list,self.minim_list,self.dotted_minim_list,self.semibreve_list]
+        self.compund_time_list=[self.dotted_crotchet_1_list,self.dotted_crotchet_2_list,self.dotted_crotchet_3_list,self.dotted_crotchet_4_list,self.dotted_minim_list]
+    # 根据拍号计算小节的容量
+    def converter_time(self):
+        simpel_time=[2,3,4]
+        compund_time=[6,9,12]
+        irregluar_time=[5,7]
+        # 判断拍号的类型
+        time_class='simpel_time' if self.time_sign[0] in simpel_time else 'compund_time' if self.time_sign[0] in compund_time else 'irregluar_time'
+        # 3/8的特殊情况
+        if self.time_sign[0] ==3 and self.time_sign[1]==8:
+            time_class='compund_time'
+        # 计算一个小节里有多少个十六分音符
+        type_beat=[2,4,8,16]
+        type_beat_num=[8,4,2,1]
+        time_num=type_beat_num[type_beat.index(self.time_sign[1])]*self.time_sign[0]
+        return time_class,time_num
+    # 本函数最终输出满足要求的列表【列表里面是每一个小节里面能够使用哪些节奏型，使用多少次】
+    def rythem_class_bar(self):
+        time_class,time_num=self.converter_time()
+        # 选出一个小节内将会使用哪些节奏型，使用多少次
+        if time_class=='simpel_time':
+            # 解不定方程租
+            rythem_class_bar=[[x1,x2,x3,x4] for x1 in range(10) for x2 in range(10)for x3 in range(10)for x4 in range(10) if x1*4+x2*8+x3*12+x4*16==time_num]
+        if time_class=='compund_time':
+            # 解不定方程租
+            rythem_class_bar=[[x1,x2,x3,x4,x5] for x1 in range(10) for x2 in range(10)for x3 in range(10)for x4 in range(10)for x5 in range(10) if x1*6+x2*6+x3*6+x4*6+x5*12==time_num]
+        return rythem_class_bar
+
+
+    # 根据小节数，随机挑出相同数量的列表
+    def rythem_class_choice_bar(self):
+        rythem_class=self.rythem_class_c_bar()
+        rythem_class_choice_bar=[]
+        for i in range(self.bar_num):
+            rythem_class_choice_bar+=[random.choice(rythem_class)]
+        return rythem_class_choice_bar
+
+    def create_rythem_bar(self):
+        # 根据单复拍转换列表
+        time_kind=(self.converter_time())[0]
+        if time_kind=='simpel_time':
+            rythem_1_list=self.rythem_s_1_list
+            rythem_2_list=self.rythem_s_2_list
+            rythem_3_list=self.rythem_s_3_list
+            rythem_4_list=self.rythem_s_4_list
+        if time_kind=='compund_time':
+            rythem_1_list=self.rythem_co_1_list
+            rythem_2_list=self.rythem_co_2_list
+            rythem_3_list=self.rythem_co_3_list
+            rythem_4_list=self.rythem_co_4_list
+            rythem_5_list=self.rythem_co_5_list
+
+        l_1,l_2,l_3,l_4,l_5,rythem_list_all=[],[],[],[],[],[]
+        rythem_class_choice_bar=self.rythem_class_choice_bar()
+        for v1 in rythem_class_choice_bar:
+            # 整个小节的节奏型
+            for i in range(v1[0]):
+                l_1.append(rythem_1_list[random.randint(0,self.rythem_kind_max[0])])
+            for i in range(v1[1]):
+                l_2.append(rythem_2_list[random.randint(0,self.rythem_kind_max[1])])
+            for i in range(v1[2]):
+                l_3.append(rythem_3_list[random.randint(0,self.rythem_kind_max[2])])
+            for i in range(v1[3]):
+                l_4.append(rythem_4_list[random.randint(0,self.rythem_kind_max[3])])
+            if time_kind=='compund_time':
+                for i in range(v1[4]):
+                    l_5.append(rythem_5_list(random.randint(0,self.rythem_kind_max[4])))
+            # 打乱节奏型
+            rythem_list_bar=[l_1,l_2,l_3,l_4,l_5]
+            random.shuffle(rythem_list_bar)
+            # 存储
+            rythem_list_all+=rythem_list_bar
+            # 清零
+            l_1,l_2,l_3,l_4,l_5=[],[],[],[],[]
+        # 删除空集
+        rythem=[]
+        for v2 in rythem_list_all:
+            if v2 != []:
+                rythem.append(v2)
+        rythem_c=[]
+        for v3 in rythem:
+            rythem_c+=v3
+        return rythem,rythem_c
+
+    def rythem_appear_control_1(self):
+        while_l=[]
+        rythem,rythem_c=self.create_rythem_bar()
+        for v1 in self.rythem_appear_c:
+            if rythem_c.count(v1[0]) >= v1[1]:
+                while_l.append('true')
+        return rythem,rythem_c,while_l
+
+    def rythem_appear_control_2(self):
+        rythem,rythem_c,while_l=self.rythem_appear_control_1()
+        while len(while_l) != len(self.rythem_appear_c):
+            rythem,rythem_c,while_l=self.rythem_appear_control_1()
+        return rythem,rythem_c
+
+
 # 数字转中文     
 def num_to_zh(num):
     _MAPPING = ('零', '一', '二', '三', '四', '五', '六', '七', '八', '九', '十', '十一', '十二', '十三', '十四', '十五', '十六', '十七','十八', '十九')
@@ -738,8 +849,26 @@ def random_interval_t(low_c,high_c,accidental_l,interval_num_l,property_l):
     interval_t=step4()
     return interval_t
 
+# 生成一组自然音程|可以控制间隔
+def random_root_to_interval(low_c,high_c,key_num_l,sharp_flat_l,modal_l,space_l,list_num,key_list):
+    # 生成一个大小调实例
+    note_list=random_Mm_note_list(low_c,high_c,key_num_l,sharp_flat_l,modal_l)
+    # 生成一组根音跟冠音
+    root_list=random_select_note(note_list,space_l,list_num,key_list)
+    high_list=random_select_note(note_list,space_l,list_num,key_list)
+    # 生成一组音程实例
+    interval_list=[]
+    for v1,v2 in zip(root_list,high_list):
+        # 先交换两音位置，确保冠音>根音
+        if v2.count_num()<v1.count_num():
+            v1,v2=v2,v1
+        interval_list.append(module_interval(v1,v2))
+
+
 # 随机生成一组音程
 def random_interval_list(low_c,high_c,accidental_l,interval_num_l,property_l,space_l,list_num):
+    # 随机生成一组有间隔要求的音
+    # 这些音当做根音 然后随机抽取性质进行生成音程实例
     def step1(): # 控制两个音程之间根音的间隔
         # 算出间隔的音数
         space_min,space_max=interval_to_num(space_l[0]),interval_to_num(space_l[1])
@@ -1052,7 +1181,7 @@ def random_select_note(note_list,space_l,list_num,key_list):
                 count_num1,count_num2=note_new.count_num(),result_list[-1].count_num()
             result_list.append(note_new)
         return result_list
-    def step2(): # 控制最少出现一个调号音
+    def step2(): # 控制最少出现两个调号音
         result_list=step1()
         key_note=[v1 for v1 in result_list if v1.note() in key_list]
         while len(key_note)<2:
@@ -1063,3 +1192,47 @@ def random_select_note(note_list,space_l,list_num,key_list):
     return result_list
 
 
+# 随机生成一组节奏型
+def random_group_rythem(rythem_c):
+    rythem_t=module_rythem()
+    def simple_time():
+        # 选择从哪几个列表里面抽节奏型
+        rythem_list=[v2 for v1,v2 in zip(rythem_c[1],rythem_t.simple_time_list) if v1!=0]
+        # 随机抽取规定的节奏型
+        start=-1
+        rythem=[]
+        for v1,v2 in zip(rythem_c[1],rythem_list):
+            start+=1
+            for i in range(v1):
+                rythem.append(v2[random.choice(rythem_c[2][start])])
+        # 打乱节奏型
+        random.shuffle(rythem)
+        # 计算应该生成什么拍号
+        time_num=0
+        for v1,v2 in zip(rythem_c[1],[1,2,3,4]):
+            time_num+=v1*v2
+        time_sign=' \\time %d/4 '%time_num
+        return rythem,time_num,time_sign
+    def compund_time():
+        # 选择从哪几个列表里面抽节奏型
+        rythem_list=[v2 for v1,v2 in zip(rythem_c[1],rythem_t.compund_time_list) if v1!=0]
+        # 随机抽取规定的节奏型
+        start=-1
+        rythem=[]
+        for v1,v2 in zip(rythem_c[1],rythem_list):
+            start+=1
+            for i in range(v1):
+                rythem.append(v2[random.choice(rythem_c[2][start])])
+        # 打乱节奏型
+        random.shuffle(rythem)
+        # 计算应该生成什么拍号
+        time_num=0
+        for v1,v2 in zip(rythem_c[1],[3,3,3,3,6]):
+            time_num+=v1*v2
+        time_sign=' \\time %d/8 '%time_num
+        return rythem,time_num,time_sign
+    def main():
+        rythem,time_num,time_sign=simple_time() if rythem_c[0]=='simple_time' else compund_time()
+        return rythem,time_num,time_sign
+    rythem,time_num,time_sign=main()
+    return rythem,time_num,time_sign

@@ -5,12 +5,12 @@ import module
 import create_ly
 # 与音相关
 # 列表前一个是音名，后一个是组别
-low_c=['a',0]
-high_c=['c',3] 
+low_c=['c',-1]
+high_c=['e',1] 
 # 这是能选择的升降记号
 accidental_l=[0,1,-1,2,-2] # -2重降，-1降，0无，1升，2重升
 # 选择谱号
-clef='S' 
+clef='B' 
 # ly文件生成
 accidental_ly='@12'# ['all','@1','@12','@2','@0']  0是所有记号都有，1是没有重升重降，2是含有重升重降，3是只有重升重降，4是没有升降记号
 
@@ -25,7 +25,7 @@ def write_note_name():
         return note_all,note_name
     def step_2():
         note_all,note_name_all='',''
-        for o in range(100):
+        for o in range(1):
             note_row,note_name_row='',''
             for i in range(10):
                 note,note_name=step_1()
@@ -517,13 +517,13 @@ def chord_resolution():
 
 def write_Mm_scale():
     # 专有参数
-    key_num_l=[1,2,3,4,5,6,7]
+    key_num_l=[0,1,2,3,4,5,6,7]
     sharp_flat_l=['sharp','flat']
-    modal_l=[[['major'],['nature']],[['minor'],['nature','harmony','melody']]]
+    modal_l=[[['major'],['nature']],[['minor'],['nature']]]
     def step1():
         Mm_t,octave_l,asc_des=module.random_Mm_scale(low_c,high_c,key_num_l,sharp_flat_l,modal_l)
         # 调号是否使用
-        key_sign=random.choice(['使用调号','不使用调号'])
+        key_sign=random.choice(['使用调号','使用调号'])
         key_ly=Mm_t.key_t.key_sign_ly() if key_sign=='使用调号' else '\key c \major'
         # 音阶的音
         scale_l=[v1.note_all() for v1 in octave_l]
@@ -539,7 +539,7 @@ def write_Mm_scale():
         return scale,scale_skip,scale_name
     def step2():
         scale_all,scale_skip_all,scale_name_all='','',''
-        for o in range(100):
+        for o in range(10):
             scale_row,scale_skip_row,scale_name_row='','',''
             for i in range(1):
                 scale,scale_skip,scale_name=step1()
@@ -775,3 +775,4 @@ def write_chromatic_scale():
     step2()
     return '运行完成'
 
+write_Mm_scale()

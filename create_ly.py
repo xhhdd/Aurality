@@ -28,7 +28,7 @@ def create_ly(ly_layout_c,chord,clef,main,lyric,file):
     lyric = \lyricmode{ %s }' %lyric
     # 这个变量负责谱面上的音符，同时会有谱号、和弦模式两个控制
     main='\n\
-    main=%s{ %s %s %s }'%(chord,clef,main_before,main)
+    main=%s{ %s  %s }'%(chord,clef,main)
 
     # 下面的变量都是对于谱子上其他内容的控制，通常来说，1就是显示，0就是不显示
     score_1=' \n\
@@ -279,6 +279,25 @@ class ly_set:
         main_before=' \override Staff.BarLine.stencil = ##f \\accidentalStyle Score.piano'
         ly_layout_1=[bar_num_c,time_sign_c,midi_c,tempo_c,tempo,time,key_sign_c,clef_sign_c,main_before]
         ly_layout_2=[bar_num_c,time_sign_c,midi_c,tempo_c,tempo,time,key_sign_c,clef_sign_c,main_before]
+        # 文件名
+        file=file_name()
+        file=file.base_range(question,self.clef_file,self.accidental_ly,self.low_c,self.high_c)
+        # 拉起ly文件
+        create_ly(ly_layout_1,chord,self.clef,self.main,self.lyric,file)
+        create_ly(ly_layout_2,chord,self.clef,self.main_answer,self.lyric_answer,file+'-answer')
+        return 'ly文件生成完毕'
+    def rythem_group_ear(self,time_sign,question,main_before):
+        chord=''
+        bar_num_c=1
+        time_sign_c=0
+        midi_c=1
+        tempo_c=0
+        tempo='\\tempo 4 = 150'
+        time=' %s'%time_sign
+        key_sign_c='\override Staff.KeySignature.break-visibility = ##(#f #f #f)' #调号控制 
+        clef_sign_c='\override Score.Clef.break-visibility = ##(#f #f #t)' #换行后谱号不再重写
+        ly_layout_1=[bar_num_c,time_sign_c,midi_c,tempo_c,tempo,time,key_sign_c,clef_sign_c,main_before]
+        ly_layout_2=[bar_num_c,time_sign_c,0,tempo_c,tempo,time,key_sign_c,clef_sign_c,main_before]
         # 文件名
         file=file_name()
         file=file.base_range(question,self.clef_file,self.accidental_ly,self.low_c,self.high_c)
