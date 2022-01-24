@@ -47,7 +47,7 @@ def write_note_name():
         return 
     step_2()
     return '运行完成'
-
+write_note_name()
 def write_note():
     def step1():
         note_t=module.random_create_note(low_c,high_c,accidental_l)
@@ -774,5 +774,3 @@ def write_chromatic_scale():
         return '运行完成'
     step2()
     return '运行完成'
-
-write_Mm_scale()
