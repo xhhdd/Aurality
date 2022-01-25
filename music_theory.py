@@ -5,12 +5,12 @@ import module
 import create_ly
 # 与音相关
 # 列表前一个是音名，后一个是组别
-low_c=['c',-1]
-high_c=['e',1] 
+low_c=['a',0]
+high_c=['c',3] 
 # 这是能选择的升降记号
 accidental_l=[0,1,-1,2,-2] # -2重降，-1降，0无，1升，2重升
 # 选择谱号
-clef='B' 
+clef='S' 
 # ly文件生成
 accidental_ly='@12'# ['all','@1','@12','@2','@0']  0是所有记号都有，1是没有重升重降，2是含有重升重降，3是只有重升重降，4是没有升降记号
 
@@ -47,7 +47,7 @@ def write_note_name():
         return 
     step_2()
     return '运行完成'
-write_note_name()
+
 def write_note():
     def step1():
         note_t=module.random_create_note(low_c,high_c,accidental_l)
@@ -286,14 +286,14 @@ def write_interval_name():
 
 def write_interval_note():
     # 特殊参数
-    interval_num_l=[5]
+    interval_num_l=[1,2,3,4,5,6,7,8,9,10,11,12,13,14]
     property_l=['d_d','d','m','M','A','d_A','p'] # ['d_d','d','m','M','A','d_A','p','fail']
     def step1():
         # 生成实例
         interval_t=module.random_interval_t(low_c,high_c,accidental_l,interval_num_l,property_l)
         note_t1,note_t2=interval_t.note_t1,interval_t.note_t2
         # 随机两音的高低
-        asc_des=random.choice(['asc','des'])
+        asc_des=random.choice(['asc'])
         if asc_des=='des':
             note_t1,note_t2=note_t2,note_t1
             asc_des_name='往下，'
@@ -774,3 +774,5 @@ def write_chromatic_scale():
         return '运行完成'
     step2()
     return '运行完成'
+
+write_interval_note()
