@@ -324,8 +324,9 @@ class scale_chinese:
     # 主音的音级
     def tonic(self):
         add_num=self.chinese_scale_tonic_num if self.chinese_scale_tonic_num not in [3,4] else self.chinese_scale_tonic_num+1 
-        tonic=self.scale_base[self.key_tonic+add_num]
-        return tonic
+        tonic_num=self.key_tonic+add_num
+        tonic=self.scale_base[tonic_num]
+        return tonic,tonic_num
     # 调式的名字，只是函数内部进行调用
     def scale_name_zh(self):
         # 关于调式
@@ -333,8 +334,8 @@ class scale_chinese:
         tonic2=tonic_num_l[self.chinese_scale_tonic_num]
         # 关于主音
         sharp_flat=['','升','降']
-        tonic0=sharp_flat[self.key_t.key_list()[1]] if self.tonic() in self.key_t.key_list()[0] else ''
-        tonic1=self.tonic() if self.chinese_scale_tonic_num in [1,2,4] else self.tonic().upper()
+        tonic0=sharp_flat[self.key_t.key_list()[1]] if self.tonic()[0] in self.key_t.key_list()[0] else ''
+        tonic1=self.tonic()[0] if self.chinese_scale_tonic_num+1 in [2,3,5] else self.tonic()[0].upper()
         return tonic0+tonic1+tonic2
     # 五声调式
     def pentatonic(self):
@@ -379,16 +380,17 @@ class scale_church:
         self.key_tonic=self.key_t.tonic()[1] # 代表伊奥尼亚的数字
     # 主音
     def tonic(self):
-        tonic=self.scale_base[self.key_tonic+self.chinese_scale_tonic_num]
-        return tonic
+        tonic_num=self.key_tonic+self.chinese_scale_tonic_num
+        tonic=self.scale_base[tonic_num]
+        return tonic,tonic_num
     # 调式音阶的名称
     def scale_name_zh(self):
         scale_name_l=['伊奥尼亚','多利亚','弗利几亚','利底亚','混合利底亚','爱奥里亚','洛克利亚']
         scale_name=scale_name_l[self.chinese_scale_tonic_num]
         # 关于主音
         sharp_flat=['','升','降']
-        tonic0=sharp_flat[self.key_t.key_list()[1]] if self.tonic() in self.key_t.key_list()[0] else ''
-        tonic1=self.tonic() if self.chinese_scale_tonic_num in [2,3,6,7] else self.tonic().upper()
+        tonic0=sharp_flat[self.key_t.key_list()[1]] if self.tonic()[0] in self.key_t.key_list()[0] else ''
+        tonic1=self.tonic()[0] if self.chinese_scale_tonic_num+1 in [2,3,6,7] else self.tonic()[0].upper()
         return tonic0+tonic1+scale_name+'调式'
 
 # 半音阶的类
@@ -525,8 +527,8 @@ class module_rythem:
         # 总时值为四分音符
         self.crotchet_list=['4','8 8','8 16 16','16 16 8','16 16 16 16','8. 16','16 8 16',"\\tuplet 3/2 {a' 8 8 8 }",'16 8.']
         # 总时值为附点四分音符
-        self.dotted_crotchet_1_list =['4.','4 8','8 4','4 16 16','16 16 4']
-        self.dotted_crotchet_2_list =['4.','8 8 8','16 16 8 8','8 16 16 8','8 8 16 16','16 16 16 16 8','16 16 8 16 16','8 16 16 16 16','16 16 16 16 16 16']
+        self.dotted_crotchet_1_list=['4.','4 8','8 4','4 16 16','16 16 4']
+        self.dotted_crotchet_2_list=['4.','8 8 8','16 16 8 8','8 16 16 8','8 8 16 16','16 16 16 16 8','16 16 8 16 16','8 16 16 16 16','16 16 16 16 16 16']
         self.dotted_crotchet_3_list=['4.','8. 16 8','8 8. 16','8. 16 16 16','16 16 8. 16','16 8. 8','8 16 8.','16 8. 16 16','16 16 16 8.']
         self.dotted_crotchet_4_list=['4.','16 8 16 8','8 16 8 16','8 16 8 16 16','16 16 16 8 16','16 8 8 16']
         # 总时值为二分音符
@@ -538,7 +540,13 @@ class module_rythem:
         self.semibreve_list=['1','8 4 4 4 8','16 16 4 4 4 8','16 16 4 4 4 16 16']
         # 总时值为倍全音符
         self.breve_list="\override Staff.NoteHead.style = #'altdefault a'\\breve "
-        self.simple_time_list=[self.crotchet_list,self.minim_list,self.dotted_minim_list,self.semibreve_list]
+        # 不同拍号对应的列表
+        time_24_43_44_list=[self.quaver_list,self.quaver_list,self.crotchet_list,self.minim_list,self.dotted_minim_1_list,self.semibreve_list]
+        time_22_32_42_list=[['4'],self.minim_list,self.dotted_minim_1_list,self.semibreve_list,self.breve_list]
+        time_38_68_98_128_list=[self.dotted_quaver_1_list,self.dotted_quaver_2_list,self.dotted_quaver_3_list,self.dotted_quaver_4_list]
+
+        # 待处理
+        self.simple_time_list=[self.crotchet_list,self.minim_list,self.dotted_minim_2_list,self.semibreve_list]
         self.compund_time_list=[self.dotted_crotchet_1_list,self.dotted_crotchet_2_list,self.dotted_crotchet_3_list,self.dotted_crotchet_4_list,self.dotted_minim_list]
     # 根据拍号计算小节的容量
     def converter_time(self):
@@ -1135,7 +1143,7 @@ def random_Mm_scale(range_low_c,range_high_c,key_num_l,sharp_flat_l,Mm_mode_l):
 def random_church_scale(range_low_c,range_high_c,key_num_l,sharp_flat_l,church_scale_tonic_l):
     note_list,church_t=random_church_note_list(range_low_c,range_high_c,key_num_l,sharp_flat_l,church_scale_tonic_l)
     # 生成一个主音的实例
-    tonic=add_accidental_to_note([module_note(church_t.key_t.tonic()[1],0)],church_t.key_t.key_list())[0]
+    tonic=add_accidental_to_note([module_note(church_t.tonic()[1],0)],church_t.key_t.key_list())[0]
     octave_l=random.choice(cut_octave(note_list,tonic))
     # 随机上下行
     asc_des=random.choice(['asc','des'])
@@ -1148,7 +1156,7 @@ class random_chinese_scale():
     def __init__(self,range_low_c,range_high_c,key_num_l,sharp_flat_l,chinese_scale_tonic_l,chinese_hexa_l,chinese_hepta_l):
         self.random_chinese_t=random_chinese_note_list(range_low_c,range_high_c,key_num_l,sharp_flat_l,chinese_scale_tonic_l,chinese_hexa_l,chinese_hepta_l)
         # 生成一个主音的实例
-        self.tonic=add_accidental_to_note([module_note(self.random_chinese_t.chinese_t.key_tonic,0)],self.random_chinese_t.chinese_t.key_t.key_list())[0]
+        self.tonic=add_accidental_to_note([module_note(self.random_chinese_t.chinese_t.tonic()[1],0)],self.random_chinese_t.chinese_t.key_t.key_list())[0]
     def penta(self):
         note_list,scale_name=self.random_chinese_t.penta()
         penta_octave_l=random.choice(cut_octave(note_list,self.tonic))
@@ -1254,4 +1262,5 @@ def random_group_rythem(rythem_c):
         return rythem,time_num,time_sign
     rythem,time_num,time_sign=main()
     return rythem,time_num,time_sign
+
 

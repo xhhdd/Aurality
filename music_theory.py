@@ -337,7 +337,7 @@ def interval_resolution():
     # 专属参数
     key_num_l=[0,1,2,3,4,5,6,7]
     sharp_flat_l=['sharp','flat']
-    modal_l=['major','minor'],['nature','harmony']
+    modal_l=[[['major'],['nature','harmony']],[['minor'],['nature','harmony']]]
     def step1():
         [note_t1,note_t2],interval_resolution_l,Mm_t=module.random_interval_resolution(low_c,high_c,key_num_l,sharp_flat_l,modal_l)
         interval=' < '+note_t1.note_all()+' '+note_t2.note_all()+' >1 '
@@ -613,7 +613,7 @@ def write_church_scale():
 def write_chinese_scale():
     # 专有参数
     key_num_l=[0,1,2,3,4,5,6,7]
-    sharp_flat_l=['sharp','flat']
+    sharp_flat_l=['flat','sharp']
     modal_num_l=[1,2,3,4,5]
     modal_hexa_l=[0,1]
     modal_hepta_l=[0,1,2] 
@@ -775,4 +775,4 @@ def write_chromatic_scale():
     step2()
     return '运行完成'
 
-write_interval_note()
+write_chinese_scale()
