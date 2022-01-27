@@ -775,4 +775,3 @@ def write_chromatic_scale():
     step2()
     return '运行完成'
 
-write_chinese_scale()
