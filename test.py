@@ -12,6 +12,7 @@ clef='S'
 accidental_ly='@12'# ['all','@1','@12','@2','@0']  0是所有记号都有，1是没有重升重降，2是含有重升重降，3是只有重升重降，4是没有升降记号
 
 
+import random
 import module
 import create_ly
 
@@ -40,4 +41,7 @@ def step2():
     question='test'
     ly_t.write_note_name(question)
     return 
-step2()
+
+rythem_t=module.module_rythem([5,4])
+print(rythem_t.select_rythem_list())
+print(rythem_t.rythem_list())

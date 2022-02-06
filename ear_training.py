@@ -12,15 +12,15 @@ accidental_l=[0,1,-1] # -2重降，-1降，0无，1升，2重升
 # 选择谱号
 clef='S' 
 # ly文件生成
-accidental_ly='@1'# ['all','@1','@12','@2','@0']  0是所有记号都有，1是没有重升重降，2是含有重升重降，3是只有重升重降，4是没有升降记号
+accidental_ly='@0'# ['all','@1','@12','@2','@0']  0是所有记号都有，1是没有重升重降，2是含有重升重降，3是只有重升重降，4是没有升降记号
 
 
 def pitch_Mm():
     # 特殊参数
-    key_num_l=[3]
+    key_num_l=[0]
     sharp_flat_l=['sharp']
-    modal_l=[['major'],['nature']]
-    space_l=[[2,'M'],[3,'M']]
+    modal_l=[[['major'],['nature']],[['major'],['nature']]]
+    space_l=[[1,'A'],[5,'p']]
     def step1():
         list_num=10 # 控制一次有多少个单音
         # 生成一个大调或小调的音组
@@ -55,7 +55,7 @@ def pitch_Mm():
         main=note_midi_all
         lyric=''
         main_answer=note_all
-        lyric_answer=key_name_all
+        lyric_answer=''
         ly_t=create_ly.ly_set(accidental_ly,low_c,high_c,clef,main,lyric,main_answer,lyric_answer)
         question='pitch_Mm'
         ly_t.pitch_Mm(question)
@@ -66,7 +66,7 @@ def pitch_Mm():
 
 def interval_property_ear():
     # 特殊参数
-    interval_num_l=[6]
+    interval_num_l=[7]
     property_l=['M','m']
     def step1():
         interval_t=module.random_interval_t(low_c,high_c,accidental_l,interval_num_l,property_l)
@@ -199,7 +199,7 @@ def interval_group_ear():
 # 和弦性质听辨
 def chord_property_ear():
     # 专有参数
-    chord_name_l=['dim','minor']
+    chord_name_l=['dim','aug']
     invert_l=[0]
     def step1():
         chord_t=module.random_chord_t(low_c,high_c,accidental_l,chord_name_l,invert_l)
@@ -276,3 +276,4 @@ def rythem_group_ear():
         ly_t.rythem_group_ear(time_sign,question,main_before)
     step2()
     return 
+

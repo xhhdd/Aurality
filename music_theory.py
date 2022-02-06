@@ -454,11 +454,11 @@ def write_chord_note():
 
 def chord_resolution():
     # 专属参数
-    key_num_l=[0]
+    key_num_l=[0,1,2,3,4,5,6,7]
     sharp_flat_l=['sharp','flat']
-    modal_l=['major','minor'],['nature','harmony']
+    modal_l=[[['major'],['nature','harmony']],[['minor'],['nature','harmony']]]
     chord_name_l=['Mm7','dd7']# 'major','minor','aug','dim'|'MM7','Mm7','mm7','dm7','dd7'
-    invert_l=[3]
+    invert_l=[0,1,2,3]
     def step0(chord_resolution_l): # 关于属七和弦原位解决有三个同样的音而lilypond不支持这件事
         chord_resolution_0=''
         for i in range(1):
@@ -479,7 +479,7 @@ def chord_resolution():
             chord_0+=v1.note_all()+' '
         chord=' < '+chord_0+' >1 '
         # 和弦解决的音，注意两个音上不能叠在一起的事情
-        if chord_t.chord_name=='Mm7' and chord_t.invert_num==0:
+        if chord_t.chord_name=='Mm7' and chord_t.inversion_num==0:
             chord_resolution=step0(chord_resolution_l)
         else:
             chord_resolution_0=''
@@ -774,4 +774,4 @@ def write_chromatic_scale():
         return '运行完成'
     step2()
     return '运行完成'
-
+    

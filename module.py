@@ -2,6 +2,7 @@
 from itertools import count
 from os import remove
 import random
+from unittest import result
 # 音符的类
 class module_note:
     def __init__(self,note_num,accidental_num):
@@ -515,9 +516,102 @@ class tone_semitone:
         return kind_zh+tone_semitone_zh,kind_en+' '+tone_semitone_en,errors
 
 # 节奏的类
+
 class module_rythem:
     def __init__(self,time_sign):
         self.time_sign=time_sign
+        # 单拍子与复拍子
+        if self.time_sign[0] in [2,3,4] and self.time_sign[1]==4:
+            self.time_class='42_43_44'
+        if self.time_sign[0] in [3,6,9,12] and self.time_sign[1]==8:
+            self.time_class='38_68_98_128'
+        if self.time_sign[0] in [2,3,4] and self.time_sign[1]==2:
+            self.time_class='22_32_42'
+        if self.time_sign[0] in [6,9,12] and self.time_sign[1]==4:
+            self.time_class='64_94_124'
+        if self.time_sign[0] in [3,6,9,12] and self.time_sign[1]==16:
+            self.time_class='316_616_916_1216'
+        # 不规则拍
+        if self.time_sign[0] in [5,7] and self.time_sign[1]==16:
+            self.time_class='5_7_16'
+        if self.time_sign[0] in [5,7] and self.time_sign[1]==8:
+            self.time_class='5_7_8'
+        if self.time_sign[0] in [5,7] and self.time_sign[1]==4:
+            self.time_class='5_7_4'
+        if self.time_sign[0] in [5,7] and self.time_sign[1]==2:
+            self.time_class='5_7_2'
+        # 计算每个小节的容量，32分音符令为数字1
+        type_time_converter=[2,4,8,16]
+        type_time=[16,8,4,2]
+        self.bar_volume=type_time_converter[type_time.index(self.time_sign[1])]*self.time_sign[0]
+    
+    # 计算使用什么节奏型，使用多少次的所有可能
+    def select_rythem_list(self):
+        def irregular():
+            if self.time_sign[1]==16:
+                pass # 还没有想好怎么组合
+            if self.time_sign[1]==8:
+                pass # 还没有想好怎么组合
+            if self.time_sign[1]==4:
+                rythem_t2=module_rythem([2,4])
+                rythem_t3=module_rythem([3,4])
+                select_all_l2=rythem_t2.select_rythem_list()
+                select_all_l3=rythem_t3.select_rythem_list()
+            return select_all_l2,select_all_l3
+        def main():
+            # 不规则拍
+            if self.time_class in ['5_7_16','5_7_8','5_7_4','5_7_2']:
+                select_all_l2,select_all_l3=irregular()
+                return select_all_l2,select_all_l3
+            # 2/4,3/4,4/4
+            if self.time_class=='42_43_44':
+                select_all_list=[[x1,x2,x3,x4,x5] for x1 in range(10) for x2 in range(10)for x3 in range(10)for x4 in range(10)for x5 in range(10) if x1*8+x2*8+x3*16+x4*24+x5*32==self.bar_volume]
+            # 38_68_98_128
+            if self.time_class=='38_68_98_128':
+                select_all_list=[[x1,x2,x3,x4,x5] for x1 in range(10) for x2 in range(10)for x3 in range(10)for x4 in range(10)for x5 in range(10) if x1*12+x2*12+x3*12+x4*12+x5*24==self.bar_volume]
+            # 22_32_42
+            if self.time_class=='22_32_42':
+                select_all_list=[[x1,x2,x3,x4] for x1 in range(10) for x2 in range(10)for x3 in range(10)for x4 in range(10) if x1*8+x2*16+x3*24+x4*32==self.bar_volume]
+            # 64_94_124
+            if self.time_class=='64_94_124':
+                select_all_list=[[x1,x2,x3,x4,x5] for x1 in range(10) for x2 in range(10)for x3 in range(10)for x4 in range(10)for x5 in range(10) if x1*24+x2*24+x3*24+x4*24+x5*48==self.bar_volume]
+            # 316_616_916_1216
+            if self.time_class=='316_616_916_1216':
+                select_all_list=[[x1,x2,x3,x4,x5] for x1 in range(10) for x2 in range(10)for x3 in range(10)for x4 in range(10)for x5 in range(10) if x1*6+x2*6+x3*6+x4*6+x5*12==self.bar_volume]
+            return select_all_list
+        return main()
+
+    # 一个工具函数，移除掉不需要出现的节奏型类
+    def remove_select_rythem_list(self,select_all_list,remove_rythem_l):
+        def bool_check(remove_num,select_all_list):
+            bool=0
+            for v1 in select_all_list:
+                bool+=1 if v1[remove_num]!=0 else 0
+            return bool
+        def remove():
+            # 把remove_rythem_l转成remove_num_l
+            if self.time_class=='42_43_44':
+                remove_num_l=[['8','4','2','2.','1'].index(v1) for v1 in remove_rythem_l]
+            if self.time_class=='38_68_98_128':
+                remove_num_l=[['4.1','4.2','4.3','4.4','2.'].index(v1) for v1 in remove_rythem_l]
+            if self.time_class=='22_32_42':
+                remove_num_l=[['4','2','2.','1'].index(v1) for v1 in remove_rythem_l]
+            if self.time_class=='64_94_124':
+                remove_num_l=[['2.1','2.2','2.3','2.4','1.'].index(v1) for v1 in remove_rythem_l]
+            if self.time_class=='316_616_916_1216':
+                remove_num_l=[['8.1','8.2','8.3','8.4','4.'].index(v1) for v1 in remove_rythem_l]
+            # 移除不能出现的列表
+            for remove_num in remove_num_l:
+                while bool(bool_check(remove_num,select_all_list)):
+                    for v3 in select_all_list:
+                        if v3[remove_num]!=0:
+                            select_all_list.remove(v3)
+            return select_all_list
+        select_all_list=remove()
+        return select_all_list
+
+    # 根据拍号选择使用哪些节奏型
+    def rythem_list(self):
         # 总时值为八分音符
         self.quaver_list=['8','16 16','16 32 32','32 32 16','32 32 32 32','16. 32','32 16 32',"\\tuplet 3/2 {a' 16 16 16 }",'32 16.']
         # 总时值为附点八分音符
@@ -544,8 +638,6 @@ class module_rythem:
         self.semibreve_list=['1','8 4 4 4 8','16 16 4 4 4 8','16 16 4 4 4 16 16']
         # 总时值为倍全音符
         self.breve_list=["\override Staff.NoteHead.style = #'altdefault a'\\breve "]
-    # 根据拍号整合列表
-    def rythem_list_class(self,time_class):
         # 24_43_44列表1——总时值为八分音符
             # 本列表做了一些特别的处理，为了4分音符为单位拍的节奏型看起来友善一点
         time_24_43_44_list_1=[]
@@ -568,7 +660,7 @@ class module_rythem:
         time_38_68_98_128_list_3=[self.dotted_crotchet_3_list,[0,1,2,3,4,5,6,7,8]] # 0-8
         time_38_68_98_128_list_4=[self.dotted_crotchet_4_list,[0,1,2,3,4,5]] # 0-5
         # 38_68_98_128列表——总时值为附点二分音符
-        time_38_68_98_128_list_5=['2.',[0]]
+        time_38_68_98_128_list_5=[['2.'],[0]]
         # ————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
         # 22_32_42列表1——总时值为四分音符|0-8
         time_22_32_42_list_1=[self.crotchet_list,[0,1,2,3,4,5,6,7,8]]
@@ -585,76 +677,54 @@ class module_rythem:
         time_64_94_124_list_3=[self.dotted_minim_3_list,[0,1,2,3,4,5,6,7,8]] # 0-8
         time_64_94_124_list_4=[self.dotted_minim_4_list,[0,1,2,3,4,5]] # 0-5
         # 64_94_124列表——总时值为附点全音符
-        time_64_94_124_list_5=['1.',[0]]
-        
+        time_64_94_124_list_5=[['1.'],[0]]
+        # ————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+        # 316_616_916_1216——总时值为附点八分音符
+        time_316_616_916_1216_list_1=[self.dotted_quaver_1_list,[0,1,2,3,4]] # 0-4
+        time_316_616_916_1216_list_2=[self.dotted_quaver_2_list,[0,1,2,3,4,5,6,7,8]] # 0-8
+        time_316_616_916_1216_list_3=[self.dotted_quaver_3_list,[0,1,2,3,4,5,6,7,8]] # 0-8
+        time_316_616_916_1216_list_4=[self.dotted_quaver_4_list,[0,1,2,3,4,5]] # 0-5
+        # 316_616_916_1216——总时值为附点四分音符
+        time_316_616_916_1216_list_5=[['4.'],[0]] 
         # 整合列表
         time_24_43_44_list=[time_24_43_44_list_1,time_24_43_44_list_2,time_24_43_44_list_3,time_24_43_44_list_4,time_24_43_44_list_5]
         time_38_68_98_128_list=[time_38_68_98_128_list_1,time_38_68_98_128_list_2,time_38_68_98_128_list_3,time_38_68_98_128_list_4,time_38_68_98_128_list_5]
         time_22_32_42_list=[time_22_32_42_list_1,time_22_32_42_list_2,time_22_32_42_list_3,time_22_32_42_list_4]
         time_64_94_124_list=[time_64_94_124_list_1,time_64_94_124_list_2,time_64_94_124_list_3,time_64_94_124_list_4,time_64_94_124_list_5]
+        time_316_616_916_1216_list=[time_316_616_916_1216_list_1,time_316_616_916_1216_list_2,time_316_616_916_1216_list_3,time_316_616_916_1216_list_4,time_316_616_916_1216_list_5]
         # 进行判断
-        if time_class=='42_43_44':
+        if self.time_class=='42_43_44':
             rythem_list=time_24_43_44_list
-        if time_class=='38_68_98_128':
+        if self.time_class=='38_68_98_128':
             rythem_list=time_38_68_98_128_list
-        if time_class=='22_32_42':
+        if self.time_class=='22_32_42':
             rythem_list=time_22_32_42_list
-        if time_class=='64_94_124':
+        if self.time_class=='64_94_124':
             rythem_list=time_64_94_124_list
+        if self.time_class=='316_616_916_1216':
+            rythem_list=time_316_616_916_1216_list
+        # 不规则拍
+        if self.time_class in ['5_7_16','5_7_8','5_7_4','5_7_2']:
+            rythem_list=self.irregular_rythem_list()
         return rythem_list
-    # 根据输入的拍号转换一小节的容量，并选择对应的节奏型
-    def converter_bar_num(self):
-        # 根据拍号选择列表
-        if self.time_sign[0] in [2,3,4] and self.time_sign[1]==4:
-            time_class='42_43_44'
-            rythem_list=self.rythem_list_class(time_class)
-        if self.time_sign[0] in [3,6,9,12] and self.time_sign[1]==8:
-            time_class='38_68_98_128'
-            rythem_list=self.rythem_list_class(time_class)
-        if self.time_sign[0] in [2,3,4] and self.time_sign[1]==2:
-            time_class='22_32_42'
-            rythem_list=self.rythem_list_class(time_class)
-        if self.time_sign[0] in [6,9,12] and self.time_sign[1]==4:
-            time_class='64_94_124'
-            rythem_list=self.rythem_list_class(time_class)
-        # 计算每个小节的容量，32分音符令为数字1
-        type_time_converter=[2,4,8,16]
-        type_time=[16,8,4,2]
-        bar_num=type_time_converter[type_time.index(self.time_sign[1])]*self.time_sign[0]
-        return bar_num,rythem_list,time_class
-    # 选择使用哪些节奏型，每种使用多少次
-    def select_rythem_class(self,remove_rythem_l):
-        # step2的判断函数
-        def bool_check(remove_num,select_all_list):
-            bool=0
-            for v1 in select_all_list:
-                bool+=1 if v1[remove_num]!=0 else 0
-            return bool
-        # 生成所有列表
-        def step1():
-            bar_num,rythem_list,time_class=self.converter_bar_num()
-            # 2/4,3/4,4/4
-            select_all_list=[[x1,x2,x3,x4,x5] for x1 in range(10) for x2 in range(10)for x3 in range(10)for x4 in range(10)for x5 in range(10) if x1*8+x2*8+x3*16+x4*24+x5*32==bar_num]
-            return rythem_list,select_all_list,time_class
-        # 做出筛选，剔除不需要的列表
-        def step2():
-            rythem_list,select_all_list,time_class=step1()
-            # 算出remove_num_l
-            if time_class=='42_43_44':
-                remove_num_l=[['8','4','2','2.','1'].index(v1) for v1 in remove_rythem_l]
-            # 移除不能出现的列表
-            for remove_num in remove_num_l:
-                while bool(bool_check(remove_num,select_all_list)):
-                    for v3 in select_all_list:
-                        if v3[remove_num]!=0:
-                            select_all_list.remove(v3)
-            return rythem_list,select_all_list
-        rythem_list,select_all_list=step2()
-        return rythem_list,select_all_list
+
+    # 不规则拍生成
+    def irregular_rythem_list(self):
+        # 生成一个实例即可，比如5/4拍也是由42_43_44这一类构成的
+        if self.time_sign[1]==16:
+            pass # 还没有想好怎么组合
+        if self.time_sign[1]==8:
+            pass # 还没有想好怎么组合
+        if self.time_sign[1]==4:
+            rythem_t=module_rythem([2,4]) 
+            rythem_list=rythem_t.rythem_list()
+        return rythem_list
 
 
+# 随机生成一小节的节奏型
 def random_rythem_list(time_sign,remove_rythem_l):
     rythem_t=module_rythem(time_sign)
+
     rythem_list,select_all_list=rythem_t.select_rythem_class(remove_rythem_l)
     select_list=random.choice(select_all_list)
     rythem=[]
@@ -665,8 +735,49 @@ def random_rythem_list(time_sign,remove_rythem_l):
     while [] in rythem:
         rythem.remove([])
     random.shuffle(rythem)
-    rythem=' '.join(rythem)
     return rythem
+
+# 判断整条节奏型中的节奏型是否满足要求
+def judge_rythem_list(rythem_class,rythem_l,key_rythem_l):
+    def init():
+        if rythem_class=='42_43_44':
+            time_sign=[2,4]
+        if rythem_class=='38_68_98_128':
+            time_sign=[3,8]
+        if rythem_class=='22_32_42':
+            time_sign=[2,2]
+        if rythem_class=='64_94_124':
+            time_sign=[6,4]
+        if rythem_class=='316_616_916_1216':
+            time_sign=[3,16]
+        rythem_t=module_rythem(time_sign)
+        rythem_list=rythem_t.rythem_list_class()
+        return rythem_list
+    # 默认规则
+    def default_rule():
+        rythem_list=init()
+        errors_list=[]
+        # 24_34_44节奏型中不要太多的32分音符
+        if rythem_class=='42_43_44':
+            rythem_32=rythem_list[0][0] # 得到32分音符的列表
+            # 判断一条节奏型里面有多少个32分音符的节奏
+            list_32=[v1 for v1 in rythem_l if v1 in rythem_32]
+            if len(list_32)>2:
+                errors_list.append('error')
+        return errors_list
+    # 控制某个节奏型出现多少次
+    def rythem_control_num():
+        return ['']
+    # 报错信息集中
+    def main():
+        errors_list=default_rule()+rythem_control_num()
+        if 'error' in errors_list:
+            errors='error'
+        else:
+            errors=''
+        return errors
+    errors=main()
+    return errors
 
 
 # 数字转中文     
@@ -1235,6 +1346,8 @@ def random_select_note(note_list,space_c,list_num,important_list):
     def step2(): # 控制最少出现两个调号音
         result_list=step1()
         key_note=[v1 for v1 in result_list if v1.note() in important_list]
+        if len(key_note)==0:
+            return result_list
         while len(key_note)<2:
             result_list=step1()
             key_note=[v1 for v1 in result_list if v1.note() in important_list]
