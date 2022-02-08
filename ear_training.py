@@ -12,7 +12,7 @@ accidental_l=[0,1,-1] # -2重降，-1降，0无，1升，2重升
 # 选择谱号
 clef='S' 
 # ly文件生成
-accidental_ly='@0'# ['all','@1','@12','@2','@0']  0是所有记号都有，1是没有重升重降，2是含有重升重降，3是只有重升重降，4是没有升降记号
+accidental_ly='@1'# ['all','@1','@12','@2','@0']  0是所有记号都有，1是没有重升重降，2是含有重升重降，3是只有重升重降，4是没有升降记号
 
 
 def pitch_Mm():
@@ -66,7 +66,7 @@ def pitch_Mm():
 
 def interval_property_ear():
     # 特殊参数
-    interval_num_l=[7]
+    interval_num_l=[2]
     property_l=['M','m']
     def step1():
         interval_t=module.random_interval_t(low_c,high_c,accidental_l,interval_num_l,property_l)
@@ -277,4 +277,3 @@ def rythem_group_ear():
     step2()
     return 
 
-pitch_Mm()

@@ -305,3 +305,22 @@ class ly_set:
         create_ly(ly_layout_1,chord,self.clef,self.main,self.lyric,file)
         create_ly(ly_layout_2,chord,self.clef,self.main_answer,self.lyric_answer,file+'-answer')
         return 'ly文件生成完毕'
+    def rythem_ear(self,time_ly,main_before,question):
+        chord=''
+        bar_num_c=1
+        time_sign_c=0
+        midi_c=1
+        tempo_c=0
+        tempo='\\tempo 4 = 150'
+        time=' %s'%time_ly
+        key_sign_c='\override Staff.KeySignature.break-visibility = ##(#f #f #f)' #调号控制 
+        clef_sign_c='\override Score.Clef.break-visibility = ##(#f #f #t)' #换行后谱号不再重写
+        ly_layout_1=[bar_num_c,time_sign_c,midi_c,tempo_c,tempo,time,key_sign_c,clef_sign_c,main_before]
+        ly_layout_2=[bar_num_c,time_sign_c,0,tempo_c,tempo,time,key_sign_c,clef_sign_c,main_before]
+        # 文件名
+        file=file_name()
+        file=file.base_range(question,self.clef_file,self.accidental_ly,self.low_c,self.high_c)
+        # 拉起ly文件
+        create_ly(ly_layout_1,chord,self.clef,self.main,self.lyric,file)
+        create_ly(ly_layout_2,chord,self.clef,self.main_answer,self.lyric_answer,file+'-answer')
+        return 'ly文件生成完毕'

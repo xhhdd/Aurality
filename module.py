@@ -760,6 +760,10 @@ class module_rythem:
         beam3=" \set Timing.beatStructure = %s "%beatStructure
         beam=beam1+beam2+beam3
         return beam
+    # lilypond的拍号格式
+    def time_ly(self):
+        time_ly="\\time %d/%d "%(self.time_sign[0],self.time_sign[1])
+        return time_ly
 
 # 随机生成一小节的节奏型
 def random_rythem_bar_list(time_sign,remove_rythem_l,irregular_mode='23'): # remove_rythem_l在不规则拍的时候依旧只要填一个列表
@@ -783,7 +787,7 @@ def random_rythem_bar_list(time_sign,remove_rythem_l,irregular_mode='23'): # rem
             rythem_l.remove([])
         random.shuffle(rythem_l) # 打乱节奏型
         return rythem_l
-
+    # 不规则拍的节奏型
     def irregular_rythem(select_all_l,rythem_list):
         select_list=random.choice(select_all_l) # 抽取其中select列表
         rythem_l=[]
@@ -796,7 +800,6 @@ def random_rythem_bar_list(time_sign,remove_rythem_l,irregular_mode='23'): # rem
         # 打乱节奏型
         random.shuffle(rythem_l) 
         return rythem_l
-
     def irregular():
         # 得到节奏型的select列表
         select_all_l2,select_all_l3=rythem_t.select_rythem_list()
@@ -829,31 +832,52 @@ def random_rythem_bar_list(time_sign,remove_rythem_l,irregular_mode='23'): # rem
         return rythem_l,rythem_t
     return main()
 
-
+# 生成一条节奏型|固定的拍号
+def random_rythem_list(time_sign,remove_rythem_l,irregular_mode,bar_num):
+    # 生成节奏型
+    def step1():
+        # 判断是不是不规则拍子
+        if module_rythem(time_sign).time_class not in ['5_7_16','5_7_8','5_7_4','5_7_2']:
+            # 生成一小节的节奏型
+            rythem_list=[]
+            for i in range(bar_num):
+                rythem_bar,rythem_t=random_rythem_bar_list(time_sign,remove_rythem_l,irregular_mode)
+                rythem_list+=rythem_bar
+        else:
+            # 生成一小节的节奏型
+            rythem_list=[]
+            for i in range(bar_num):
+                rythem_bar,rythem_t=random_rythem_bar_list(time_sign,remove_rythem_l,irregular_mode)
+                # 解开嵌套列表
+                v2=[]
+                for v1 in rythem_bar:
+                    v2+=v1
+                # 节奏型合到一起
+                rythem_list+=v2
+        return rythem_list,rythem_t
+    # 对整条节奏型进行判断
+    def step2():
+        rythem_list,rythem_t=step1()
+        time_class=rythem_t.time_class
+        errors=judge_rythem_list(rythem_list,time_class)
+        while errors=='error':
+            rythem_list,rythem_t=step1()
+            time_class=rythem_t.time_class
+            errors=judge_rythem_list(rythem_list,time_class)
+        return rythem_list,rythem_t
+    rythem_list,rythem_t=step2()
+    return rythem_list,rythem_t
 
 # 判断整条节奏型中的节奏型是否满足要求
-def judge_rythem_list(rythem_class,rythem_l,key_rythem_l):
-    def init():
-        if rythem_class=='42_43_44':
-            time_sign=[2,4]
-        if rythem_class=='38_68_98_128':
-            time_sign=[3,8]
-        if rythem_class=='22_32_42':
-            time_sign=[2,2]
-        if rythem_class=='64_94_124':
-            time_sign=[6,4]
-        if rythem_class=='316_616_916_1216':
-            time_sign=[3,16]
-        rythem_t=module_rythem(time_sign)
-        rythem_list=rythem_t.rythem_list_class()
-        return rythem_list
+def judge_rythem_list(rythem_l,time_class):
     # 默认规则
     def default_rule():
-        rythem_list=init()
-        errors_list=[]
+        #得到32分音符列表
+        rythem_t=module_rythem([2,4])
+        rythem_32=rythem_t.rythem_list()[0][0]
         # 24_34_44节奏型中不要太多的32分音符
-        if rythem_class=='42_43_44':
-            rythem_32=rythem_list[0][0] # 得到32分音符的列表
+        errors_list=[]
+        if time_class=='24_34_44':
             # 判断一条节奏型里面有多少个32分音符的节奏
             list_32=[v1 for v1 in rythem_l if v1 in rythem_32]
             if len(list_32)>2:
@@ -865,10 +889,7 @@ def judge_rythem_list(rythem_class,rythem_l,key_rythem_l):
     # 报错信息集中
     def main():
         errors_list=default_rule()+rythem_control_num()
-        if 'error' in errors_list:
-            errors='error'
-        else:
-            errors=''
+        errors='error' if 'error' in errors_list else ''
         return errors
     errors=main()
     return errors
