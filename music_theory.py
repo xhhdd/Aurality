@@ -8,11 +8,11 @@ import create_ly
 low_c=['a',0]
 high_c=['c',3] 
 # 这是能选择的升降记号
-accidental_l=[0,1,-1,2,-2] # -2重降，-1降，0无，1升，2重升
+accidental_l=[0] # -2重降，-1降，0无，1升，2重升
 # 选择谱号
 clef='S' 
 # ly文件生成
-accidental_ly='@12'# ['all','@1','@12','@2','@0']  0是所有记号都有，1是没有重升重降，2是含有重升重降，3是只有重升重降，4是没有升降记号
+accidental_ly=''# ['all','@1','@12','@2','@0']  0是所有记号都有，1是没有重升重降，2是含有重升重降，3是只有重升重降，4是没有升降记号
 
 
 
@@ -25,7 +25,7 @@ def write_note_name():
         return note_all,note_name
     def step_2():
         note_all,note_name_all='',''
-        for o in range(1):
+        for o in range(100):
             note_row,note_name_row='',''
             for i in range(10):
                 note,note_name=step_1()

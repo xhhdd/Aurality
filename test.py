@@ -13,35 +13,16 @@ accidental_ly='@12'# ['all','@1','@12','@2','@0']  0是所有记号都有，1是
 
 
 import random
-import module
+
 import create_ly
 
 time_sign=[2,4]
 remove_rythem_l=['1','2.','2']
 
-def step1():
-    rythem=module.random_rythem_list(time_sign,remove_rythem_l)
-    return rythem
-def step2():
-    rythem_all=''
-    for o in range(100):
-        rythem_row=''
-        for i in range(4):
-            rythem_row+=step1()+' '
-        # 行数
-        start_row=0
-        row_name=" \\break \set Score.currentBarNumber = #%s " %(o+2+start_row)
-        rythem_all+=rythem_row+row_name
-    # 拉起ly文件
-    main="a'"+rythem_all
-    lyric=''
-    main_answer=''
-    lyric_answer=''
-    ly_t=create_ly.ly_set(accidental_ly,low_c,high_c,clef,main,lyric,main_answer,lyric_answer)
-    question='test'
-    ly_t.write_note_name(question)
-    return 
 
-rythem_t=module.module_rythem([5,4])
-print(rythem_t.select_rythem_list())
-print(rythem_t.rythem_list())
+
+
+
+s='2,3'
+s=s.split(',')
+print(s)
