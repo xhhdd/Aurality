@@ -57,4 +57,3 @@ def rythem_ear():
         return 
     return step2()
 
-rythem_ear()

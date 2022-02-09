@@ -766,7 +766,7 @@ class module_rythem:
         return time_ly
 
 # 随机生成一小节的节奏型
-def random_rythem_bar_list(time_sign,remove_rythem_l,irregular_mode='23'): # remove_rythem_l在不规则拍的时候依旧只要填一个列表
+def random_rythem_bar_list(time_sign,remove_rythem_l,irregular_mode): # remove_rythem_l在不规则拍的时候依旧只要填一个列表
     # 生成一个节奏实例
     rythem_t=module_rythem(time_sign)
     def normal():
