@@ -20,8 +20,8 @@ import create_ly
 
 
 def rythem_ear():
-    time_sign=[4,4]
-    remove_rythem_l=[]
+    time_sign=[2,4]
+    remove_rythem_l=['2','8','2.','1']
     irregular_mode='2,3'
     bar_num=4
     def step1():
@@ -35,7 +35,7 @@ def rythem_ear():
         return rythem,beam,time_ly
     def step2():
         rythem_all,rythem_midi_all='',''
-        for o in range(10):
+        for o in range(100):
             rythem_bar,rythem_midi_bar='',''
             for i in range (1):
                 rythem,beam,time_ly=step1()
