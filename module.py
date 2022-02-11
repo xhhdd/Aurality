@@ -940,6 +940,26 @@ def interval_to_num(interval_c):
     count_num=abs(note_t2.count_num()-note_t1.count_num())
     return count_num
 
+# 计算等音程
+def enharmonic_interval(interval_t):
+    # 根据输入的音程实例，计算两个音的等音列表
+    note_t1,note_t2=interval_t.note_t1,interval_t.note_t2
+    enharmonic_l1=enharmonica(note_t1)
+    enharmonic_l2=enharmonica(note_t2)
+    # 接下来把这两个列表做一个全排列,并且调用音程的类，形成一个实例列表|这里要注意可能二度三度会出一些差错！
+    enharmonic_interval=[]
+    for v1 in enharmonic_l1:
+        for v2 in enharmonic_l2:
+            enharmonic_interval.append(module_interval(v1,v2))
+    # 接下来通过音程的度数来判断是等结构的音程or不等结构的音程
+    same_degree=[]
+    diff_degree=[]
+    for v1 in enharmonic_interval:
+        if v1.interval_num()[0]==interval_t.interval_num()[0]:
+            same_degree.append(v1)
+        else:
+            diff_degree.append(v1)
+    return same_degree,diff_degree
 
 # 随机生成一个音符实例
 def random_create_note(range_low_c,range_high_c,accidental_l):
@@ -1526,7 +1546,7 @@ def judge_rythem_list(rythem_l,time_class):
     errors=main()
     return errors
 
-# 调式中的音级
+# 随机生成一个调式中的音级
 def random_scale_Mm_step(range_low_c,range_high_c,key_num_l,sharp_flat_l,Mm_mode_l):
     # 随机生成一条大小调的音组
     note_list,Mm_t=random_Mm_note_list(range_low_c,range_high_c,key_num_l,sharp_flat_l,Mm_mode_l)
@@ -1541,3 +1561,12 @@ def random_scale_Mm_step(range_low_c,range_high_c,key_num_l,sharp_flat_l,Mm_mode
     step_name_mode1=step_name_l1[step_num]
     step_name_mode2=step_name_l2[step_num]
     return Mm_t,note,[step_name_mode1,step_name_mode2]
+
+# 随机生成一组等音程
+def random_enharmonic_interval(range_low_c,range_high_c,accidental_l,interval_num_l,property_l):
+    # 随机生成一个音程
+    interval_t=random_interval_t(range_low_c,range_high_c,accidental_l,interval_num_l,property_l)
+    # 调用函数得到等音程列表
+    same_degree,diff_degree=enharmonic_interval(interval_t)
+    return interval_t,same_degree,diff_degree
+

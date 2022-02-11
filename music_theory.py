@@ -857,4 +857,12 @@ def write_scale_Mm_step():
     step2()
     return '运行完成'
 
-write_scale_Mm_step()
+
+interval_num_l=[6,7,8,9,10,11,12,13,14]
+property_l=['d_d','d','m','M','A','d_A','p'] # ['d_d','d','m','M','A','d_A','p','fail']
+interval_t,same_degree,diff_degree=module.random_enharmonic_interval(range_low_c,range_high_c,accidental_l,interval_num_l,property_l)
+print('等结构的音程')
+print(interval_t.note_t1.note_all(),interval_t.note_t2.note_all())
+for v1 in same_degree:
+    print(v1.note_t1.note_all())
+    print(v1.note_t2.note_all())

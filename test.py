@@ -2,8 +2,8 @@
 
 # 与音相关
 # 列表前一个是音名，后一个是组别
-low_c=['a',0]
-high_c=['c',3] 
+range_low_c=['a',0]
+range_high_c=['c',3] 
 # 这是能选择的升降记号
 accidental_l=[0,1,-1,2,-2] # -2重降，-1降，0无，1升，2重升
 # 选择谱号
@@ -18,42 +18,44 @@ import create_ly
 
 
 
-
-def rythem_ear():
-    time_sign=[2,4]
-    remove_rythem_l=['2','8','2.','1']
-    irregular_mode='2,3'
-    bar_num=4
+def write_key_sign():
+    key_num_l=[1,2,3,4,5,6,7]
+    sharp_flat_l=['sharp','flat']
     def step1():
-        # 生成一组节奏型
-        rythem_list,rythem_t=module.random_rythem_list(time_sign,remove_rythem_l,irregular_mode,bar_num)
-        rythem=' '.join(rythem_list)
-        # beam连杆设置
-        beam=rythem_t.beam(irregular_mode)
-        # 拍号
-        time_ly=rythem_t.time_ly()
-        return rythem,beam,time_ly
+        # 随机生成一个大小调的实例
+        Mm_t=module.random_Mm_t(key_num_l,sharp_flat_l,[[['major'],['nature']],[['minor'],['nature']]])
+        # 得到调号书写的ly形式
+        key_sign=Mm_t.key_t.key_sign_ly()+' '
+        # 得到大小调的名字
+        tonic,modal2,modal1=Mm_t.scale_name_zh()
+        scale_name=tonic+modal1+'1 '
+        # 需要跳过的空格
+        skip=" \skip1 "
+        return key_sign,skip,scale_name
     def step2():
-        rythem_all,rythem_midi_all='',''
-        for o in range(100):
-            rythem_bar,rythem_midi_bar='',''
-            for i in range (1):
-                rythem,beam,time_ly=step1()
-                rythem_midi_bar=time_ly+rythem+' \\time 2/4 \skip1 '+time_ly+rythem+' \\time 2/4 \skip1 '+time_ly+rythem
-                rythem_bar+=rythem
+        scale_name_all,key_sign_all,skip_all='','',''
+        for o in range(10):
+            scale_name_row,key_sign_row,skip_row='','',''
+            for i in range(4):
+                key_sign,skip,scale_name=step1()
+                scale_name_row+=scale_name
+                key_sign_row+=key_sign+skip
+                skip_row+=skip
             # 行数
             start_row=0
             row_name=" \\break \set Score.currentBarNumber = #%s " %(o+2+start_row)
-            rythem_all+=rythem_bar+row_name
-            rythem_midi_all+='\\time 2/4 \skip1 '+rythem_midi_bar+'\\time 2/4 \skip1 '+row_name
+            scale_name_all+=scale_name_row+row_name
+            key_sign_all+=key_sign_row+row_name
+            skip_all+=skip_row+row_name
         # 拉起ly文件
-        main=rythem_midi_all
-        lyric=''
-        main_answer=rythem_all
-        lyric_answer=''
-        ly_t=create_ly.ly_set(accidental_ly,low_c,high_c,clef,main,lyric,main_answer,lyric_answer)
-        question='rythem_ear'
-        ly_t.rythem_ear(time_ly,beam,question)
-        return 
-    return step2()
+        main=skip_all
+        lyric=scale_name_all
+        main_answer=key_sign_all
+        lyric_answer=scale_name_all
+        ly_t=create_ly.ly_set(accidental_ly,range_low_c,range_high_c,clef,main,lyric,main_answer,lyric_answer)
+        question='write_key_sign'
+        ly_t.write_note_name(question)
+        return
+    step2()
+    return
 
