@@ -415,7 +415,7 @@ class module_rythem:
         time_24_34_44_list_1+=[v1+' '+v2 for v1 in self.quaver_list for v2 in ['8']]
         time_24_34_44_list_1=[time_24_34_44_list_1,[v1 for v1 in range(len(time_24_34_44_list_1))]]
         # 24_34_44列表2——总时值为四分音符|0-8
-        time_24_34_44_list_2=[self.crotchet_list,[0,1,2,3,4]]
+        time_24_34_44_list_2=[self.crotchet_list,[0,1,2,3,4,5,6]]
         # 24_34_44列表3——总时值为二分音符|0-8
         time_24_34_44_list_3=[self.minim_list,[0,1,2,3,4,5,6,7,8]]
         # 24_34_44列表4——总时值为附点二分音符|0-3
@@ -940,17 +940,59 @@ def interval_to_num(interval_c):
     count_num=abs(note_t2.count_num()-note_t1.count_num())
     return count_num
 
+# 判断整条节奏型中的节奏型是否满足要求
+def judge_rythem_list(rythem_l,time_class):
+    # 默认规则
+    def default_rule():
+        #得到32分音符列表
+        rythem_t=module_rythem([2,4])
+        rythem_old_32=rythem_t.rythem_list()[0][0]
+        rythem_reapt_32=rythem_t.rythem_list()[1][0]
+            # 去重
+        rythem_32=[]
+        for v1 in rythem_old_32:
+            if v1 not in rythem_reapt_32:
+                rythem_32.append(v1)
+        # 24_34_44节奏型中不要太多的32分音符
+        errors_list=[]
+        if time_class=='24_34_44':
+            # 判断一条节奏型里面有多少个32分音符的节奏
+            list_32=[v1 for v1 in rythem_l if v1 in rythem_32]
+            if len(list_32)>2:
+                errors_list.append('error')
+        return errors_list
+    # 控制某个节奏型出现多少次
+    def rythem_control_num():
+        errors_list=[]
+        list=[v1 for v1 in rythem_l if v1 == '16 8 16']
+        if len(list)<2:
+            errors_list.append('error')
+        else:
+            errors_list.append('')
+        return errors_list
+    # 报错信息集中
+    def main():
+        errors_list=default_rule()+rythem_control_num()
+        errors='error' if 'error' in errors_list else ''
+        return errors
+    errors=main()
+    return errors
+    
 # 计算等音程
 def enharmonic_interval(interval_t):
     # 根据输入的音程实例，计算两个音的等音列表
     note_t1,note_t2=interval_t.note_t1,interval_t.note_t2
-    enharmonic_l1=enharmonica(note_t1)
-    enharmonic_l2=enharmonica(note_t2)
+    enharmonic_l1=enharmonica(note_t1)+[note_t1]
+    enharmonic_l2=enharmonica(note_t2)+[note_t2]
     # 接下来把这两个列表做一个全排列,并且调用音程的类，形成一个实例列表|这里要注意可能二度三度会出一些差错！
     enharmonic_interval=[]
     for v1 in enharmonic_l1:
         for v2 in enharmonic_l2:
-            enharmonic_interval.append(module_interval(v1,v2))
+            # 不要取到本来输入的两个音
+            if v1!=note_t1 or v2!=note_t2:
+                # 调用interval之间要判断一下音程度数
+                if v2.note_num>=v1.note_num:
+                    enharmonic_interval.append(module_interval(v1,v2))
     # 接下来通过音程的度数来判断是等结构的音程or不等结构的音程
     same_degree=[]
     diff_degree=[]
@@ -1514,37 +1556,7 @@ def random_rythem_list(time_sign,remove_rythem_l,irregular_mode,bar_num):
     rythem_list,rythem_t=step2()
     return rythem_list,rythem_t
 
-# 判断整条节奏型中的节奏型是否满足要求
-def judge_rythem_list(rythem_l,time_class):
-    # 默认规则
-    def default_rule():
-        #得到32分音符列表
-        rythem_t=module_rythem([2,4])
-        rythem_old_32=rythem_t.rythem_list()[0][0]
-        rythem_reapt_32=rythem_t.rythem_list()[1][0]
-            # 去重
-        rythem_32=[]
-        for v1 in rythem_old_32:
-            if v1 not in rythem_reapt_32:
-                rythem_32.append(v1)
-        # 24_34_44节奏型中不要太多的32分音符
-        errors_list=[]
-        if time_class=='24_34_44':
-            # 判断一条节奏型里面有多少个32分音符的节奏
-            list_32=[v1 for v1 in rythem_l if v1 in rythem_32]
-            if len(list_32)>2:
-                errors_list.append('error')
-        return errors_list
-    # 控制某个节奏型出现多少次
-    def rythem_control_num():
-        return ['']
-    # 报错信息集中
-    def main():
-        errors_list=default_rule()+rythem_control_num()
-        errors='error' if 'error' in errors_list else ''
-        return errors
-    errors=main()
-    return errors
+
 
 # 随机生成一个调式中的音级
 def random_scale_Mm_step(range_low_c,range_high_c,key_num_l,sharp_flat_l,Mm_mode_l):

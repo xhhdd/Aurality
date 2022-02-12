@@ -5,10 +5,10 @@ import module
 import create_ly
 # 与音相关
 # 列表前一个是音名，后一个是组别
-range_low_c=['a',0]
-range_high_c=['c',3] 
+range_low_c=['c',1]
+range_high_c=['c',2] 
 # 这是能选择的升降记号
-accidental_l=[0] # -2重降，-1降，0无，1升，2重升
+accidental_l=[1,-1] # -2重降，-1降，0无，1升，2重升
 # 选择谱号
 clef='S' 
 # ly文件生成
@@ -858,11 +858,3 @@ def write_scale_Mm_step():
     return '运行完成'
 
 
-interval_num_l=[6,7,8,9,10,11,12,13,14]
-property_l=['d_d','d','m','M','A','d_A','p'] # ['d_d','d','m','M','A','d_A','p','fail']
-interval_t,same_degree,diff_degree=module.random_enharmonic_interval(range_low_c,range_high_c,accidental_l,interval_num_l,property_l)
-print('等结构的音程')
-print(interval_t.note_t1.note_all(),interval_t.note_t2.note_all())
-for v1 in same_degree:
-    print(v1.note_t1.note_all())
-    print(v1.note_t2.note_all())
