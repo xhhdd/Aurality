@@ -56,7 +56,7 @@ def create_ly(ly_layout_c,chord,clef,main,lyric,file):
     score_2='\n\
     <<  \n\
     { \n\
-        \set Staff.printKeyCancellation = ##f'
+        \set Staff.printKeyCancellation = ##f \set Staff.explicitKeySignatureVisibility = #end-of-line-invisible '
 
     # 0表示不要加上速度，1则是要加上
     if tempo_c==0:
@@ -323,4 +323,23 @@ class ly_set:
         # 拉起ly文件
         create_ly(ly_layout_1,chord,self.clef,self.main,self.lyric,file)
         create_ly(ly_layout_2,chord,self.clef,self.main_answer,self.lyric_answer,file+'-answer')
+        return 'ly文件生成完毕'
+    def enharmonic_interval(self,question):
+        chord=''
+        bar_num_c=1
+        time_sign_c=0
+        midi_c=0
+        tempo_c=0
+        tempo='\\tempo 4 = 150'
+        time='\\time 2/2'  
+        key_sign_c='\override Staff.KeySignature.break-visibility = ##(#f #f #f)' #调号控制 
+        clef_sign_c='\override Score.Clef.break-visibility = ##(#f #f #t)' #换行后谱号不再重写
+        main_before=' \override Staff.BarLine.stencil = ##f ' #\skip
+        ly_layout_c=[bar_num_c,time_sign_c,midi_c,tempo_c,tempo,time,key_sign_c,clef_sign_c,main_before]
+        # 文件名
+        file=file_name()
+        file=file.base_range(question,self.clef_file,self.accidental_ly,self.low_c,self.high_c)
+        # 拉起ly文件
+        create_ly(ly_layout_c,chord,self.clef,self.main,self.lyric,file)
+        create_ly(ly_layout_c,chord,self.clef,self.main_answer,self.lyric_answer,file+'-answer')
         return 'ly文件生成完毕'
