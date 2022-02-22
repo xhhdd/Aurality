@@ -5,8 +5,8 @@ import module
 import create_ly
 # 与音相关
 # 列表前一个是音名，后一个是组别
-low_c=['a',0]
-high_c=['c',3] 
+range_low_c=['c',1]
+range_high_c=['c',2] 
 # 这是能选择的升降记号
 accidental_l=[0,1,-1] # -2重降，-1降，0无，1升，2重升
 # 选择谱号
@@ -14,17 +14,50 @@ clef='S'
 # ly文件生成
 accidental_ly='@1'# ['all','@1','@12','@2','@0']  0是所有记号都有，1是没有重升重降，2是含有重升重降，3是只有重升重降，4是没有升降记号
 
+def random_pitch():
+    space_c=[[2,'m'],[5,'p']]
+    def step1():
+        t=module.random_chromatic_note_list(range_low_c,range_high_c,[0],['sharpe'])
+        note_list=t.minor()[1]
+        # 挑出需要的音
+        note_list=module.random_select_note(note_list,space_c,10,[])
+        # 把音的实例转成具体的音符
+        note_l=[v1.note_all() for v1 in note_list]
+        note='1 '.join(note_l)
+        return note
+    def step2():
+        note_all,note_midi_all='',''
+        for o in range(100):
+            note_row=''
+            for i in range(1):
+                note=step1()
+                note_row+=note
+            # 行数
+            start_row=0
+            row_name=" \\break \set Score.currentBarNumber = #%s " %(o+2+start_row)
+            note_all+=note_row+row_name
+            note_midi_all+=' \skip1 '+note_row+' \skip1 '+row_name
+        # 拉起ly文件
+        main=note_midi_all
+        lyric=''
+        main_answer=note_all
+        lyric_answer=''
+        ly_t=create_ly.ly_set(accidental_ly,range_low_c,range_high_c,clef,main,lyric,main_answer,lyric_answer)
+        question='pitch_Mm'
+        ly_t.pitch_Mm(question)
+        return 
+    return step2()
 
 def pitch_Mm():
     # 特殊参数
     key_num_l=[0]
     sharp_flat_l=['sharp']
     modal_l=[[['major'],['nature']],[['major'],['nature']]]
-    space_l=[[1,'A'],[5,'p']]
+    space_l=[[1,'A'],[4,'p']]
     def step1():
         list_num=10 # 控制一次有多少个单音
         # 生成一个大调或小调的音组
-        note_list,Mm_t=module.random_Mm_note_list(low_c,high_c,key_num_l,sharp_flat_l,modal_l)
+        note_list,Mm_t=module.random_Mm_note_list(range_low_c,range_high_c,key_num_l,sharp_flat_l,modal_l)
         key_list=Mm_t.key_t.key_list()[0]
         note_list=module.random_select_note(note_list,space_l,list_num,key_list)
         # 答案上体现的音符
@@ -56,7 +89,7 @@ def pitch_Mm():
         lyric=''
         main_answer=note_all
         lyric_answer=''
-        ly_t=create_ly.ly_set(accidental_ly,low_c,high_c,clef,main,lyric,main_answer,lyric_answer)
+        ly_t=create_ly.ly_set(accidental_ly,range_low_c,range_high_c,clef,main,lyric,main_answer,lyric_answer)
         question='pitch_Mm'
         ly_t.pitch_Mm(question)
         return 
@@ -64,12 +97,14 @@ def pitch_Mm():
     return '运行完成'
 
 
+
+
 def interval_property_ear():
     # 特殊参数
-    interval_num_l=[2]
+    interval_num_l=[3]
     property_l=['M','m']
     def step1():
-        interval_t=module.random_interval_t(low_c,high_c,accidental_l,interval_num_l,property_l)
+        interval_t=module.random_interval_t(range_low_c,range_high_c,accidental_l,interval_num_l,property_l)
         note_t1,note_t2=interval_t.note_t1,interval_t.note_t2
         # 音程里面的两个音
         interval=" < "+note_t1.note_all()+' '+note_t2.note_all()+" >1 "
@@ -96,7 +131,7 @@ def interval_property_ear():
         lyric=''
         main_answer=interval_all
         lyric_answer=interval_name_all
-        ly_t=create_ly.ly_set(accidental_ly,low_c,high_c,clef,main,lyric,main_answer,lyric_answer)
+        ly_t=create_ly.ly_set(accidental_ly,range_low_c,range_high_c,clef,main,lyric,main_answer,lyric_answer)
         question='interval_property_ear'
         ly_t.pitch_Mm(question)
         return '运行完成'
@@ -116,7 +151,7 @@ def pitch_group_Mm():
     skip=" \skip 16*%d "%list_num
     def step1():
         # 生成一个大调或小调的音组
-        note_list,Mm_t=module.random_Mm_note_list(low_c,high_c,key_num_l,sharp_flat_l,modal_l)
+        note_list,Mm_t=module.random_Mm_note_list(range_low_c,range_high_c,key_num_l,sharp_flat_l,modal_l)
         key_list=Mm_t.key_t.key_list()[0]
         note_list=module.random_select_note(note_list,space_l,list_num,key_list)
         # 答案上的音符
@@ -141,7 +176,7 @@ def pitch_group_Mm():
         lyric=''
         main_answer=note_all
         lyric_answer=''
-        ly_t=create_ly.ly_set(accidental_ly,low_c,high_c,clef,main,lyric,main_answer,lyric_answer)
+        ly_t=create_ly.ly_set(accidental_ly,range_low_c,range_high_c,clef,main,lyric,main_answer,lyric_answer)
         question='pitch_group_Mm'
         ly_t.pitch_group_ear(time_sign,question)
         return '运行完成'
@@ -159,7 +194,7 @@ def interval_group_ear():
     # 设定ly文件中跳过的字符串
     skip=' \\time %d/4 '%list_num+" \skip 4*%d "%list_num+' \\time '+time_sign
     def step1():
-        interval_l=module.random_interval_list(low_c,high_c,accidental_l,interval_num_l,property_l,space_l,list_num)
+        interval_l=module.random_interval_list(range_low_c,range_high_c,accidental_l,interval_num_l,property_l,space_l,list_num)
         # 音程的两个音
         interval=[' < '+v1.note_t1.note_all()+' '+v1.note_t2.note_all()+' >1 ' for v1 in interval_l]
         interval=' '.join(interval)
@@ -187,7 +222,7 @@ def interval_group_ear():
         lyric=''
         main_answer=interval_all
         lyric_answer=interval_name_all
-        ly_t=create_ly.ly_set(accidental_ly,low_c,high_c,clef,main,lyric,main_answer,lyric_answer)
+        ly_t=create_ly.ly_set(accidental_ly,range_low_c,range_high_c,clef,main,lyric,main_answer,lyric_answer)
         question='interval_group_ear'
         ly_t.pitch_group_ear(time_sign,question)
         return '运行完成'
@@ -202,7 +237,7 @@ def chord_property_ear():
     chord_name_l=['dim','aug']
     invert_l=[0]
     def step1():
-        chord_t=module.random_chord_t(low_c,high_c,accidental_l,chord_name_l,invert_l)
+        chord_t=module.random_chord_t(range_low_c,range_high_c,accidental_l,chord_name_l,invert_l)
         chord_l=chord_t.chord()[1]
         # 和弦的名字
         chord_name=chord_t.chord_name_zh()[0]+chord_t.chord_name_zh()[1]+'1 '
@@ -230,7 +265,7 @@ def chord_property_ear():
         lyric=''
         main_answer=chord_all
         lyric_answer=chord_name_all
-        ly_t=create_ly.ly_set(accidental_ly,low_c,high_c,clef,main,lyric,main_answer,lyric_answer)
+        ly_t=create_ly.ly_set(accidental_ly,range_low_c,range_high_c,clef,main,lyric,main_answer,lyric_answer)
         question='chord_property_ear'
         ly_t.pitch_Mm(question)
         return '运行完成'
@@ -271,7 +306,7 @@ def rythem_group_ear():
         main_answer=rythem_all
         lyric_answer=''
         main_before=beam
-        ly_t=create_ly.ly_set(accidental_ly,low_c,high_c,clef,main,lyric,main_answer,lyric_answer)
+        ly_t=create_ly.ly_set(accidental_ly,range_low_c,range_high_c,clef,main,lyric,main_answer,lyric_answer)
         question='rythem_group_ear'
         ly_t.rythem_group_ear(time_sign,question,main_before)
     step2()
@@ -279,7 +314,7 @@ def rythem_group_ear():
 
 def rythem_ear():
     time_sign=[2,4]
-    remove_rythem_l=['2','8','2.','1']
+    remove_rythem_l=['8','2.','1']
     irregular_mode='2,3'
     bar_num=4
     def step1():
@@ -309,9 +344,10 @@ def rythem_ear():
         lyric=''
         main_answer=rythem_all
         lyric_answer=''
-        ly_t=create_ly.ly_set(accidental_ly,low_c,high_c,clef,main,lyric,main_answer,lyric_answer)
+        ly_t=create_ly.ly_set(accidental_ly,range_low_c,range_high_c,clef,main,lyric,main_answer,lyric_answer)
         question='rythem_ear'
         ly_t.rythem_ear(time_ly,beam,question)
         return 
     return step2()
 
+rythem_ear()

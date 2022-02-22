@@ -415,9 +415,9 @@ class module_rythem:
         time_24_34_44_list_1+=[v1+' '+v2 for v1 in self.quaver_list for v2 in ['8']]
         time_24_34_44_list_1=[time_24_34_44_list_1,[v1 for v1 in range(len(time_24_34_44_list_1))]]
         # 24_34_44列表2——总时值为四分音符|0-8
-        time_24_34_44_list_2=[self.crotchet_list,[0,1,2,3,4,5,6]]
+        time_24_34_44_list_2=[self.crotchet_list,[0,1,2,3,4,5,6,7,8]]
         # 24_34_44列表3——总时值为二分音符|0-8
-        time_24_34_44_list_3=[self.minim_list,[0,1,2,3,4,5,6,7,8]]
+        time_24_34_44_list_3=[self.minim_list,[3,4,5,6]]
         # 24_34_44列表4——总时值为附点二分音符|0-3
         time_24_34_44_list_4=[self.dotted_minim_list,[0,1,2,3]]
         # 24_34_44列表5——总时值为全音符|0-3
@@ -964,11 +964,13 @@ def judge_rythem_list(rythem_l,time_class):
     # 控制某个节奏型出现多少次
     def rythem_control_num():
         errors_list=[]
-        list=[v1 for v1 in rythem_l if v1 == '16 8 16']
-        if len(list)<2:
+
+        list=[v1 for v1 in rythem_l if v1 in ['8 4 8','16 16 4 8','8 4 16 16','16 16 4 16 16']]
+        if len(list)<1:
             errors_list.append('error')
         else:
             errors_list.append('')
+
         return errors_list
     # 报错信息集中
     def main():
@@ -1002,6 +1004,23 @@ def enharmonic_interval(interval_t):
         else:
             diff_degree.append(v1)
     return same_degree,diff_degree
+
+# 计算等和弦|只能够让三和弦或者七和弦进行使用
+def enharmonic_chord(chord_t):
+    # 根据输入的和弦实例，计算最低音的等音列表
+    enharmonica_list=enharmonica(chord_t.chord()[1][0])
+    # 用等音与和弦的性质再次调用和弦模块
+    new_root_note=[]
+    for v1 in enharmonica_list:
+        new_chord_t=module_chord(v1,chord_t.chord_name,chord_t.inversion_num)
+        if new_chord_t.chord()[2]!='error':
+            new_root_note.append(v1)
+    return new_root_note
+
+
+
+
+
 
 # 随机生成一个音符实例
 def random_create_note(range_low_c,range_high_c,accidental_l):
@@ -1388,7 +1407,7 @@ def random_select_note(note_list,space_c,list_num,important_list):
         # 挑出音的列表
         result_list=[note_seed]
         while len(result_list)!=list_num:
-            note_new=note_list[random.randint(0,max_num-1)]
+            note_new=note_list[random.randint(0,max_num)]
             count_num1,count_num2=note_new.count_num(),result_list[-1].count_num()
             while abs(count_num1-count_num2)>space_max or abs(count_num1-count_num2)<space_min:
                 note_new=note_list[random.randint(0,max_num-1)]

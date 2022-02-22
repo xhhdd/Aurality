@@ -5,10 +5,10 @@ import module
 import create_ly
 # 与音相关
 # 列表前一个是音名，后一个是组别
-range_low_c=['c',1]
-range_high_c=['c',2] 
+range_low_c=['a',0]
+range_high_c=['c',3] 
 # 这是能选择的升降记号
-accidental_l=[1,-1] # -2重降，-1降，0无，1升，2重升
+accidental_l=[1,0,2,-1,-2] # -2重降，-1降，0无，1升，2重升
 # 选择谱号
 clef='S' 
 # ly文件生成
@@ -247,7 +247,7 @@ def write_enharmonica():
 
 def write_interval_name():
     # 特殊参数
-    interval_num_l=[1,2,3,4,5,6,7,8,9,10,11,12,13,14]
+    interval_num_l=[1,2,3,4,5,6,7,8]
     property_l=['m','M','p','A','d'] # ['d_d','d','m','M','A','d_A','p','fail']
     def step1():
         # 生成实例
@@ -873,7 +873,7 @@ def write_key_sign():
         return key_sign,skip,scale_name
     def step2():
         scale_name_all,key_sign_all,skip_all='','',''
-        for o in range(10):
+        for o in range(100):
             scale_name_row,key_sign_row,skip_row='','',''
             for i in range(4):
                 key_sign,skip,scale_name=step1()
@@ -947,4 +947,4 @@ def enharmonic_interval():
     step2()
     return
 
-enharmonic_interval()
+write_key_sign()
