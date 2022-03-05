@@ -66,6 +66,7 @@ class module_note:
         # 加上音组的变化
         note_num+=self.note_num_mode()[3]*12
         return note_num
+    
 
 # 音程的类
 class module_interval:
@@ -415,9 +416,9 @@ class module_rythem:
         time_24_34_44_list_1+=[v1+' '+v2 for v1 in self.quaver_list for v2 in ['8']]
         time_24_34_44_list_1=[time_24_34_44_list_1,[v1 for v1 in range(len(time_24_34_44_list_1))]]
         # 24_34_44列表2——总时值为四分音符|0-8
-        time_24_34_44_list_2=[self.crotchet_list,[0,1,2,3,4,5,6,7,8]]
+        time_24_34_44_list_2=[self.crotchet_list,[1,2,3,4,5,6,8]]
         # 24_34_44列表3——总时值为二分音符|0-8
-        time_24_34_44_list_3=[self.minim_list,[3,4,5,6]]
+        time_24_34_44_list_3=[self.minim_list,[1,2]]
         # 24_34_44列表4——总时值为附点二分音符|0-3
         time_24_34_44_list_4=[self.dotted_minim_list,[0,1,2,3]]
         # 24_34_44列表5——总时值为全音符|0-3
@@ -965,7 +966,7 @@ def judge_rythem_list(rythem_l,time_class):
     def rythem_control_num():
         errors_list=[]
 
-        list=[v1 for v1 in rythem_l if v1 in ['8 4 8','16 16 4 8','8 4 16 16','16 16 4 16 16']]
+        list=[v1 for v1 in rythem_l if v1 in ['8. 16','16 8 16','16 8.']]
         if len(list)<1:
             errors_list.append('error')
         else:
@@ -1417,7 +1418,7 @@ def random_select_note(note_list,space_c,list_num,important_list):
     def step2(): # 控制最少出现两个调号音
         result_list=step1()
         key_note=[v1 for v1 in result_list if v1.note() in important_list]
-        if len(key_note)==0:
+        if len(important_list)==1:
             return result_list
         while len(key_note)<2:
             result_list=step1()

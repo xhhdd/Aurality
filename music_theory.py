@@ -5,23 +5,67 @@ import module
 import create_ly
 # 与音相关
 # 列表前一个是音名，后一个是组别
-range_low_c=['a',0]
-range_high_c=['c',3] 
+range_low_c=['c',1]
+range_high_c=['g',2] 
 # 这是能选择的升降记号
-accidental_l=[1,0,2,-1,-2] # -2重降，-1降，0无，1升，2重升
+accidental_l=[0] # -2重降，-1降，0无，1升，2重升
 # 选择谱号
 clef='S' 
 # ly文件生成
-accidental_ly=''# ['all','@1','@12','@2','@0']  0是所有记号都有，1是没有重升重降，2是含有重升重降，3是只有重升重降，4是没有升降记号
+accidental_ly='@0'# ['all','@1','@12','@2','@0']  0是所有记号都有，1是没有重升重降，2是含有重升重降，3是只有重升重降，4是没有升降记号
 
+# 专门生成五线谱线上的音或者是间上的音
+def recognition_note():
+    # 线上或者间上
+    line_space=''
+    def step1():
+        note_t=module.random_create_note(range_low_c,range_high_c,accidental_l)
+        if line_space=='line':
+            while note_t.note_num%2==0:
+                note_t=module.random_create_note(range_low_c,range_high_c,accidental_l)
+        else:
+            while note_t.note_num%2!=0:
+                note_t=module.random_create_note(range_low_c,range_high_c,accidental_l)
+        note=note_t.note_all()
+        note_name=note_t.note_name()[0][2]+note_t.note().upper()
+        return note,note_name
+    def step2():
+        note_all,note_name_all='',''
+        for o in range(100):
+            note_row,note_name_row='',''
+            for i in range(10):
+                note,note_name=step1()
+                note_row+=note+'1 '
+                note_name_row+=' "'+note_name+'"1 '
+            # 行数
+            start_row=0
+            row_name=" \\break \set Score.currentBarNumber = #%s " %(o+2+start_row)
+            note_all+=note_row+row_name
+            note_name_all+=note_name_row+row_name
+        # 拉起ly文件
+        main=note_all
+        lyric=''
+        main_answer=note_all
+        lyric_answer=note_name_all
+        ly_t=create_ly.ly_set(accidental_ly,range_low_c,range_high_c,clef,main,lyric,main_answer,lyric_answer)
+        question='write_note_name'
+        ly_t.write_note_name(question)
+        return 
+    step2()
+    return '运行完成'
 
 
 # 根据五线谱上的音符写出音名
 def write_note_name():
+    # 唱名开关
+    step_io=1
     def step_1():
         note_t=module.random_create_note(range_low_c,range_high_c,accidental_l)
         note_all=note_t.note_all()
         note_name=note_t.note_name()[0][2]+note_t.note().upper()
+        # 唱名
+        step_name=str(note_t.note_num_mode()[1])
+        note_name=step_name if step_io==1 else note_name
         return note_all,note_name
     def step_2():
         note_all,note_name_all='',''
@@ -922,7 +966,7 @@ def enharmonic_interval():
         return interval,interval_answer,skip,interval_kind
     def step2():
         interval_all,interval_answer_all,interval_kind_all='','',''
-        for o in range(100):
+        for o in range(10):
             interval_row,interval_answer_row,interval_kind_row='','',''
             for i in range(1):
                 interval,interval_answer,skip,interval_kind=step1()
@@ -947,4 +991,4 @@ def enharmonic_interval():
     step2()
     return
 
-write_key_sign()
+recognition_note()

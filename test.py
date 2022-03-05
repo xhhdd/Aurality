@@ -16,16 +16,8 @@ import random
 import module
 import create_ly
 
-note_t=module.module_note(1,0)
-
-chord_t=module.module_chord(note_t,'major',0)
-
-new_root_note=module.enharmonic_chord(chord_t)
-for v1 in new_root_note:
-    print(v1.note_all())
+t=module.module_key(1,'sharp')
 
 
 
-
-
-
+print(t.key_list())

@@ -1,26 +1,26 @@
 # -*- coding: utf-8 -*-
-from ntpath import join
 import random
 import module
 import create_ly
 # 与音相关
 # 列表前一个是音名，后一个是组别
-range_low_c=['c',1]
-range_high_c=['c',2] 
+range_low_c=['a',0]
+range_high_c=['e',2] 
 # 这是能选择的升降记号
-accidental_l=[0,1,-1] # -2重降，-1降，0无，1升，2重升
+accidental_l=[0] # -2重降，-1降，0无，1升，2重升
 # 选择谱号
 clef='S' 
 # ly文件生成
 accidental_ly='@1'# ['all','@1','@12','@2','@0']  0是所有记号都有，1是没有重升重降，2是含有重升重降，3是只有重升重降，4是没有升降记号
 
 def random_pitch():
+    list_num=5
     space_c=[[2,'m'],[5,'p']]
     def step1():
         t=module.random_chromatic_note_list(range_low_c,range_high_c,[0],['sharpe'])
         note_list=t.minor()[1]
         # 挑出需要的音
-        note_list=module.random_select_note(note_list,space_c,10,[])
+        note_list=module.random_select_note(note_list,space_c,list_num,[])
         # 把音的实例转成具体的音符
         note_l=[v1.note_all() for v1 in note_list]
         note='1 '.join(note_l)
@@ -50,12 +50,12 @@ def random_pitch():
 
 def pitch_Mm():
     # 特殊参数
-    key_num_l=[0]
+    list_num=10 
+    key_num_l=[1]
     sharp_flat_l=['sharp']
     modal_l=[[['major'],['nature']],[['major'],['nature']]]
-    space_l=[[1,'A'],[4,'p']]
+    space_l=[[2,'m'],[8,'p']]
     def step1():
-        list_num=10 # 控制一次有多少个单音
         # 生成一个大调或小调的音组
         note_list,Mm_t=module.random_Mm_note_list(range_low_c,range_high_c,key_num_l,sharp_flat_l,modal_l)
         key_list=Mm_t.key_t.key_list()[0]
@@ -314,9 +314,9 @@ def rythem_group_ear():
 
 def rythem_ear():
     time_sign=[2,4]
-    remove_rythem_l=['8','2.','1']
+    remove_rythem_l=['8','2.','1','2']
     irregular_mode='2,3'
-    bar_num=4
+    bar_num=3
     def step1():
         # 生成一组节奏型
         rythem_list,rythem_t=module.random_rythem_list(time_sign,remove_rythem_l,irregular_mode,bar_num)
@@ -350,4 +350,4 @@ def rythem_ear():
         return 
     return step2()
 
-rythem_ear()
+pitch_Mm()
