@@ -54,7 +54,9 @@ class module_note:
         # 对组别的名称进行一定的处理
         octave_name_list=['小字组',"小字一组","小字二组","小字三组","小字四组","小字五组","大字四组","大字三组","大字二组","大字一组","大字组"]
         octave_name=octave_name_list[self.converter()[1]]
-        return accidental_name,octave_name
+        # 音名【大写】、简谱【数字】
+        note_name=[self.note().upper(),self.note_num_mode()[1]]
+        return octave_name,accidental_name,note_name
     # 把音转换成音数
     def count_num(self):
         note_base_num=self.note_num_mode()[1]
@@ -66,7 +68,12 @@ class module_note:
         # 加上音组的变化
         note_num+=self.note_num_mode()[3]*12
         return note_num
-    
+    # 判断音是在线上还是间上
+    def line_space(self):
+        # 判断奇数还是偶数
+        odd_even='odd' if abs(self.note_num%2)==1 else 'even'
+        # 在不同谱号中的效果
+        
 
 # 音程的类
 class module_interval:
