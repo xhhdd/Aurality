@@ -423,7 +423,7 @@ class module_rythem:
         time_24_34_44_list_1+=[v1+' '+v2 for v1 in self.quaver_list for v2 in ['8']]
         time_24_34_44_list_1=[time_24_34_44_list_1,[v1 for v1 in range(len(time_24_34_44_list_1))]]
         # 24_34_44列表2——总时值为四分音符|0-8
-        time_24_34_44_list_2=[self.crotchet_list,[1,2,3,4,5,6,8]]
+        time_24_34_44_list_2=[self.crotchet_list,[1,2,3,4,5,6]]
         # 24_34_44列表3——总时值为二分音符|0-8
         time_24_34_44_list_3=[self.minim_list,[1,2]]
         # 24_34_44列表4——总时值为附点二分音符|0-3
@@ -973,7 +973,7 @@ def judge_rythem_list(rythem_l,time_class):
     def rythem_control_num():
         errors_list=[]
 
-        list=[v1 for v1 in rythem_l if v1 in ['8. 16','16 8 16','16 8.']]
+        list=[v1 for v1 in rythem_l if v1 in ['16 8 16']]
         if len(list)<1:
             errors_list.append('error')
         else:

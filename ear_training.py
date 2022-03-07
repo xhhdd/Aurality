@@ -5,7 +5,7 @@ import create_ly
 # 与音相关
 # 列表前一个是音名，后一个是组别
 range_low_c=['a',0]
-range_high_c=['e',2] 
+range_high_c=['g',2] 
 # 这是能选择的升降记号
 accidental_l=[0] # -2重降，-1降，0无，1升，2重升
 # 选择谱号
@@ -53,13 +53,15 @@ def pitch_Mm():
     list_num=10 
     key_num_l=[1]
     sharp_flat_l=['sharp']
-    modal_l=[[['major'],['nature']],[['major'],['nature']]]
+    modal_l=[[['minor'],['harmony']],[['minor'],['harmony']]]
     space_l=[[2,'m'],[8,'p']]
     def step1():
         # 生成一个大调或小调的音组
         note_list,Mm_t=module.random_Mm_note_list(range_low_c,range_high_c,key_num_l,sharp_flat_l,modal_l)
         key_list=Mm_t.key_t.key_list()[0]
-        note_list=module.random_select_note(note_list,space_l,list_num,key_list)
+        scale_67th_list=Mm_t.scale_67th()[0]
+        important_list=key_list+scale_67th_list
+        note_list=module.random_select_note(note_list,space_l,list_num,['d'])
         # 答案上体现的音符
         note_l=[v1.note_all() for v1 in note_list]
         note='1 '.join(note_l)
@@ -101,8 +103,8 @@ def pitch_Mm():
 
 def interval_property_ear():
     # 特殊参数
-    interval_num_l=[3]
-    property_l=['M','m']
+    interval_num_l=[4,3]
+    property_l=['p','m']
     def step1():
         interval_t=module.random_interval_t(range_low_c,range_high_c,accidental_l,interval_num_l,property_l)
         note_t1,note_t2=interval_t.note_t1,interval_t.note_t2
@@ -316,7 +318,7 @@ def rythem_ear():
     time_sign=[2,4]
     remove_rythem_l=['8','2.','1','2']
     irregular_mode='2,3'
-    bar_num=3
+    bar_num=4
     def step1():
         # 生成一组节奏型
         rythem_list,rythem_t=module.random_rythem_list(time_sign,remove_rythem_l,irregular_mode,bar_num)
@@ -328,7 +330,7 @@ def rythem_ear():
         return rythem,beam,time_ly
     def step2():
         rythem_all,rythem_midi_all='',''
-        for o in range(100):
+        for o in range(70):
             rythem_bar,rythem_midi_bar='',''
             for i in range (1):
                 rythem,beam,time_ly=step1()

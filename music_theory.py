@@ -10,7 +10,7 @@ range_high_c=['g',2]
 # 这是能选择的升降记号
 accidental_l=[0] # -2重降，-1降，0无，1升，2重升
 # 选择谱号
-clef='S' 
+clef='T' 
 # ly文件生成
 accidental_ly='@0'# ['all','@1','@12','@2','@0']  0是所有记号都有，1是没有重升重降，2是含有重升重降，3是只有重升重降，4是没有升降记号
 
@@ -991,4 +991,4 @@ def enharmonic_interval():
     step2()
     return
 
-recognition_note()
+write_key_sign()
