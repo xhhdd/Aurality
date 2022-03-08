@@ -16,8 +16,14 @@ import random
 import module
 import create_ly
 
-t=module.module_key(1,'sharp')
+def func1():
+    def func2():
+        t=random.randint(1,10)
+        return t
+    return func2
 
+def receive(v):
+    
+    return v()
 
-
-print(t.key_list())
+receive(func1())

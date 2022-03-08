@@ -1406,6 +1406,7 @@ class random_chromatic_scale:
 
 # 根据传入的音组，随机选出几个|每两个音之间需要在一定的间隔之内
 def random_select_note(note_list,space_c,list_num,important_list):
+    important_note_list,important_time=important_list
     def step1():
         # 算出间隔的音数
         space_min,space_max=interval_to_num(space_c[0]),interval_to_num(space_c[1])
@@ -1424,15 +1425,14 @@ def random_select_note(note_list,space_c,list_num,important_list):
         return result_list
     def step2(): # 控制最少出现两个调号音
         result_list=step1()
-        key_note=[v1 for v1 in result_list if v1.note() in important_list]
-        if len(important_list)==1:
+        key_note=[v1 for v1 in result_list if v1.note() in important_note_list]
+        if len(important_note_list)==0:
             return result_list
-        while len(key_note)<2:
+        while len(key_note)<important_time:
             result_list=step1()
-            key_note=[v1 for v1 in result_list if v1.note() in important_list]
+            key_note=[v1 for v1 in result_list if v1.note() in important_note_list]
         return result_list
-    result_list=step2()
-    return result_list
+    return step2()
 
 
 # 随机生成一组节奏型
