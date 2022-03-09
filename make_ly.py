@@ -109,3 +109,20 @@ class ly_set:
         make_ly(ly_layout_1,chord,self.clef,self.note,self.lyric,file_name)
         make_ly(ly_layout_2,chord,self.clef,self.note_back,self.lyric_back,file_name+'-midi')
         return 'ly文件生成完毕'
+    def rythem(self,file_name,time_ly,beam):
+        chord=''
+        bar_num_c=1
+        time_sign_c=0
+        midi_c=0
+        tempo_c=0
+        tempo=''
+        time=time_ly 
+        key_sign_c='\override Staff.KeySignature.break-visibility = ##(#f #f #f)' #调号控制 
+        clef_sign_c='\override Score.Clef.break-visibility = ##(#f #f #t)' #换行后谱号不再重写
+        main_before=beam #\skip
+        ly_layout_1=[bar_num_c,time_sign_c,midi_c,tempo_c,tempo,time,key_sign_c,clef_sign_c,main_before]
+        ly_layout_2=[bar_num_c,time_sign_c,1,tempo_c,tempo,time,key_sign_c,clef_sign_c,main_before]
+        # 拉起ly文件
+        make_ly(ly_layout_1,chord,self.clef,self.note,self.lyric,file_name)
+        make_ly(ly_layout_2,chord,self.clef,self.note_back,self.lyric_back,file_name+'-midi')
+        return 'ly文件生成完毕'

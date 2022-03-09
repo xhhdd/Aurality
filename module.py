@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from itertools import count
-from os import remove
+from config import *
 import random
 from unittest import result
 # 音符的类
@@ -414,62 +414,29 @@ class module_rythem:
         self.breve_list=["\override Staff.NoteHead.style = #'altdefault a'\\breve "]
 
         # 28_216列表
-        time_28_216_list_1=[self.quaver_list,[0,1,2,3,4,5,6,7]] # 0-7
-        # 24_34_44列表1——总时值为八分音符
+        time_82_216_list=[self.quaver_list]
+        # 24_34_44列表1——总时值为八分音符，总时值为四分音符|0-8，总时值为二分音符|0-8，总时值为附点二分音符|0-3，总时值为全音符|0-3
             # 本列表做了一些特别的处理，为了4分音符为单位拍的节奏型看起来友善一点
         time_24_34_44_list_1=[]
         time_24_34_44_list_1+=[v1+' '+v2 for v1 in self.quaver_list for v2 in self.quaver_list]
         time_24_34_44_list_1+=[v1+' '+v2 for v1 in ['8'] for v2 in self.quaver_list]
         time_24_34_44_list_1+=[v1+' '+v2 for v1 in self.quaver_list for v2 in ['8']]
-        time_24_34_44_list_1=[time_24_34_44_list_1,[v1 for v1 in range(len(time_24_34_44_list_1))]]
-        # 24_34_44列表2——总时值为四分音符|0-8
-        time_24_34_44_list_2=[self.crotchet_list,[1,2,3,4,5,6]]
-        # 24_34_44列表3——总时值为二分音符|0-8
-        time_24_34_44_list_3=[self.minim_list,[1,2]]
-        # 24_34_44列表4——总时值为附点二分音符|0-3
-        time_24_34_44_list_4=[self.dotted_minim_list,[0,1,2,3]]
-        # 24_34_44列表5——总时值为全音符|0-3
-        time_24_34_44_list_5=[self.semibreve_list,[0,1,2,3]]
+        time_24_34_44_list=[time_24_34_44_list_1,self.crotchet_list,self.minim_list,self.dotted_minim_list,self.semibreve_list]
         # ————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
-        # 38_68_98_128列表——总时值为附点四分音符
-        time_38_68_98_128_list_1=[self.dotted_crotchet_1_list,[0,1,2,3,4]] # 0-4
-        time_38_68_98_128_list_2=[self.dotted_crotchet_2_list,[0,1,2,3,4,5,6,7,8]] # 0-8
-        time_38_68_98_128_list_3=[self.dotted_crotchet_3_list,[0,1,2,3,4,5,6,7,8]] # 0-8
-        time_38_68_98_128_list_4=[self.dotted_crotchet_4_list,[0,1,2,3,4,5]] # 0-5
-        # 38_68_98_128列表——总时值为附点二分音符
-        time_38_68_98_128_list_5=[['2.'],[0]]
+        # 38_68_98_128列表——总时值为附点四分音符，总时值为附点二分音符
+        time_38_68_98_128_list=[self.dotted_crotchet_1_list,self.dotted_crotchet_2_list,self.dotted_crotchet_3_list,self.dotted_crotchet_4_list,['2.']]
         # ————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
-        # 22_32_42列表1——总时值为四分音符|0-8
-        time_22_32_42_list_1=[self.crotchet_list,[0,1,2,3,4,5,6,7,8]]
-        # 22_32_42列表2——总时值为二分音符|0-8
-        time_22_32_42_list_2=[self.minim_list,[0,1,2,3,4,5,6,7,8]]
-        # 22_32_42列表4——总时值为附点二分音符|0-3
-        time_22_32_42_list_3=[self.dotted_minim_list,[0,1,2,3]]
-        # 22_32_42列表5——总时值为全音符|0-3
-        time_22_32_42_list_4=[self.semibreve_list,[0,1,2,3]]
+        # 22_32_42列表——总时值为四分音符|0-8，总时值为二分音符|0-8，总时值为附点二分音符|0-3，总时值为全音符|0-3
+        time_22_32_42_list=[self.crotchet_list,self.minim_list,self.dotted_minim_list,self.semibreve_list]
         # ————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
-        # 64_94_124列表——总时值为附点二分音符
-        time_64_94_124_list_1=[self.dotted_minim_1_list,[0,1,2,3,4]] # 0-4
-        time_64_94_124_list_2=[self.dotted_minim_2_list,[0,1,2,3,4,5,6,7,8]] # 0-8
-        time_64_94_124_list_3=[self.dotted_minim_3_list,[0,1,2,3,4,5,6,7,8]] # 0-8
-        time_64_94_124_list_4=[self.dotted_minim_4_list,[0,1,2,3,4,5]] # 0-5
-        # 64_94_124列表——总时值为附点全音符
-        time_64_94_124_list_5=[['1.'],[0]]
+        # 64_94_124列表——总时值为附点二分音符，总时值为附点全音符
+        time_64_94_124_list=[self.dotted_minim_1_list,self.dotted_minim_2_list,self.dotted_minim_3_list,self.dotted_minim_4_list,['1.']]
+
         # ————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
-        # 316_616_916_1216——总时值为附点八分音符
-        time_316_616_916_1216_list_1=[self.dotted_quaver_1_list,[0,1,2,3,4]] # 0-4
-        time_316_616_916_1216_list_2=[self.dotted_quaver_2_list,[0,1,2,3,4,5,6,7,8]] # 0-8
-        time_316_616_916_1216_list_3=[self.dotted_quaver_3_list,[0,1,2,3,4,5,6,7,8]] # 0-8
-        time_316_616_916_1216_list_4=[self.dotted_quaver_4_list,[0,1,2,3,4,5]] # 0-5
-        # 316_616_916_1216——总时值为附点四分音符
-        time_316_616_916_1216_list_5=[['4.'],[0]] 
-        # 整合列表
-        time_82_216_list=[time_28_216_list_1]
-        time_24_34_44_list=[time_24_34_44_list_1,time_24_34_44_list_2,time_24_34_44_list_3,time_24_34_44_list_4,time_24_34_44_list_5]
-        time_38_68_98_128_list=[time_38_68_98_128_list_1,time_38_68_98_128_list_2,time_38_68_98_128_list_3,time_38_68_98_128_list_4,time_38_68_98_128_list_5]
-        time_22_32_42_list=[time_22_32_42_list_1,time_22_32_42_list_2,time_22_32_42_list_3,time_22_32_42_list_4]
-        time_64_94_124_list=[time_64_94_124_list_1,time_64_94_124_list_2,time_64_94_124_list_3,time_64_94_124_list_4,time_64_94_124_list_5]
-        time_316_616_916_1216_list=[time_316_616_916_1216_list_1,time_316_616_916_1216_list_2,time_316_616_916_1216_list_3,time_316_616_916_1216_list_4,time_316_616_916_1216_list_5]
+        # 316_616_916_1216——总时值为附点八分音符，总时值为附点四分音符
+        time_316_616_916_1216_list=[self.dotted_quaver_1_list,self.dotted_quaver_2_list,self.dotted_quaver_3_list,self.dotted_quaver_4_list,['4.']]
+
+
         # 进行判断
         if self.time_class=='28_216':
             rythem_list=time_82_216_list
@@ -973,8 +940,8 @@ def judge_rythem_list(rythem_l,time_class):
     def rythem_control_num():
         errors_list=[]
 
-        list=[v1 for v1 in rythem_l if v1 in ['16 8 16']]
-        if len(list)<1:
+        list=[v1 for v1 in rythem_l if v1 in important_rythem_list[0]]
+        if len(list)<important_rythem_list[1]:
             errors_list.append('error')
         else:
             errors_list.append('')
@@ -1481,7 +1448,7 @@ def random_group_rythem(rythem_c):
     return rythem,time_num,time_sign
 
 # 随机生成一小节的节奏型
-def random_rythem_bar_list(time_sign,remove_rythem_l,irregular_mode): # remove_rythem_l在不规则拍的时候依旧只要填一个列表
+def random_rythem_bar_list(time_sign): # remove_rythem_l在不规则拍的时候依旧只要填一个列表
     # 生成一个节奏实例
     rythem_t=module_rythem(time_sign)
     def normal():
@@ -1494,9 +1461,11 @@ def random_rythem_bar_list(time_sign,remove_rythem_l,irregular_mode): # remove_r
         # 生成1小节的节奏型
         select_list=random.choice(select_all_list) # 抽取其中select列表
         rythem_l=[]
+        loop_time=0
         for v1,v2 in zip(rythem_list,select_list):
             for i in range(v2):
-                rythem_l.append(v1[0][random.choice(v1[1])])
+                rythem_l.append(v1[random.choice(rythem_range_list[loop_time])])
+            loop_time+=0 if v2==0 else 1
         # 删除空集
         while [] in rythem_l:
             rythem_l.remove([])
@@ -1506,9 +1475,11 @@ def random_rythem_bar_list(time_sign,remove_rythem_l,irregular_mode): # remove_r
     def irregular_rythem(select_all_l,rythem_list):
         select_list=random.choice(select_all_l) # 抽取其中select列表
         rythem_l=[]
+        loop_time=0
         for v1,v2 in zip(rythem_list,select_list):
             for i in range(v2):
-                rythem_l.append(v1[0][random.choice(v1[1])])
+                rythem_l.append(v1[random.choice(rythem_range_list[loop_time])])
+            loop_time+=0 if v2==0 else 1
         # 删除空集
         while [] in rythem_l:
             rythem_l.remove([])
@@ -1548,21 +1519,21 @@ def random_rythem_bar_list(time_sign,remove_rythem_l,irregular_mode): # remove_r
     return main()
 
 # 生成一条节奏型|固定的拍号
-def random_rythem_list(time_sign,remove_rythem_l,irregular_mode,bar_num):
+def random_rythem_list(time_sign):
     # 生成节奏型
     def step1():
         # 判断是不是不规则拍子
         if module_rythem(time_sign).time_class not in ['5_7_16','5_7_8','5_7_4','5_7_2']:
             # 生成一小节的节奏型
             rythem_list=[]
-            for i in range(bar_num):
-                rythem_bar,rythem_t=random_rythem_bar_list(time_sign,remove_rythem_l,irregular_mode)
+            for i in range(list_num):
+                rythem_bar,rythem_t=random_rythem_bar_list(time_sign)
                 rythem_list+=rythem_bar
         else:
             # 生成一小节的节奏型
             rythem_list=[]
-            for i in range(bar_num):
-                rythem_bar,rythem_t=random_rythem_bar_list(time_sign,remove_rythem_l,irregular_mode)
+            for i in range(list_num):
+                rythem_bar,rythem_t=random_rythem_bar_list(time_sign)
                 # 解开嵌套列表
                 v2=[]
                 for v1 in rythem_bar:
