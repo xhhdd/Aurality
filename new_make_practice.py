@@ -50,7 +50,10 @@ def pitch_Mm(important_note_list=[[],0]):
         repeat_inside=1
         repeat_outside=100
         file_name='pitch_Mm'
-        make_ly(step1(),repeat_inside,repeat_outside,file_name)
+        note,lyric,note_back,lyric_back=repeat(step1(),repeat_inside,repeat_outside)
+        # 生成ly文件
+        ly_t=ly_set(note,lyric,note_back,lyric_back,clef)
+        ly_t.pitch_Mm(file_name)
         return '运行完成'
     return step2()
 
@@ -73,7 +76,7 @@ def rythem(time_sign):
     def step2():
         # 生成
         repeat_inside=1
-        repeat_outside=50
+        repeat_outside=100
         file_name='rythem'
         note,lyric,note_back,lyric_back=repeat(step1(),repeat_inside,repeat_outside)
         # 生成ly文件
@@ -82,4 +85,4 @@ def rythem(time_sign):
         return '运行完成'
     return step2()
 
-rythem([2,4])
+pitch_Mm()
