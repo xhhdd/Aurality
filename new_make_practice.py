@@ -85,4 +85,4 @@ def rythem(time_sign):
         return '运行完成'
     return step2()
 
-pitch_Mm()
+rythem([2,4])

@@ -1465,7 +1465,7 @@ def random_rythem_bar_list(time_sign): # remove_rythem_l在不规则拍的时候
         for v1,v2 in zip(rythem_list,select_list):
             for i in range(v2):
                 rythem_l.append(v1[random.choice(rythem_range_list[loop_time])])
-            loop_time+=0 if v2==0 else 1
+            loop_time+=1
         # 删除空集
         while [] in rythem_l:
             rythem_l.remove([])
