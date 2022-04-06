@@ -7,7 +7,7 @@ def create_ly(ly_layout_c,chord,clef,main,lyric,file):
 
     # 这一项参数不需要进行变化
     header = '\
-    \\version "2.22.1" \n\
+    \\version "2.20.0" \n\
     \paper {  \n\
         #(set-paper-size "a4") %设定页面大小 \n\
         indent = 0 %首行无缩进 \n\

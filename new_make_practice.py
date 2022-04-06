@@ -42,7 +42,8 @@ def pitch_Mm(important_note_list=[[],0]):
             note_l=[v1.note_all() for v1 in note_list]
             note='1 '.join(note_l)
             # 给到midi软件的音符
-            note_midi=' \skip1 '+note+' \skip1 '
+            # b站投稿临时 note=note+'1 ' 
+            note_midi=' \skip1 '+note+' \skip1 ' # b站投稿 #'  \skip1 '+note+note+note+' \skip1'
             return note,'',note_midi,''
         return random_func
     def step2():
@@ -54,6 +55,35 @@ def pitch_Mm(important_note_list=[[],0]):
         # 生成ly文件
         ly_t=ly_set(note,lyric,note_back,lyric_back,clef)
         ly_t.pitch_Mm(file_name)
+        return '运行完成'
+    return step2()
+
+def interval():
+    def step1():
+        def random_func():
+            # 生成一个音程实例
+            interval_t=random_interval_t(range_low_c,range_high_c,accidental_l,interval_num_l,property_l)
+            # 音程里面的两个音
+            note_t1,note_t2=interval_t.note_t1,interval_t.note_t2
+            interval=" < "+note_t1.note_all()+' '+note_t2.note_all()+" >1 "
+            # 音程的名字
+            interval_name=interval_t.interval_name()[0]
+            # 答案
+            note=interval+' '
+            lyric=interval_name+'1 '
+            # midi
+            note_midi=interval # b站投稿 重复三次 #  ' \skip1 '+interval+interval+interval+' \skip1 '
+            return note,lyric,note_midi,''
+        return random_func
+    def step2():
+        # 生成
+        repeat_inside=1
+        repeat_outside=100
+        file_name='interval'
+        note,lyric,note_back,lyric_back=repeat(step1(),repeat_inside,repeat_outside)
+        # 生成ly文件
+        ly_t=ly_set(note,lyric,note_back,lyric_back,clef)
+        ly_t.interval(file_name)
         return '运行完成'
     return step2()
 
@@ -85,4 +115,32 @@ def rythem(time_sign):
         return '运行完成'
     return step2()
 
-rythem([2,4])
+def rythem_b(time_sign):
+    t=module_rythem(time_sign)
+    # 拍号 
+    time_ly=t.time_ly()
+    # beam连杆设置
+    beam=t.beam(irregular_mode)
+    def step1():
+        def random_func():
+            # 生成一组节奏型
+            rythem_list,rythem_t=random_rythem_list(time_sign)
+            rythem=' '.join(rythem_list)
+            # 输出准备
+            note=rythem+' \skip1*2 '
+            note_midi=' \\time 2/4 \skip2 \skip2'+time_ly+rythem+' \\time 2/4 \skip2 '+time_ly+rythem+' \\time 2/4 \skip2 '+time_ly+rythem+' \\time 2/4 \skip2 \skip2 '
+            return note,'',note_midi,''
+        return random_func
+    def step2():
+        # 生成
+        repeat_inside=1
+        repeat_outside=100
+        file_name='rythem'
+        note,lyric,note_back,lyric_back=repeat(step1(),repeat_inside,repeat_outside)
+        # 生成ly文件
+        ly_t=ly_set(note,lyric,note_back,lyric_back,clef)
+        ly_t.rythem_b(file_name,time_ly,beam)
+        return '运行完成'
+    return step2()
+
+pitch_Mm()
